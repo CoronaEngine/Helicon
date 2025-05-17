@@ -5,6 +5,8 @@
 #include "ShaderEmbededCodegen/CustomLibrary.h"
 
 
+using namespace EmbeddedShader;
+
 struct MyStruct1
 {
 	VariateProxy<int> int_A = 85244;
@@ -23,7 +25,6 @@ struct MyStruct3
 };
 
 
-
 int main(int argc, char* argv[])
 {
 	auto lambda = [&]()
@@ -34,12 +35,12 @@ int main(int argc, char* argv[])
 			VariateProxy<MyStruct2> myStruct2;
 			VariateProxy<MyStruct3> myStruct3;
 
-			myStruct1->int_A = 1;
+			//myStruct1->int_A = 1;
 
 			VariateProxy<ktm::fvec3> fvec3_A = ktm::fvec3(1, 2, 3);
 			VariateProxy<ktm::fvec3> fvec3_B = ktm::fvec3(1, 2, 3);
 
-			fvec3_B = MathFunc::sqrt(fvec3_A);
+			//fvec3_B = sqrt(fvec3_A);
 
 
 			$IF(fvec3_A)
@@ -53,6 +54,6 @@ int main(int argc, char* argv[])
 			};
 		};
 
-	std::string parseRes = abstractSyntaxTree.parse(lambda);
+	std::string parseRes = EmbeddedShader::shaderParse(lambda);
 	std::cout << parseRes;
 }

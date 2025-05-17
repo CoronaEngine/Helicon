@@ -2,39 +2,44 @@
 
 #include "VariateProxy.h"
 
-template<typename Type>
-struct GPU_IF
+namespace EmbeddedShader
 {
-	GPU_IF(VariateProxy<Type>& condition)
+
+	template<typename Type>
+	struct GPU_IF
 	{
-	}
-	void operator % (std::function<void()> func)
-	{
-	}
-};
+		GPU_IF(VariateProxy<Type>& condition)
+		{
+		}
+		void operator % (std::function<void()> func)
+		{
+		}
+	};
 #define $IF(...) ;GPU_IF(__VA_ARGS__) % [&]() noexcept -> void
 
 
-template<typename Type>
-struct GPU_ELSEIF
-{
-	GPU_ELSEIF(VariateProxy<Type>& condition)
+	template<typename Type>
+	struct GPU_ELSEIF
 	{
-	}
-	void operator % (std::function<void()> func)
-	{
-	}
-};
+		GPU_ELSEIF(VariateProxy<Type>& condition)
+		{
+		}
+		void operator % (std::function<void()> func)
+		{
+		}
+	};
 #define $ELIF(...) ;GPU_ELSEIF(__VA_ARGS__) % [&]() noexcept -> void
 
 
-struct GPU_ELSE
-{
-	GPU_ELSE()
+	struct GPU_ELSE
 	{
-	}
-	void operator % (std::function<void()> func)
-	{
-	}
-};
+		GPU_ELSE()
+		{
+		}
+		void operator % (std::function<void()> func)
+		{
+		}
+	};
 #define $ELSE ;GPU_ELSE() % [&]() noexcept -> void
+
+}
