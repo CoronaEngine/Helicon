@@ -65,9 +65,14 @@ namespace EmbeddedShader
 			return *(new VariateProxy());
 		}
 
+		Type* operator->()
+		{
+			return value;
+		}
+
 		VariateProxy& operator=(const VariateProxy& rhs)
 		{
-			return *(new VariateProxy());
+			return *this;
 		}
 
 #define CREATE_OPERATOR_UNARY(Operator) \
@@ -123,11 +128,11 @@ namespace EmbeddedShader
 		CREATE_OPERATOR_BINARY(>>= );
 		CREATE_OPERATOR_BINARY(<<= );
 
-		//CREATE_OPERATOR_EQUAL(=);
-
 		//CREATE_OPERATOR_PARAMETER_INT(++);
 		//CREATE_OPERATOR_PARAMETER_INT(--);
-		//CREATE_OPERATOR_PARAMETER_INT([]);
+
+	private:
+		Type* value;
 	};
 
 

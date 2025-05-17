@@ -5,18 +5,15 @@
 
 namespace EmbeddedShader
 {
-	template<typename T>
-	T clamp(T variable, T a, T b)
+	template<typename Type>
+	VariateProxy<Type> max(VariateProxy<Type> a, VariateProxy<Type> b)
 	{
+		return a;
 	}
 
-	template<typename T>
-	T sqrt(T variable)
+	template<typename Type>
+	VariateProxy<Type> min(VariateProxy<Type> a, VariateProxy<Type> b)
 	{
-	}
-
-	template<typename T>
-	T pow(T variable, T power)
-	{
+		return a;
 	}
 }

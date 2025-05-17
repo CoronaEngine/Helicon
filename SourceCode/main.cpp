@@ -35,13 +35,13 @@ int main(int argc, char* argv[])
 			VariateProxy<MyStruct2> myStruct2;
 			VariateProxy<MyStruct3> myStruct3;
 
-			//myStruct1->int_A = 1;
+			myStruct1->int_A = 1;
 
 			VariateProxy<ktm::fvec3> fvec3_A = ktm::fvec3(1, 2, 3);
 			VariateProxy<ktm::fvec3> fvec3_B = ktm::fvec3(1, 2, 3);
 
-			//fvec3_B = sqrt(fvec3_A);
-
+			fvec3_B = max(fvec3_A, fvec3_B);
+			fvec3_B = min(fvec3_A, fvec3_B);
 
 			$IF(fvec3_A)
 			{
