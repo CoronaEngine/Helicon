@@ -1,7 +1,7 @@
-#include "AbstractSyntaxTree.h"
-#include "ControlFlows.h"
+#include "ShaderEmbededCodegen/AbstractSyntaxTree.h"
+#include "ShaderEmbededCodegen/ControlFlows.h"
 #include <iostream>
-#include "CustomLibrary.h"
+#include "ShaderEmbededCodegen/CustomLibrary.h"
 
 /*struct PushConsts
 {
