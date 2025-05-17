@@ -8,7 +8,7 @@
     - 不支持使用C风格数组的拷贝构造（int arr[3]; VariateProxy<VariateProxy<int>> Array = arr;）
 - 运算符
 - 数学库：
-  - 与glsl相同（如：clamp、sqrt、pow）
+  - 与glsl相同（如：clamp、sqrt、pow、max、min）
 - 控制流（plan）
   - if、else、elif
   - for、while
