@@ -1,0 +1,38 @@
+## 特性说明
+- 变量定义：
+  - 基本类型、数学库类型（不支持默认构造）
+  - 结构体struct（支持默认构造）
+  - 数组
+    - 构造时给初始化列表{}，或者给size
+    - 支持使用STL的容器构造：通过begin、end构造数组
+    - 不支持使用C风格数组的拷贝构造（int arr[3]; VariateProxy<VariateProxy<int>> Array = arr;）
+- 运算符
+- 数学库：
+  - 与glsl相同（如：clamp、sqrt、pow）
+- 控制流（plan）
+  - if、else、elif
+  - for、while
+  - break、continue
+  - 待定：switch case
+- gpu资源（plan）：
+  - Image：
+    - uniform sampler2D
+    - uniform image2D
+  - buffer：
+    - layout(binding = 0) uniform
+    - layout(binding = 2) buffer
+  - push_constant
+- 全局常量（plan）：gl_GlobalInvocationID、gl_ViewIndex、gl_Position等
+
+## TODO && BUG list
+- 数组构造时通过size创建空数组
+- 数组构造时使用STL的容器构造：通过begin、end构造数组
+- martix的索引[]支持
+- imageLoad imageStore
+- 控制流（if、else、elif）（for、while）（break、continue）（待定：switch case）
+- 用户使用的类型名称替换
+  - VariateProxy<int> => int
+  - VariateProxy<VariateProxy<int>> => array<int>
+- 文件include关系整理
+- 内存泄漏问题，内存统一管理
+- *fvec3会被当成结构体(DSL临时支持，但需要数学库再做验证)，uvec3不会出现该情况
