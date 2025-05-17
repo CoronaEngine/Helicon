@@ -62,8 +62,8 @@ endif()
 
 # 头文件目录
 include_directories(
-    ${PROJECT_SOURCE_DIR}/ktm-0.2.8/
-    ${PROJECT_SOURCE_DIR}/boost_1_85_0/
+    ${PROJECT_SOURCE_DIR}/ktm/
+    ${PROJECT_SOURCE_DIR}/pfr/include/
     ${PROJECT_SOURCE_DIR}/ShaderEmbededCodegen/
 )
 

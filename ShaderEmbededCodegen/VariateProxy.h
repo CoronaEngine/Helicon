@@ -144,7 +144,6 @@ public:
 				memcpy(indexVisitPointer + index, tempIndexProxy, sizeof(VariateProxy<ElementType>));
 				indexVisitPointer[index].isIndexVariable = true;
 				indexVisitPointer[index].getAstNode(false)->variateName = thisVariableName + "[" + std::to_string(index) + "]";
-				delete tempIndexProxy;
 			}
 		}
 		//mat
