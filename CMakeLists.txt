@@ -64,11 +64,11 @@ endif()
 include_directories(
     ${PROJECT_SOURCE_DIR}/ktm/
     ${PROJECT_SOURCE_DIR}/pfr/include/
-    ${PROJECT_SOURCE_DIR}/ShaderEmbededCodegen/
+    ${PROJECT_SOURCE_DIR}/SourceCode/
 )
 
 # 设置源代码目录
-set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/ShaderEmbededCodegen)
+set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/SourceCode)
 
 
 # 递归搜索源文件
@@ -81,4 +81,4 @@ file(GLOB_RECURSE SOURCE_FILES
 
 # 添加可执行文件
 add_executable(${PROJECT_NAME}  ${SOURCE_FILES})
-set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "ShaderEmbededCodegen")
+set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
