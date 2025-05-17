@@ -51,4 +51,18 @@ namespace EmbeddedShader
 	};
 #define $ELSE if(GPU_ELSE gpuElse3Tg8Hp2K6nQ9rV4xY7wB1mZ5cF0sD9;true)
 
+	template<typename Type>
+	struct GPU_WHILE
+	{
+		GPU_WHILE(VariateProxy<Type>& condition)
+		{
+			//while begin pattern
+		}
+
+		~GPU_WHILE()
+		{
+			//while end pattern
+		}
+	};
+#define $WHILE(condition) if(GPU_WHILE gpuWhileD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9(condition);true)
 }

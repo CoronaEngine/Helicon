@@ -27,8 +27,8 @@ struct MyStruct3
 
 int main(int argc, char* argv[])
 {
-	auto lambda = [&]()
-		{
+	auto lambda =
+		[&]{
 			VariateProxy<VariateProxy<int>> arr = { 1, 2 ,8, 1, 72, 11, 48416 };
 
 			VariateProxy<MyStruct1> myStruct1;
@@ -51,6 +51,11 @@ int main(int argc, char* argv[])
 			}
 			$ELSE
 			{
+			}
+
+			$WHILE(fvec3_A)
+			{
+
 			}
 		};
 
