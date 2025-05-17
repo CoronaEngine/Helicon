@@ -1,0 +1,8 @@
+[submodule "pfr"]
+	path = pfr
+	url = https://github.com/boostorg/pfr.git
+	ignore = all
+[submodule "ktm"]
+	path = ktm
+	url = https://github.com/YGXXD/ktm.git
+	ignore = all
