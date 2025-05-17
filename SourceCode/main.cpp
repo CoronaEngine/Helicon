@@ -45,13 +45,13 @@ int main(int argc, char* argv[])
 
 			$IF(fvec3_A)
 			{
-			};
+			}
 			$ELIF(fvec3_B)
 			{
-			};
+			}
 			$ELSE
 			{
-			};
+			}
 		};
 
 	std::string parseRes = EmbeddedShader::shaderParse(lambda);

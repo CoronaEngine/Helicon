@@ -27,7 +27,7 @@
 ## TODO && BUG list
 - 数组构造时通过size创建空数组
 - 数组构造时使用STL的容器构造：通过begin、end构造数组
-- martix的索引[]支持
+- matrix[]支持
 - imageLoad imageStore
 - 控制流（if、else、elif）（for、while）（break、continue）（待定：switch case）
 - 用户使用的类型名称替换
