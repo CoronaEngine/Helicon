@@ -64,6 +64,7 @@ endif()
 include_directories(
     ${PROJECT_SOURCE_DIR}/ktm/
     ${PROJECT_SOURCE_DIR}/pfr/include/
+    ${PROJECT_SOURCE_DIR}/preprocessor/include/
     ${PROJECT_SOURCE_DIR}/SourceCode/
 )
 
