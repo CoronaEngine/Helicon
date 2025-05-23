@@ -10,14 +10,13 @@
 
 
 
-#define PFR_REFLECTABLE_MEMBER_FUNCTION_ONE(index, CLASSNAME, MemberFunction) \
-    decltype(std::mem_fn(&CLASSNAME::MemberFunction))                                \
-        CLASSNAME##_ptr##index = std::mem_fn(&CLASSNAME::MemberFunction);
 
+#define PFR_REFLECTABLE_MEMBER_FUNCTION_ONE(r, CLASSNAME, i, MemberFunction) \
+    decltype(std::mem_fn(&CLASSNAME::MemberFunction))                        \
+        BOOST_PP_CAT(MemberFunction, _ptr) = std::mem_fn(&CLASSNAME::MemberFunction);
 
 #define PFR_REFLECTABLE_MEMBER_FUNCTION(CLASSNAME, ...) \
-    BOOST_PP_SEQ_FOR_EACH(PFR_REFLECTABLE_MEMBER_FUNCTION_ONE, CLASSNAME, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
-
+    BOOST_PP_SEQ_FOR_EACH_I(PFR_REFLECTABLE_MEMBER_FUNCTION_ONE, CLASSNAME, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 
 struct Actor
