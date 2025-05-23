@@ -18,7 +18,7 @@ namespace EmbeddedShader
 			//if end pattern
 		}
 	};
-#define $IF(condition) if(GPU_IF gpuIfD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9(condition);true)
+#define $IF(condition) if constexpr (GPU_IF gpuIfD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9(condition);true)
 
 
 	template<typename Type>
@@ -34,7 +34,7 @@ namespace EmbeddedShader
 			//elseif end pattern
 		}
 	};
-#define $ELIF(condition) if(GPU_ELSEIF gpuElseIfQ7Jk3P9mR2vX5nB8tW4yL6cZ1dG0sF9(condition);true)
+#define $ELIF(condition) if constexpr (GPU_ELSEIF gpuElseIfQ7Jk3P9mR2vX5nB8tW4yL6cZ1dG0sF9(condition);true)
 
 
 	struct GPU_ELSE
@@ -49,7 +49,7 @@ namespace EmbeddedShader
 			//else end pattern
 		}
 	};
-#define $ELSE if(GPU_ELSE gpuElse3Tg8Hp2K6nQ9rV4xY7wB1mZ5cF0sD9;true)
+#define $ELSE if constexpr (GPU_ELSE gpuElse3Tg8Hp2K6nQ9rV4xY7wB1mZ5cF0sD9;true)
 
 	template<typename Type>
 	struct GPU_WHILE
@@ -64,5 +64,19 @@ namespace EmbeddedShader
 			//while end pattern
 		}
 	};
-#define $WHILE(condition) if(GPU_WHILE gpuWhileD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9(condition);true)
+#define $WHILE(condition) if constexpr (GPU_WHILE gpuWhileD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9(condition);true)
+
+	struct GPU_FOR
+	{
+		GPU_FOR(const std::function<void()>& content)
+		{
+			content();
+		}
+
+		~GPU_FOR()
+		{
+			//...
+		}
+	};
+#define $FOR(condition) if constexpr (GPU_FOR gpuForD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9([&]{condition;});true)
 }
