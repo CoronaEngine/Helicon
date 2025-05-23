@@ -6,3 +6,6 @@
 	path = ktm
 	url = https://github.com/YGXXD/ktm.git
 	ignore = all
+[submodule "preprocessor"]
+	path = preprocessor
+	url = https://github.com/boostorg/preprocessor.git
