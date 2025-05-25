@@ -1,0 +1,518 @@
+/*
+- 变量定义：
+  - 基本类型
+  - 结构体struct
+  - 数组
+- 运算符
+- 数学库：
+  - clamp、sqrt、pow、max、min.....
+- 控制流
+  - if、else、elif
+  - for、while
+  - break、continue
+  - switch case
+*/
+
+#include<iostream>
+#include<string>
+#include<unordered_map>
+#include<cctype>
+
+/*-------------------------------------词法分析器----------------------------------------*/
+
+enum Token_type
+{
+	INTEGER, PLUS, MINUS, DIV, MUL, LPAREN, RPAREN, ID, ASSIGN, SEMI, RESERVED, COMMA
+	, VAR_TYPE, INT, FLOAT, DOUBLE, CHAR, NONE, TOKEN_EOF
+};
+
+std::unordered_map<std::string, float> RESERVED_KEYWORDS = {
+	{"int",0},
+	{"float", 0},
+	{"double", 0},
+	{"char", 0}
+};
+
+
+struct VariableInfo {
+	Token_type type;
+	float value;
+	VariableInfo() : type(NONE), value(NONE) {}
+	VariableInfo(Token_type t, float v) : type(t),value(v) {}
+};
+
+
+std::unordered_map<std::string, VariableInfo> GLOBAL_SCOPE = { };
+
+std::string Token_type_tostring(Token_type type)
+{
+	switch (type) {
+	case INTEGER: return "INTEGER";
+	case PLUS: return "PLUS";
+	case MINUS: return "MINUS";
+	case DIV: return "DIV";
+	case MUL: return "MUL";
+	case LPAREN: return "LPAREN";
+	case RPAREN: return "RPAREN";
+	case ID: return "ID";
+	case ASSIGN: return "ASSIGN";
+	case SEMI: return "SEMI";
+	case RESERVED: return "RESERVED";
+	case VAR_TYPE: return "VAR_TYPE";
+	case INT: return "INT";
+	case FLOAT: return "FLOAT";
+	case DOUBLE: return "DOUBLE";
+	case CHAR: return "CHAR";
+	case COMMA: return "COMMA";
+	case NONE: return "NONE";
+	case TOKEN_EOF: return "TOKEN_EOF";
+	default: return "UNKNOWN";
+	}
+}
+
+class Token
+{
+public:
+	Token_type type;
+	float value;
+	std::string var;
+
+	Token(Token_type Type, float Value) :type(Type), value(Value), var("") {}
+	Token(Token_type Type, std::string var) :type(Type), var(var), value(0) {}
+	Token() :type(NONE), value(0), var("") {}
+
+};
+
+class Lexer
+{
+public:
+	int position = 0;
+	std::string text;
+	char current_char;
+
+	Lexer(std::string Text) :text(Text), current_char(text[position]) {}
+
+	char peek()
+	{
+		int pos = position + 1;
+		if (pos >= text.length())
+			return NONE;
+		else
+			return text[pos];
+	}
+
+	Token get_id()
+	{
+		std::string result = "";
+
+		while (current_char != NONE && std::isalnum(current_char))
+		{
+			result += current_char;
+			advance();
+		}
+		auto it = RESERVED_KEYWORDS.find(result);
+		if (it != RESERVED_KEYWORDS.end())
+			return Token(RESERVED, result);
+		else
+			return Token(ID, result);
+	}
+
+	void advance()
+	{
+		position++;
+		if (position >= text.length())
+			current_char = NONE;
+		else
+			current_char = text[position];
+	}
+
+	void Skip_space()
+	{
+		while (current_char != NONE && current_char == ' ')
+			advance();
+	}
+
+	float Integer()
+	{
+		std::string result = "";
+		while (current_char != NONE && (current_char >= '0' && current_char <= '9'))
+		{
+			result += current_char;
+			advance();
+		}
+		return std::stof(result);
+	}
+
+	void error()
+	{
+		//throw std::runtime_error("Lexer error!!!");
+		std::cout << "Lexer error: Invalid character '" << current_char << "' encountered." << std::endl;
+	}
+
+    Token get_next_token()
+    {
+        while (current_char != NONE)
+        {
+            if (std::isspace(current_char)) { Skip_space(); continue; }
+            if (std::isdigit(current_char))  return Token(INTEGER, Integer());
+
+            switch (current_char) {
+                case '+': advance(); return Token(PLUS, '+');
+                case '-': advance(); return Token(MINUS, '-');
+                case '*': advance(); return Token(MUL, '*');
+                case '/': advance(); return Token(DIV, '/');
+                case '(': advance(); return Token(LPAREN, '(');
+                case ')': advance(); return Token(RPAREN, ')');
+                case ';': advance(); return Token(SEMI, ';');
+                case '=': advance(); return Token(ASSIGN, '=');
+				case ',': advance(); return Token(COMMA, ',');
+                default:
+                    if (std::isalpha(current_char))
+                        return get_id();
+                    error();
+            }
+        }
+        return Token(TOKEN_EOF, NONE);
+    }
+};
+
+/*-------------------------------------语法分析器----------------------------------------*/
+
+class AST
+{
+public:
+	virtual ~AST() = default;
+	virtual float accept(class Interpreter& visitor) = 0;
+};
+
+class Binop : public AST
+{
+public:
+	std::unique_ptr<AST> left_ast;
+	std::unique_ptr<AST> right_ast;
+	Token_type token;
+	Binop(AST* left, Token_type Type, AST* right) :left_ast(left), token(Type), right_ast(right) {}
+	float accept(Interpreter& visitor) override;
+	~Binop() override = default;
+};
+
+class Num : public AST
+{
+public:
+	Token token;
+	float value;
+
+	Num(Token token) :token(token), value(token.value) {}
+	float accept(Interpreter& visitor) override;
+	~Num() override = default;
+};
+
+class Unaryop : public AST
+{
+public:
+	Token_type type;
+	std::unique_ptr<AST> factor;
+
+	Unaryop(Token_type Type, AST* Factor) :type(Type), factor(Factor) {}
+	float accept(Interpreter& visitor) override;
+	~Unaryop() override = default;
+};
+
+class Assign : public AST
+{
+public:
+	std::string left;
+	std::unique_ptr<AST> right;
+
+
+	Assign(std::string left, AST* right) :left(left), right(right) {}
+	float accept(Interpreter& visitor) override;
+	~Assign() override = default;
+};
+
+class Variable : public AST
+{
+public:
+	std::string name;
+	Token token;
+
+	Variable(Token token) :token(token), name(token.var) {}
+	float accept(Interpreter& visitor) override;
+	~Variable() override = default;
+};
+
+class No_op : public AST
+{
+
+};
+
+class Block : public AST
+{
+public:
+	std::vector<std::unique_ptr<AST>> statements;
+	Block() = default;
+	float accept(class Interpreter& visitor) override;
+	~Block() override = default;
+};
+
+class Parser
+{
+public:
+	Lexer lexer;
+	Token current_token;
+	Token_type current_decl_type = NONE;
+
+	Parser(Lexer lexer) :lexer(lexer) {
+		current_token = this->lexer.get_next_token();
+	}
+
+	void Eat(Token_type Type)
+	{
+		std::cout << "current_token : " << Token_type_tostring(current_token.type) << ' '
+			<< current_token.value << ' ' << current_token.var << std::endl;
+
+		if (Type != current_token.type)
+			lexer.error();
+		else
+			current_token = lexer.get_next_token();
+	}
+
+	Variable* variable()
+	{
+		Variable* node = new Variable(current_token);
+		Eat(ID);
+		return node;
+	}
+
+	AST* statement()
+	{
+		Block* block = new Block();
+		while (current_token.type != SEMI && current_token.type != TOKEN_EOF)
+		{
+			Variable* node = variable();
+			std::string left = node->name;
+			if (GLOBAL_SCOPE.find(left) == GLOBAL_SCOPE.end() && current_decl_type == NONE)
+			{
+				//throw std::runtime_error("Not have find this variable !!!");
+				std::cout << "Error: Variable '" << left << "' is not defined." << std::endl;
+			}
+			if (current_decl_type != NONE)
+			{
+				GLOBAL_SCOPE[left] = VariableInfo(current_decl_type, NONE);
+			}
+			if (current_token.type == COMMA)
+			{
+				Eat(COMMA);
+				block->statements.emplace_back(new Assign(left, nullptr));
+			}
+			else if (current_token.type == ASSIGN)
+			{
+				Eat(ASSIGN);
+				AST* value = expr();
+				block->statements.emplace_back(new Assign(left, value));
+				if (current_token.type == COMMA)
+				{
+					Eat(COMMA);
+				}
+			}
+		}
+		Eat(SEMI);
+		return block;
+	}
+
+	AST* factor()
+	{
+		Token token = current_token;
+		if (token.type == PLUS || token.type == MINUS)
+		{
+			Eat(token.type);
+			return new Unaryop(token.type, factor());
+		}
+		if (token.type == RESERVED)
+		{
+			current_decl_type = token.type;
+			Eat(RESERVED);
+			AST* node = statement();
+			current_decl_type = NONE;
+			return node;
+		}
+		if (token.type == ID)
+		{
+			return statement();
+		}
+		if (token.type == INTEGER)
+		{
+			Eat(INTEGER);
+			return new Num(token);
+		}
+		if (token.type == LPAREN)
+		{
+			Eat(LPAREN);
+			AST* node = expr();
+			Eat(RPAREN);
+			return node;
+		}
+		return nullptr;
+	}
+
+	AST* term()
+	{
+		AST* node = factor();
+		while (current_token.type == MUL || current_token.type == DIV)
+		{
+			Token token = current_token;
+			if (token.type == MUL)
+			{
+				Eat(MUL);
+				node = new Binop(node, MUL, factor());
+			}
+			if (token.type == DIV)
+			{
+				Eat(DIV);
+				node = new Binop(node, DIV, factor());
+			}
+		}
+		return node;
+	}
+
+	AST* expr()
+	{
+		AST* node = term();
+		while (current_token.type == PLUS || current_token.type == MINUS)
+		{
+			Token token = current_token;
+			if (token.type == PLUS)
+			{
+				Eat(PLUS);
+				node = new Binop(node, PLUS, term());
+			}
+			if (token.type == MINUS)
+			{
+				Eat(MINUS);
+				node = new Binop(node, MINUS, term());
+			}
+		}
+		return node;
+	}
+
+	Block* parse()
+	{
+		Block* block = new Block();
+		while (current_token.type != TOKEN_EOF)
+		{
+			AST* stmt = expr();
+			if (stmt)
+				block->statements.emplace_back(stmt);
+			else
+				break;
+		}
+		return block;
+	}
+};
+
+/*-------------------------------------解释器----------------------------------------*/
+
+class Interpreter
+{
+public:
+	Parser parser;
+
+	Interpreter(Parser parser) :parser(parser) {}
+
+	float interpreter()
+	{
+		Block* TREE = parser.parse();
+		return TREE->accept(*this);
+	}
+
+	float visit_Binop(Binop* node)
+	{
+		float left = node->left_ast->accept(*this);
+		float right = node->right_ast->accept(*this);
+		if (node->token == PLUS) return left + right;
+		if (node->token == MINUS) return left - right;
+		if (node->token == DIV) return left / right;
+		if (node->token == MUL) return left * right;
+		return 0;
+	}
+
+	float visit_Num(Num* node)
+	{
+		return node->value;
+	}
+
+	float visit_Unaryop(Unaryop* node)
+	{
+		float value = node->factor->accept(*this);
+		if (node->type == PLUS) return +value;
+		if (node->type == MINUS) return -value;
+		return 0;
+	}
+
+	float visit_Assigh(Assign* node)
+	{
+		std::string var_name = node->left;
+		if (GLOBAL_SCOPE.find(var_name) == GLOBAL_SCOPE.end())
+		{
+			//throw std::runtime_error("Error: Cannot assign value to reserved keyword ");
+			std::cout << "Error: Variable '" << var_name << "' is not defined." << std::endl;
+		}
+		else if (node->right == nullptr)
+		{
+			std::cout << "Error: Variable '" << var_name << "' is not assigned a value." << std::endl;
+			return NONE;
+		}
+		float value = node->right->accept(*this);
+		GLOBAL_SCOPE[var_name].value = value;
+		std::cout << "var_name : " << var_name << " = " << value << std::endl;
+		return value;
+	}
+
+};
+
+float Num::accept(Interpreter& visitor)
+{
+	return visitor.visit_Num(this);
+}
+
+float Binop::accept(Interpreter& visitor)
+{
+	return visitor.visit_Binop(this);
+}
+
+float Unaryop::accept(Interpreter& visitor)
+{
+	return visitor.visit_Unaryop(this);
+}
+
+float Assign::accept(Interpreter& visitor)
+{
+	return visitor.visit_Assigh(this);
+}
+
+float Variable::accept(Interpreter& visitor)
+{
+	return 0;
+}
+
+float Block::accept(Interpreter& visitor)
+{
+	float result = 0;
+	for (auto& stmt : statements)
+	{
+		if (stmt)
+			result = stmt->accept(visitor);
+	}
+	return result;
+}
+
+int main()
+{
+	std::string text = "int a , b ; a = 100 , b = 9 ; c = 99 ;";
+	//getline(std::cin, text);
+	Lexer lexer = Lexer(text);
+	Parser parser = Parser(lexer);
+	Interpreter interpreter = Interpreter(parser);
+	interpreter.interpreter();
+	return 0;
+}
