@@ -22,8 +22,8 @@
 
 enum Token_type
 {
-	INTEGER, PLUS, MINUS, DIV, MUL, LPAREN, RPAREN, ID, ASSIGN, SEMI, RESERVED, COMMA
-	, VAR_TYPE, INT, FLOAT, DOUBLE, CHAR, NONE, TOKEN_EOF
+	INTEGER, PLUS, MINUS, DIV, MUL, LPAREN, RPAREN, ID, ASSIGN, SEMI, RESERVED, COMMA,
+	SINGLE_MARK, DOT, VAR_TYPE, INT, FLOAT, DOUBLE, CHAR, STRING, NONE, TOKEN_EOF
 };
 
 std::unordered_map<std::string, float> RESERVED_KEYWORDS = {
@@ -64,6 +64,8 @@ std::string Token_type_tostring(Token_type type)
 	case DOUBLE: return "DOUBLE";
 	case CHAR: return "CHAR";
 	case COMMA: return "COMMA";
+	case DOT: return "DOT";
+	case SINGLE_MARK: return "SINGLE_MARK";
 	case NONE: return "NONE";
 	case TOKEN_EOF: return "TOKEN_EOF";
 	default: return "UNKNOWN";
@@ -132,11 +134,20 @@ public:
 			advance();
 	}
 
-	float Integer()
+	float Get_nember()
 	{
 		std::string result = "";
-		while (current_char != NONE && (current_char >= '0' && current_char <= '9'))
+		int dot_count = 0;
+		while (current_char != NONE && (current_char >= '0' && current_char <= '9' ) || current_char == '.')
 		{
+			if (current_char == '.')
+			{
+				dot_count++;
+				if (dot_count > 1)
+				{
+					error();
+				}
+			}
 			result += current_char;
 			advance();
 		}
@@ -149,12 +160,22 @@ public:
 		std::cout << "Lexer error: Invalid character '" << current_char << "' encountered." << std::endl;
 	}
 
+    Token get_char()
+    {
+        if (current_char == NONE) error();
+        char ch = current_char;
+        advance();
+        if (current_char != '\'') error(); // 期望右单引号
+        advance();
+        return Token(CHAR, static_cast<float>(ch));
+    }
+
     Token get_next_token()
     {
         while (current_char != NONE)
         {
             if (std::isspace(current_char)) { Skip_space(); continue; }
-            if (std::isdigit(current_char))  return Token(INTEGER, Integer());
+            if (std::isdigit(current_char))  return Token(INTEGER, Get_nember());
 
             switch (current_char) {
                 case '+': advance(); return Token(PLUS, '+');
@@ -166,6 +187,11 @@ public:
                 case ';': advance(); return Token(SEMI, ';');
                 case '=': advance(); return Token(ASSIGN, '=');
 				case ',': advance(); return Token(COMMA, ',');
+				case '.': advance(); return Token(DOT, '.');
+				case '\'': {
+                    advance(); // 跳过左单引号
+                    return get_char();
+                }
                 default:
                     if (std::isalpha(current_char))
                         return get_id();
@@ -205,6 +231,17 @@ public:
 	Num(Token token) :token(token), value(token.value) {}
 	float accept(Interpreter& visitor) override;
 	~Num() override = default;
+};
+
+class Char : public AST
+{
+public:
+	Token token;
+	char value;
+
+	Char(Token token) :token(token), value(static_cast<char>(token.value)) {}
+	float accept(Interpreter& visitor) override;
+	~Char() override = default;
 };
 
 class Unaryop : public AST
@@ -323,19 +360,29 @@ public:
 	AST* factor()
 	{
 		Token token = current_token;
+		if (token.type == CHAR)
+		{
+			Eat(CHAR);
+			return new Char(token);
+		}
 		if (token.type == PLUS || token.type == MINUS)
 		{
 			Eat(token.type);
 			return new Unaryop(token.type, factor());
-		}
-		if (token.type == RESERVED)
-		{
-			current_decl_type = token.type;
+        }
+        if (token.type == RESERVED)
+        {
+			std::string type_str = token.var;
+			if (type_str == "int") current_decl_type = INT;
+			else if (type_str == "float") current_decl_type = FLOAT;
+			else if (type_str == "double") current_decl_type = DOUBLE;
+			else if (type_str == "char") current_decl_type = CHAR;
+			else current_decl_type = NONE;
 			Eat(RESERVED);
 			AST* node = statement();
 			current_decl_type = NONE;
 			return node;
-		}
+        }
 		if (token.type == ID)
 		{
 			return statement();
@@ -441,6 +488,11 @@ public:
 		return node->value;
 	}
 
+	float visit_Char(Char* node)
+	{
+		return static_cast<float>(node->value);
+	}
+
 	float visit_Unaryop(Unaryop* node)
 	{
 		float value = node->factor->accept(*this);
@@ -449,6 +501,7 @@ public:
 		return 0;
 	}
 
+	/*
 	float visit_Assigh(Assign* node)
 	{
 		std::string var_name = node->left;
@@ -467,7 +520,74 @@ public:
 		std::cout << "var_name : " << var_name << " = " << value << std::endl;
 		return value;
 	}
+	*/
+	float visit_Assigh(Assign* node)
+	{
+		std::string var_name = node->left;
+		if (GLOBAL_SCOPE.find(var_name) == GLOBAL_SCOPE.end())
+		{
+			std::cout << "Error: Variable '" << var_name << "' is not defined." << std::endl;
+			return NONE;
+		}
+		if (node->right == nullptr)
+		{
+			std::cout << "Error: Variable '" << var_name << "' is not assigned a value." << std::endl;
+			return NONE;
+		}
+		float value = node->right->accept(*this);
 
+		Token_type var_type = GLOBAL_SCOPE[var_name].type;
+		bool type_ok = true;
+		switch (var_type) 
+		{
+			case INT:
+			if (std::abs(value - static_cast<int>(value)) > 1e-6) 
+			{
+				std::cout << "Type Error: Variable '" << var_name << "' is of type INT, but assigned non-integer value " << value << std::endl;
+				type_ok = false;
+			}
+			break;
+			case CHAR:
+			if (std::abs(value - static_cast<int>(value)) > 1e-6 || value < 0 || value > 255) 
+			{
+				std::cout << "Type Error: Variable '" << var_name << "' is of type CHAR, but assigned invalid value " << value << std::endl;
+				type_ok = false;
+			}
+			break;
+			default:
+			break;
+		}
+		if (!type_ok) {
+			std::cout << "Assignment to '" << var_name << "' failed due to type mismatch." << std::endl;
+			return NONE;
+		}
+
+		GLOBAL_SCOPE[var_name].value = (var_type == CHAR) ? static_cast<char>(value) : value;
+		std::cout << "var_name : " << var_name << " = ";
+
+		if (var_type == CHAR)
+			std::cout << "'" << static_cast<char>(value) << "'";
+		else
+			std::cout << value;
+		std::cout << std::endl;
+		return value;
+	}
+
+	float visit_Variable(Variable* node)
+	{
+		std::string var_name = node->name;
+		auto it = GLOBAL_SCOPE.find(var_name);
+		if (it == GLOBAL_SCOPE.end()) 
+		{
+			std::cout << "Error: Variable '" << var_name << "' is not defined." << std::endl;
+			return NONE;
+		}
+		if (it->second.type == CHAR) 
+		{
+			return static_cast<float>(static_cast<char>(it->second.value));
+		}
+		return it->second.value;
+	}
 };
 
 float Num::accept(Interpreter& visitor)
@@ -490,9 +610,14 @@ float Assign::accept(Interpreter& visitor)
 	return visitor.visit_Assigh(this);
 }
 
+float Char::accept(Interpreter& visitor)
+{
+	return visitor.visit_Char(this);
+}
+
 float Variable::accept(Interpreter& visitor)
 {
-	return 0;
+	return visitor.visit_Variable(this);
 }
 
 float Block::accept(Interpreter& visitor)
@@ -508,7 +633,7 @@ float Block::accept(Interpreter& visitor)
 
 int main()
 {
-	std::string text = "int a , b ; a = 100 , b = 9 ; c = 99 ;";
+	std::string text = "char result ; result = 'p";
 	//getline(std::cin, text);
 	Lexer lexer = Lexer(text);
 	Parser parser = Parser(lexer);
