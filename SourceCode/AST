@@ -100,7 +100,7 @@ public:
 		if (pos >= text.length())
 			return NONE;
 		else
-			return text[pos];
+			return text[pos] == ' ' ? peek() : text[pos] ;
 	}
 
 	Token get_id()
@@ -165,7 +165,7 @@ public:
         if (current_char == NONE) error();
         char ch = current_char;
         advance();
-        if (current_char != '\'') error(); // 期望右单引号
+        if (current_char != '\'') error();
         advance();
         return Token(CHAR, static_cast<float>(ch));
     }
@@ -189,7 +189,7 @@ public:
 				case ',': advance(); return Token(COMMA, ',');
 				case '.': advance(); return Token(DOT, '.');
 				case '\'': {
-                    advance(); // 跳过左单引号
+                    advance(); 
                     return get_char();
                 }
                 default:
@@ -385,7 +385,34 @@ public:
         }
 		if (token.type == ID)
 		{
-			return statement();
+			Variable* var_node = new Variable(token);
+			Eat(ID);
+			/*
+			if (current_decl_type != NONE && GLOBAL_SCOPE.find(var_node->name) == GLOBAL_SCOPE.end())
+			{
+				Eat(ID);
+				return var_node;
+			}
+			else if (GLOBAL_SCOPE.find(var_node->name) == GLOBAL_SCOPE.end() && current_decl_type == NONE)
+			{				
+				//throw std::runtime_error("Not have find this variable !!!");
+				std::cout << "Error: Variable '" << var_node->name << "' is not defined." << std::endl;
+			}
+			else if (GLOBAL_SCOPE.find(var_node->name) != GLOBAL_SCOPE.end() && current_decl_type == NONE && (lexer.peek() == '='))
+			{
+				return statement();
+			}
+			*/
+			
+
+			if (current_token.type == ASSIGN)
+			{
+				Eat(ASSIGN);
+				AST* value = expr();
+				Eat(SEMI);
+				return new Assign(var_node->name, value);
+			}
+			return var_node;
 		}
 		if (token.type == INTEGER)
 		{
@@ -541,21 +568,21 @@ public:
 		switch (var_type) 
 		{
 			case INT:
-			if (std::abs(value - static_cast<int>(value)) > 1e-6) 
-			{
-				std::cout << "Type Error: Variable '" << var_name << "' is of type INT, but assigned non-integer value " << value << std::endl;
-				type_ok = false;
-			}
-			break;
+				if (std::abs(value - static_cast<int>(value)) > 1e-6) 
+				{
+					std::cout << "Type Error: Variable '" << var_name << "' is of type INT, but assigned non-integer value " << value << std::endl;
+					type_ok = false;
+				}
+				break;
 			case CHAR:
-			if (std::abs(value - static_cast<int>(value)) > 1e-6 || value < 0 || value > 255) 
-			{
-				std::cout << "Type Error: Variable '" << var_name << "' is of type CHAR, but assigned invalid value " << value << std::endl;
-				type_ok = false;
-			}
-			break;
+				if (std::abs(value - static_cast<int>(value)) > 1e-6 || value < 0 || value > 255) 
+				{
+					std::cout << "Type Error: Variable '" << var_name << "' is of type CHAR, but assigned invalid value " << value << std::endl;
+					type_ok = false;
+				}
+				break;
 			default:
-			break;
+				break;
 		}
 		if (!type_ok) {
 			std::cout << "Assignment to '" << var_name << "' failed due to type mismatch." << std::endl;
@@ -633,7 +660,7 @@ float Block::accept(Interpreter& visitor)
 
 int main()
 {
-	std::string text = "char result ; result = 'p";
+	std::string text = "int a , b , c , d ; a = 100 ; b = a + 9 ; c = a + b , d = 99 ;";
 	//getline(std::cin, text);
 	Lexer lexer = Lexer(text);
 	Parser parser = Parser(lexer);
