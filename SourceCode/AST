@@ -22,7 +22,7 @@
 
 enum Token_type
 {
-	INTEGER, PLUS, MINUS, DIV, MUL, LPAREN, RPAREN, ID, ASSIGN, SEMI, RESERVED, COMMA,
+	INTEGER, PLUS, MINUS, DIV, MUL, LPAREN, RPAREN, ID, ASSIGN, SEMI, RESERVED, COMMA,XOR,
 	SINGLE_MARK, DOT, VAR_TYPE, INT, FLOAT, DOUBLE, CHAR, STRING, NONE, TOKEN_EOF
 };
 
@@ -66,6 +66,7 @@ std::string Token_type_tostring(Token_type type)
 	case COMMA: return "COMMA";
 	case DOT: return "DOT";
 	case SINGLE_MARK: return "SINGLE_MARK";
+	case XOR: return "XOR";
 	case NONE: return "NONE";
 	case TOKEN_EOF: return "TOKEN_EOF";
 	default: return "UNKNOWN";
@@ -100,7 +101,7 @@ public:
 		if (pos >= text.length())
 			return NONE;
 		else
-			return text[pos] == ' ' ? peek() : text[pos] ;
+			return text[pos] == ' ' ? position++,peek() : text[pos] ;
 	}
 
 	Token get_id()
@@ -188,6 +189,7 @@ public:
                 case '=': advance(); return Token(ASSIGN, '=');
 				case ',': advance(); return Token(COMMA, ',');
 				case '.': advance(); return Token(DOT, '.');
+				case '^': advance(); return Token(XOR, '^');
 				case '\'': {
                     advance(); 
                     return get_char();
@@ -357,6 +359,32 @@ public:
 		return block;
 	}
 
+	AST* Assign_var()
+	{
+		Block* block = new Block();
+
+		while (current_token.type != SEMI && current_token.type != TOKEN_EOF)
+		{
+			Variable* node = variable();
+			std::string left = node->name;
+			if (GLOBAL_SCOPE.find(left) == GLOBAL_SCOPE.end())
+			{
+				std::cout << "Error: Variable '" << left << "' is not defined." << std::endl;
+			}
+
+			Eat(ASSIGN);
+			AST* value = expr();
+			block->statements.emplace_back(new Assign(left, value));
+			if (current_token.type == COMMA)
+			{
+				Eat(COMMA);
+			}
+		}
+		Eat(SEMI);
+
+		return block;
+	}
+
 	AST* factor()
 	{
 		Token token = current_token;
@@ -385,34 +413,18 @@ public:
         }
 		if (token.type == ID)
 		{
-			Variable* var_node = new Variable(token);
-			Eat(ID);
-			/*
-			if (current_decl_type != NONE && GLOBAL_SCOPE.find(var_node->name) == GLOBAL_SCOPE.end())
+			std::string var_name = token.var;
+
+			if (current_decl_type != NONE || lexer.peek() != '=')
 			{
 				Eat(ID);
-				return var_node;
+				return new Variable(token);
 			}
-			else if (GLOBAL_SCOPE.find(var_node->name) == GLOBAL_SCOPE.end() && current_decl_type == NONE)
-			{				
-				//throw std::runtime_error("Not have find this variable !!!");
-				std::cout << "Error: Variable '" << var_node->name << "' is not defined." << std::endl;
-			}
-			else if (GLOBAL_SCOPE.find(var_node->name) != GLOBAL_SCOPE.end() && current_decl_type == NONE && (lexer.peek() == '='))
-			{
-				return statement();
-			}
-			*/
-			
 
-			if (current_token.type == ASSIGN)
+			if (lexer.peek() == '=')
 			{
-				Eat(ASSIGN);
-				AST* value = expr();
-				Eat(SEMI);
-				return new Assign(var_node->name, value);
+				return Assign_var();
 			}
-			return var_node;
 		}
 		if (token.type == INTEGER)
 		{
@@ -660,7 +672,7 @@ float Block::accept(Interpreter& visitor)
 
 int main()
 {
-	std::string text = "int a , b , c , d ; a = 100 ; b = a + 9 ; c = a + b , d = 99 ;";
+	std::string text = "char ch = '9' ; int res ; res = ch ;";
 	//getline(std::cin, text);
 	Lexer lexer = Lexer(text);
 	Parser parser = Parser(lexer);
