@@ -111,10 +111,11 @@ struct MyStruct3
 	VariateProxy<MyStruct2> int_A;
 };
 
+#include <AST.hpp>
 
 int main(int argc, char* argv[])
 {
-
+	ast_test_main();
 	test_func();
 
 	Actor test;
@@ -161,10 +162,10 @@ int main(int argc, char* argv[])
 
 			}
 
-			$FOR(VariateProxy i = 0; i < 10; ++i)
-			{
-
-			}
+			// $FOR(VariateProxy i = 0; i < 10; ++i)
+			// {
+			//
+			// }
 		};
 
 	std::string parseRes = EmbeddedShader::shaderParse(lambda);

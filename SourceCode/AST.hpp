@@ -12,6 +12,7 @@
   - break、continue
   - switch case
 */
+#pragma once
 
 #include<iostream>
 #include<string>
@@ -670,7 +671,7 @@ float Block::accept(Interpreter& visitor)
 	return result;
 }
 
-int main()
+void ast_test_main()
 {
 	std::string text = "char ch = '9' ; int res ; res = ch ;";
 	//getline(std::cin, text);
@@ -678,5 +679,4 @@ int main()
 	Parser parser = Parser(lexer);
 	Interpreter interpreter = Interpreter(parser);
 	interpreter.interpreter();
-	return 0;
 }
