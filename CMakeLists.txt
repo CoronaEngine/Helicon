@@ -83,3 +83,5 @@ file(GLOB_RECURSE SOURCE_FILES
 # 添加可执行文件
 add_executable(${PROJECT_NAME}  ${SOURCE_FILES})
 set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
+
+add_executable(ASTTest SourceCode/AST/ASTTest.cpp)
