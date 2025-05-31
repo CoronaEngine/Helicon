@@ -5,6 +5,7 @@
 
 namespace EmbeddedShader::AST
 {
+	struct Statement;
 	class Parser
 	{
 		friend class Node;
@@ -12,10 +13,14 @@ namespace EmbeddedShader::AST
 		static std::string parse(const std::function<void()>& shaderCode);
 	private:
 		Parser() = default;
-		std::string getOutput();
+		[[nodiscard]] std::string getOutput() const;
 
-		std::vector<std::shared_ptr<Node>> nodes;
+		std::vector<std::shared_ptr<Statement>> nodes;
+
+		size_t currentVariateIndex = 0;
 
 		static inline thread_local Parser* currentParser = nullptr;
+	public:
+		static std::string getUniqueVariateName();
 	};
 }

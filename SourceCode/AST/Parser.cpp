@@ -1,5 +1,6 @@
 #include <AST/Parser.hpp>
 #include <utility>
+#include <AST/Node.hpp>
 
 std::string EmbeddedShader::AST::Parser::parse(const std::function<void()>& shaderCode)
 {
@@ -11,7 +12,17 @@ std::string EmbeddedShader::AST::Parser::parse(const std::function<void()>& shad
 	return output;
 }
 
-std::string EmbeddedShader::AST::Parser::getOutput()
+std::string EmbeddedShader::AST::Parser::getOutput() const
 {
-	return "Parsed Shader Code";
+	std::string output;
+	for (auto& node: nodes)
+	{
+		 output += node->parse() + '\n';
+	}
+	return output;
+}
+
+std::string EmbeddedShader::AST::Parser::getUniqueVariateName()
+{
+	return "var_" + std::to_string(currentParser->currentVariateIndex++);
 }
