@@ -15,7 +15,7 @@ std::string EmbeddedShader::AST::Parser::parse(const std::function<void()>& shad
 std::string EmbeddedShader::AST::Parser::getOutput() const
 {
 	std::string output;
-	for (auto& node: nodes)
+	for (auto& node: statements)
 	{
 		 output += node->parse() + '\n';
 	}

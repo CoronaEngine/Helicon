@@ -8,14 +8,14 @@ namespace EmbeddedShader::AST
 	struct Statement;
 	class Parser
 	{
-		friend class Node;
+		friend class AST;
 	public:
 		static std::string parse(const std::function<void()>& shaderCode);
 	private:
 		Parser() = default;
 		[[nodiscard]] std::string getOutput() const;
 
-		std::vector<std::shared_ptr<Statement>> nodes;
+		std::vector<std::shared_ptr<Statement>> statements;
 
 		size_t currentVariateIndex = 0;
 
