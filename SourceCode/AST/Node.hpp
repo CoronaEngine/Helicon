@@ -5,16 +5,11 @@
 namespace EmbeddedShader::AST
 {
 	struct Statement;
-	class Node
+	struct DefineLocalVariate;
+	struct Node
 	{
 		friend class Parser;
-	public:
 		virtual ~Node() = default;
-		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static void localVariate(VariateType&& value);
-	private:
-		static void addNode(std::shared_ptr<Statement> node);
-	public:
 		virtual std::string parse();
 	};
 
@@ -26,6 +21,11 @@ namespace EmbeddedShader::AST
 	class Value : public Node
 	{
 
+	};
+
+	struct LocalVariate : Value
+	{
+		std::string name;
 	};
 
 	struct NumericType : Type
@@ -61,25 +61,11 @@ namespace EmbeddedShader::AST
 	{
 	};
 
-	struct LocalVariate : Statement
+	struct DefineLocalVariate : Statement
 	{
+		std::shared_ptr<LocalVariate> localVariate;
 		std::shared_ptr<Type> type;
 		std::shared_ptr<Value> value;
 		std::string parse() override;
 	};
-
-	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	void Node::localVariate(VariateType&& value)
-	{
-		NumericType type;
-		type.name = NumericType::typeName<VariateType>;
-
-		NumericValue numericValue;
-		numericValue.value = NumericValue::getValue(std::forward<VariateType>(value));
-
-		LocalVariate localVariateNode;
-		localVariateNode.type = std::make_shared<NumericType>(type);
-		localVariateNode.value = std::make_shared<NumericValue>(numericValue);
-		addNode(std::make_shared<LocalVariate>(localVariateNode));
-	}
 }
