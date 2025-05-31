@@ -1,13 +1,21 @@
 #pragma once
 #include <functional>
+#include <memory>
+#include <string>
 
 namespace EmbeddedShader::AST
 {
 	class Parser
 	{
+		friend class Node;
 	public:
-		explicit Parser(std::function<void()> shaderCode);
+		static std::string parse(const std::function<void()>& shaderCode);
 	private:
-		std::function<void()> shaderCode;
+		Parser() = default;
+		std::string getOutput();
+
+		std::vector<std::shared_ptr<Node>> nodes;
+
+		static inline thread_local Parser* currentParser = nullptr;
 	};
 }
