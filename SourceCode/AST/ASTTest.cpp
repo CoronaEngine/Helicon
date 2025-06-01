@@ -7,7 +7,7 @@ int main()
 	auto shaderCode = []()
 	{
 		auto var = AST::defineLocalVariate(42);
-		AST::defineLocalVariate(1232.f);
+		AST::defineLocalVariate(var->type, AST::binaryOperator(AST::binaryOperator(var,114, "+"),var, "+"));
 	};
 
 	puts(Parser::parse(shaderCode).c_str());

@@ -20,12 +20,13 @@ namespace EmbeddedShader::AST
 
 	class Value : public Node
 	{
-
 	};
 
 	struct LocalVariate : Value
 	{
 		std::string name;
+		std::shared_ptr<Type> type;
+		std::string parse() override;
 	};
 
 	struct NumericType : Type
@@ -64,33 +65,37 @@ namespace EmbeddedShader::AST
 	struct DefineLocalVariate : Statement
 	{
 		std::shared_ptr<LocalVariate> localVariate;
-		std::shared_ptr<Type> type;
 		std::shared_ptr<Value> value;
 		std::string parse() override;
 	};
 
-	struct BinaryOperator: Node
+	struct BinaryOperator : Value
 	{
-		enum class Type
-		{
-			Add,
-			Subtract,
-			Multiply,
-			Divide,
-			Modulo,
-			BitwiseAnd,
-			BitwiseOr,
-			BitwiseXor,
-			BitwiseLeftShift,
-			BitwiseRightShift,
-			Equal,
-			NotEqual,
-			LessThan,
-			LessThanOrEqual,
-			GreaterThan,
-			GreaterThanOrEqual,
-			And,
-			Or,
-		};
+		// enum class Type
+		// {
+		// 	Add, // +
+		// 	Subtract, // -
+		// 	Multiply, // *
+		// 	Divide,  // /
+		// 	Modulo,  // %
+		// 	BitwiseAnd, // &
+		// 	BitwiseOr, // |
+		// 	BitwiseXor, // ^
+		// 	BitwiseLeftShift, // <<
+		// 	BitwiseRightShift, // >>
+		// 	Equal, // =
+		// 	NotEqual, // !=
+		// 	LessThan, // <
+		// 	LessThanOrEqual, // <=
+		// 	GreaterThan, // >=
+		// 	GreaterThanOrEqual, // >
+		// 	And, // &&,
+		// 	Or, // ||
+		// };
+
+		std::shared_ptr<Value> value1;
+		std::shared_ptr<Value> value2;
+		std::string type;
+		std::string parse() override;
 	};
 }

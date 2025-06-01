@@ -1,8 +1,25 @@
 #include <AST/AST.hpp>
+#include <utility>
 
-std::shared_ptr<EmbeddedShader::AST::Value> EmbeddedShader::AST::AST::binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, BinaryOperator::Type type)
+std::shared_ptr<EmbeddedShader::AST::LocalVariate> EmbeddedShader::AST::AST::defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue)
 {
-	return nullptr; // 这里需要实现具体的操作符逻辑
+	auto localVariate = std::make_shared<LocalVariate>();
+	localVariate->name = Parser::getUniqueVariateName();
+	localVariate->type = std::move(type);
+	auto defineNode = std::make_shared<DefineLocalVariate>();
+	defineNode->localVariate = localVariate;
+	defineNode->value = std::move(initValue);
+	addStatement(defineNode);
+	return localVariate;
+}
+
+std::shared_ptr<EmbeddedShader::AST::Value> EmbeddedShader::AST::AST::binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType)
+{
+	auto binaryOp = std::make_shared<BinaryOperator>();
+	binaryOp->value1 = std::move(value1);
+	binaryOp->value2 = std::move(value2);
+	binaryOp->type = std::move(operatorType);
+	return binaryOp; // 这里需要实现具体的操作符逻辑
 }
 
 void EmbeddedShader::AST::AST::addStatement(std::shared_ptr<Statement> statement)
