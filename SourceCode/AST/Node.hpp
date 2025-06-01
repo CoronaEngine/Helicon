@@ -68,4 +68,29 @@ namespace EmbeddedShader::AST
 		std::shared_ptr<Value> value;
 		std::string parse() override;
 	};
+
+	struct BinaryOperator: Node
+	{
+		enum class Type
+		{
+			Add,
+			Subtract,
+			Multiply,
+			Divide,
+			Modulo,
+			BitwiseAnd,
+			BitwiseOr,
+			BitwiseXor,
+			BitwiseLeftShift,
+			BitwiseRightShift,
+			Equal,
+			NotEqual,
+			LessThan,
+			LessThanOrEqual,
+			GreaterThan,
+			GreaterThanOrEqual,
+			And,
+			Or,
+		};
+	};
 }

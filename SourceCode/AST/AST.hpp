@@ -13,7 +13,7 @@ namespace EmbeddedShader::AST
 	public:
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType&& value);
-		static std::shared_ptr<Value> addOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2);
+		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, BinaryOperator::Type type);
 	private:
 		static void addStatement(std::shared_ptr<Statement> statement);
 	};
