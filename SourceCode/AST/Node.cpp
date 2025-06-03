@@ -34,3 +34,8 @@ std::string EmbeddedShader::AST::BinaryOperator::parse()
 {
 	return "(" + value1->parse() + " " + type + " " + value2->parse() + ")";
 }
+
+std::string EmbeddedShader::AST::Assign::parse()
+{
+	return variate->name + " = " + value->parse() + ";";
+}

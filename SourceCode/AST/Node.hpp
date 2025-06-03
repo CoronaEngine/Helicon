@@ -98,4 +98,11 @@ namespace EmbeddedShader::AST
 		std::string type;
 		std::string parse() override;
 	};
+
+	struct Assign : Statement
+    {
+        std::shared_ptr<LocalVariate> variate;
+        std::shared_ptr<Value> value;
+		std::string parse() override;
+    };
 }

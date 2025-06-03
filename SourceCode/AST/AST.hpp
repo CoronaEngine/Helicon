@@ -18,6 +18,7 @@ namespace EmbeddedShader::AST
 		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType);
 		template<typename ArithmeticType> requires std::is_arithmetic_v<ArithmeticType>
 		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, ArithmeticType&& value2, std::string operatorType);
+		static void assign(std::shared_ptr<LocalVariate> variate, std::shared_ptr<Value> value);
 	private:
 		static void addStatement(std::shared_ptr<Statement> statement);
 	};

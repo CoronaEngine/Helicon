@@ -22,6 +22,14 @@ std::shared_ptr<EmbeddedShader::AST::Value> EmbeddedShader::AST::AST::binaryOper
 	return binaryOp; // 这里需要实现具体的操作符逻辑
 }
 
+void EmbeddedShader::AST::AST::assign(std::shared_ptr<LocalVariate> variate, std::shared_ptr<Value> value)
+{
+	auto assignNode = std::make_shared<Assign>();
+	assignNode->variate = std::move(variate);
+	assignNode->value = std::move(value);
+	addStatement(assignNode);
+}
+
 void EmbeddedShader::AST::AST::addStatement(std::shared_ptr<Statement> statement)
 {
 	//不会出现currentParser == nullptr这种情况
