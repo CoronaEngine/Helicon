@@ -15,10 +15,20 @@ std::string EmbeddedShader::AST::Parser::parse(const std::function<void()>& shad
 std::string EmbeddedShader::AST::Parser::getOutput() const
 {
 	std::string output;
+	output += "#version 330 core\n";
+
+	//global statements
+	for (auto& node: globalStatements)
+	{
+		output += node->parse() + '\n';
+	}
+
+	output += "void main() {\n";
 	for (auto& node: statements)
 	{
-		 output += node->parse() + '\n';
+		 output += '\t' + node->parse() + '\n';
 	}
+	output += "}\n";
 	return output;
 }
 

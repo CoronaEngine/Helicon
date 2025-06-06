@@ -22,12 +22,14 @@ namespace EmbeddedShader::AST
 	{
 	};
 
-	struct LocalVariate : Value
+	struct Variate : Value
 	{
 		std::string name;
 		std::shared_ptr<Type> type;
 		std::string parse() override;
 	};
+
+	using LocalVariate = Variate;
 
 	struct NumericType : Type
 	{
@@ -103,6 +105,17 @@ namespace EmbeddedShader::AST
     {
         std::shared_ptr<LocalVariate> variate;
         std::shared_ptr<Value> value;
+		std::string parse() override;
+    };
+
+	struct InputVariate : Variate
+	{
+		size_t index = 0;
+	};
+
+	struct DefineInputVariate : Statement
+    {
+		std::shared_ptr<InputVariate> localVariate;
 		std::string parse() override;
     };
 }

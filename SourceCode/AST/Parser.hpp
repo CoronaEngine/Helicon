@@ -16,8 +16,10 @@ namespace EmbeddedShader::AST
 		[[nodiscard]] std::string getOutput() const;
 
 		std::vector<std::shared_ptr<Statement>> statements;
+		std::vector<std::shared_ptr<Statement>> globalStatements;
 
 		size_t currentVariateIndex = 0;
+		size_t currentInputVariateIndex = 0;
 
 		static inline thread_local Parser* currentParser = nullptr;
 	public:

@@ -30,8 +30,26 @@ void EmbeddedShader::AST::AST::assign(std::shared_ptr<LocalVariate> variate, std
 	addStatement(assignNode);
 }
 
+std::shared_ptr<EmbeddedShader::AST::InputVariate> EmbeddedShader::AST::AST::defineInputVariate(std::shared_ptr<Type> type)
+{
+	auto inputVariate = std::make_shared<InputVariate>();
+	inputVariate->type = std::move(type);
+	inputVariate->name = Parser::getUniqueVariateName();
+	inputVariate->index = Parser::currentParser->currentInputVariateIndex++;
+	auto defineNode = std::make_shared<DefineInputVariate>();
+	defineNode->localVariate = inputVariate;
+	addGlobalStatement(defineNode);
+	return inputVariate;
+}
+
 void EmbeddedShader::AST::AST::addStatement(std::shared_ptr<Statement> statement)
 {
 	//不会出现currentParser == nullptr这种情况
 	Parser::currentParser->statements.push_back(std::move(statement));
+}
+
+void EmbeddedShader::AST::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
+{
+	//不会出现currentParser == nullptr这种情况
+	Parser::currentParser->globalStatements.push_back(std::move(globalStatement));
 }
