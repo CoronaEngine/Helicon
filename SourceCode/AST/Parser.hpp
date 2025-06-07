@@ -5,6 +5,7 @@
 
 namespace EmbeddedShader::AST
 {
+	struct Variate;
 	struct Statement;
 	class Parser
 	{
@@ -20,6 +21,8 @@ namespace EmbeddedShader::AST
 
 		size_t currentVariateIndex = 0;
 		size_t currentInputVariateIndex = 0;
+
+		std::shared_ptr<Variate> positionOutput;
 
 		static inline thread_local Parser* currentParser = nullptr;
 	public:

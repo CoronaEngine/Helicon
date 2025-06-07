@@ -42,6 +42,18 @@ std::shared_ptr<EmbeddedShader::AST::InputVariate> EmbeddedShader::AST::AST::def
 	return inputVariate;
 }
 
+std::shared_ptr<EmbeddedShader::AST::Variate> EmbeddedShader::AST::AST::getPositionOutput()
+{
+	//不会出现currentParser == nullptr这种情况
+	auto& posOutput = Parser::currentParser->positionOutput;
+	if (posOutput)
+		return posOutput;
+	posOutput = std::make_shared<Variate>();
+	posOutput->name = "gl_Position";
+	posOutput->type = VecType::createVecType<ktm::fvec4>();
+	return posOutput;
+}
+
 void EmbeddedShader::AST::AST::addStatement(std::shared_ptr<Statement> statement)
 {
 	//不会出现currentParser == nullptr这种情况

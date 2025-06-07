@@ -16,14 +16,14 @@ std::string EmbeddedShader::AST::LocalVariate::parse()
 	return name;
 }
 
-std::string EmbeddedShader::AST::NumericValue::parse()
+std::string EmbeddedShader::AST::BaseValue::parse()
 {
 	return value;
 }
 
 std::string EmbeddedShader::AST::VecValue::parse()
 {
-	return value;
+	return type->parse() + "(" + value + ")";
 }
 
 std::string EmbeddedShader::AST::DefineLocalVariate::parse()

@@ -38,7 +38,7 @@ namespace EmbeddedShader::AST
 
 	using LocalVariate = Variate;
 
-	struct NumericType : NameType
+	struct BaseType : NameType
 	{
 		template<typename Type>
 		static inline std::string_view typeName = "Unknown";
@@ -48,6 +48,7 @@ namespace EmbeddedShader::AST
 		DEFINE_TYPE_NAME(uint32_t,uint);
 		DEFINE_TYPE_NAME(float,float);
 		DEFINE_TYPE_NAME(double,double);
+		DEFINE_TYPE_NAME(bool,bool);
 
 #undef DEFINE_TYPE_NAME
 	};
@@ -89,7 +90,7 @@ namespace EmbeddedShader::AST
 		return vecType;
 	}
 
-	struct NumericValue : Value
+	struct BaseValue : Value
 	{
 		std::string value;
 		template<typename ValueType>
@@ -103,6 +104,7 @@ namespace EmbeddedShader::AST
 	struct VecValue : Value
 	{
 		std::string value;
+		std::shared_ptr<VecType> type;
 		std::string parse() override;
 	};
 
