@@ -14,6 +14,8 @@ namespace EmbeddedShader::AST
 	public:
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType&& value);
+		template<typename VariateType> requires ktm::is_vector_v<VariateType>
+		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType&& value);
 		static std::shared_ptr<LocalVariate> defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue);
 		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType);
 		template<typename ArithmeticType> requires std::is_arithmetic_v<ArithmeticType>
@@ -25,6 +27,19 @@ namespace EmbeddedShader::AST
 	private:
 		static void addStatement(std::shared_ptr<Statement> statement);
 		static void addGlobalStatement(std::shared_ptr<Statement> globalStatement);
+
+		template<typename Type>
+		struct VecInfo
+		{
+
+		};
+
+		template<typename Type,size_t N>
+		struct VecInfo<ktm::vec<N,Type>>
+		{
+			using ValueType = Type;
+			static constexpr size_t Dimension = N;
+		};
 	};
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -36,15 +51,14 @@ namespace EmbeddedShader::AST
 		auto numericValue = std::make_shared<NumericValue>();
 		numericValue->value = NumericValue::getValue(std::forward<VariateType>(value));
 
-		auto localVariate = std::make_shared<LocalVariate>();
-		localVariate->name = Parser::getUniqueVariateName();
-		localVariate->type = std::move(type);
+		return defineLocalVariate(std::move(type), std::move(numericValue));
+	}
 
-		auto defineNode = std::make_shared<DefineLocalVariate>();
-		defineNode->localVariate = localVariate;
-		defineNode->value = std::move(numericValue);
-		addStatement(defineNode);
-		return localVariate;
+	template<typename VariateType> requires ktm::is_vector_v<VariateType>
+	std::shared_ptr<LocalVariate> AST::defineLocalVariate(VariateType&& value)
+	{
+		auto type = VecType::createVecType<VariateType>();
+		auto vecValue = std::make_shared<VecValue>();
 	}
 
 	template<typename ArithmeticType> requires std::is_arithmetic_v<ArithmeticType>

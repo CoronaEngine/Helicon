@@ -6,17 +6,22 @@ std::string EmbeddedShader::AST::Node::parse()
 	return "";
 }
 
+std::string EmbeddedShader::AST::NameType::parse()
+{
+	return name;
+}
+
 std::string EmbeddedShader::AST::LocalVariate::parse()
 {
 	return name;
 }
 
-std::string EmbeddedShader::AST::NumericType::parse()
+std::string EmbeddedShader::AST::NumericValue::parse()
 {
-	return name;
+	return value;
 }
 
-std::string EmbeddedShader::AST::NumericValue::parse()
+std::string EmbeddedShader::AST::VecValue::parse()
 {
 	return value;
 }
