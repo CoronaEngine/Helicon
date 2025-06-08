@@ -57,6 +57,23 @@ namespace EmbeddedShader::AST
 	private:
 		static void addStatement(std::shared_ptr<Statement> statement);
 		static void addGlobalStatement(std::shared_ptr<Statement> globalStatement);
+		template<typename Type>
+		struct ValueConverter
+		{
+			static std::shared_ptr<Value> convert(Type&& value)
+			{
+				return createValue(std::forward<Type>(value));
+			}
+		};
+
+		template<typename Type>
+		struct ValueConverter<std::shared_ptr<Type>>
+		{
+			static std::shared_ptr<Value> convert(const std::shared_ptr<Type>& value)
+			{
+				return value;
+			}
+		};
 	};
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -111,9 +128,9 @@ namespace EmbeddedShader::AST
 		vecValue->type = type;
 
 		bool first = true;
-		std::string valueStr = ((first? (first = false,std::forward<Args>(args)->parse()) : std::forward<Args>(args)->parse() + ",") + ...);
-
-		vecValue->value = std::move(valueStr);
+		//ide可能会误报警告
+		vecValue->value = ((first? (first = false,ValueConverter<std::remove_cvref_t<Args>>::convert(std::forward<Args>(args))->parse()) :
+				ValueConverter<std::remove_cvref_t<Args>>::convert(std::forward<Args>(args))->parse() + ",") + ...);
 		return vecValue;
 	}
 
