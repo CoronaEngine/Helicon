@@ -37,7 +37,7 @@ std::shared_ptr<EmbeddedShader::AST::InputVariate> EmbeddedShader::AST::AST::def
 	inputVariate->name = Parser::getUniqueVariateName();
 	inputVariate->index = Parser::currentParser->currentInputVariateIndex++;
 	auto defineNode = std::make_shared<DefineInputVariate>();
-	defineNode->localVariate = inputVariate;
+	defineNode->variate = inputVariate;
 	addGlobalStatement(defineNode);
 	return inputVariate;
 }

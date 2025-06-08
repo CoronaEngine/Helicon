@@ -47,7 +47,7 @@ std::string EmbeddedShader::AST::Assign::parse()
 
 std::string EmbeddedShader::AST::DefineInputVariate::parse()
 {
-	return "layout(location = " + std::to_string(localVariate->index) + ") in " + localVariate->type->parse() + " " + localVariate->name + ";";
+	return "layout(location = " + std::to_string(variate->index) + ") in " + variate->type->parse() + " " + variate->name + ";";
 }
 
 std::string EmbeddedShader::AST::MemberAccess::parse() {

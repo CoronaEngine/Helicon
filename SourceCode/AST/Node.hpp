@@ -163,7 +163,7 @@ namespace EmbeddedShader::AST
 
 	struct DefineInputVariate : Statement
     {
-		std::shared_ptr<InputVariate> localVariate;
+		std::shared_ptr<InputVariate> variate;
 		std::string parse() override;
     };
 
