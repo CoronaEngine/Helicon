@@ -9,7 +9,7 @@ int main()
 	auto shaderCode = []()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>();
-		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4,2>({aPos,AST::createValue(1.f)}));
+		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,AST::createValue(1.f)));
 	};
 
 	puts(Parser::parse(shaderCode).c_str());

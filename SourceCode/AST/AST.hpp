@@ -32,6 +32,8 @@ namespace EmbeddedShader::AST
 
 		template<typename ValueType,size_t N>
 		static std::shared_ptr<VecValue> createVecValue(const std::array<std::shared_ptr<Value>, N>& value);
+		template<typename ValueType,typename... Args>
+		static std::shared_ptr<VecValue> createVecValue(Args&&... args);
 
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType&& value);
@@ -97,6 +99,20 @@ namespace EmbeddedShader::AST
 			valueStr += value[i]->parse() + ",";
 		}
 		valueStr += value.back()->parse();
+		vecValue->value = std::move(valueStr);
+		return vecValue;
+	}
+
+	template<typename ValueType, typename ... Args>
+	std::shared_ptr<VecValue> AST::createVecValue(Args&&... args)
+	{
+		auto type = VecType::createVecType<ValueType>();
+		auto vecValue = std::make_shared<VecValue>();
+		vecValue->type = type;
+
+		bool first = true;
+		std::string valueStr = ((first? (first = false,std::forward<Args>(args)->parse()) : std::forward<Args>(args)->parse() + ",") + ...);
+
 		vecValue->value = std::move(valueStr);
 		return vecValue;
 	}
