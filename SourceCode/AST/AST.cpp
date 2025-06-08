@@ -25,8 +25,8 @@ std::shared_ptr<EmbeddedShader::AST::Value> EmbeddedShader::AST::AST::binaryOper
 void EmbeddedShader::AST::AST::assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value)
 {
 	auto assignNode = std::make_shared<Assign>();
-	assignNode->variate = std::move(variate);
-	assignNode->value = std::move(value);
+	assignNode->leftValue = std::move(variate);
+	assignNode->rightValue = std::move(value);
 	addStatement(assignNode);
 }
 

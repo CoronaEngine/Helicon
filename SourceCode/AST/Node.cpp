@@ -42,7 +42,7 @@ std::string EmbeddedShader::AST::BinaryOperator::parse()
 
 std::string EmbeddedShader::AST::Assign::parse()
 {
-	return variate->parse() + " = " + value->parse() + ";";
+	return leftValue->parse() + " = " + rightValue->parse() + ";";
 }
 
 std::string EmbeddedShader::AST::DefineInputVariate::parse()

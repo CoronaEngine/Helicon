@@ -151,8 +151,8 @@ namespace EmbeddedShader::AST
 
 	struct Assign : Statement
     {
-        std::shared_ptr<Value> variate;
-        std::shared_ptr<Value> value;
+        std::shared_ptr<Value> leftValue;
+        std::shared_ptr<Value> rightValue;
 		std::string parse() override;
     };
 
