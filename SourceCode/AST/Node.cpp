@@ -11,7 +11,7 @@ std::string EmbeddedShader::AST::NameType::parse()
 	return name;
 }
 
-std::string EmbeddedShader::AST::LocalVariate::parse()
+std::string EmbeddedShader::AST::Variate::parse()
 {
 	return name;
 }
@@ -42,10 +42,14 @@ std::string EmbeddedShader::AST::BinaryOperator::parse()
 
 std::string EmbeddedShader::AST::Assign::parse()
 {
-	return variate->name + " = " + value->parse() + ";";
+	return variate->parse() + " = " + value->parse() + ";";
 }
 
 std::string EmbeddedShader::AST::DefineInputVariate::parse()
 {
 	return "layout(location = " + std::to_string(localVariate->index) + ") in " + localVariate->type->parse() + " " + localVariate->name + ";";
+}
+
+std::string EmbeddedShader::AST::MemberAccess::parse() {
+	return value->parse() + "." + memberName;
 }

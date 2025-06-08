@@ -45,13 +45,15 @@ namespace EmbeddedShader::AST
 		template<typename ArithmeticType> requires std::is_arithmetic_v<ArithmeticType>
 		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, ArithmeticType&& value2, std::string operatorType);
 
-		static void assign(std::shared_ptr<LocalVariate> variate, std::shared_ptr<Value> value);
+		static void assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value);
 
 		static std::shared_ptr<InputVariate> defineInputVariate(std::shared_ptr<Type> type);
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 		static std::shared_ptr<InputVariate> defineInputVariate();
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<InputVariate> defineInputVariate();
+
+		static std::shared_ptr<MemberAccess> access(std::shared_ptr<Value> value, std::string memberName);
 
 		static std::shared_ptr<Variate> getPositionOutput();
 	private:

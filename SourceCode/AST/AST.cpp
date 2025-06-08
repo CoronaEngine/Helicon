@@ -22,7 +22,7 @@ std::shared_ptr<EmbeddedShader::AST::Value> EmbeddedShader::AST::AST::binaryOper
 	return binaryOp; // 这里需要实现具体的操作符逻辑
 }
 
-void EmbeddedShader::AST::AST::assign(std::shared_ptr<LocalVariate> variate, std::shared_ptr<Value> value)
+void EmbeddedShader::AST::AST::assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value)
 {
 	auto assignNode = std::make_shared<Assign>();
 	assignNode->variate = std::move(variate);
@@ -40,6 +40,14 @@ std::shared_ptr<EmbeddedShader::AST::InputVariate> EmbeddedShader::AST::AST::def
 	defineNode->localVariate = inputVariate;
 	addGlobalStatement(defineNode);
 	return inputVariate;
+}
+
+std::shared_ptr<EmbeddedShader::AST::MemberAccess> EmbeddedShader::AST::AST::access(std::shared_ptr<Value> value,
+	std::string memberName) {
+	auto memberAccess = std::make_shared<MemberAccess>();
+	memberAccess->value = std::move(value);
+	memberAccess->memberName = std::move(memberName);
+	return memberAccess;
 }
 
 std::shared_ptr<EmbeddedShader::AST::Variate> EmbeddedShader::AST::AST::getPositionOutput()

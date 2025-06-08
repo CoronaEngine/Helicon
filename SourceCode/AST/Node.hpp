@@ -151,7 +151,7 @@ namespace EmbeddedShader::AST
 
 	struct Assign : Statement
     {
-        std::shared_ptr<LocalVariate> variate;
+        std::shared_ptr<Value> variate;
         std::shared_ptr<Value> value;
 		std::string parse() override;
     };
@@ -166,4 +166,11 @@ namespace EmbeddedShader::AST
 		std::shared_ptr<InputVariate> localVariate;
 		std::string parse() override;
     };
+
+	struct MemberAccess : Value
+	{
+		std::shared_ptr<Value> value;
+		std::string memberName;
+		std::string parse() override;
+	};
 }
