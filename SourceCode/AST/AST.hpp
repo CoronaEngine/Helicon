@@ -11,18 +11,6 @@ namespace EmbeddedShader::AST
 	class AST
 	{
 		AST() = default;
-		template<typename VecValueType>
-		struct VecTraits
-		{
-
-		};
-
-		template<typename Type,size_t N>
-		struct VecTraits<ktm::vec<N,Type>>
-		{
-			using ValueType = Type;
-			static constexpr size_t dimension = N;
-		};
 	public:
 
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -30,8 +18,6 @@ namespace EmbeddedShader::AST
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<VecValue> createValue(const VariateType& value);
 
-		template<typename ValueType,size_t N>
-		static std::shared_ptr<VecValue> createVecValue(const std::array<std::shared_ptr<Value>, N>& value);
 		template<typename ValueType,typename... Args>
 		static std::shared_ptr<VecValue> createVecValue(Args&&... args);
 
@@ -42,10 +28,10 @@ namespace EmbeddedShader::AST
 		static std::shared_ptr<LocalVariate> defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue);
 
 		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType);
-		template<typename ArithmeticType> requires std::is_arithmetic_v<ArithmeticType>
-		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, ArithmeticType&& value2, std::string operatorType);
+		static std::shared_ptr<Value> binaryOperator(auto&& value1, auto&& value2, std::string operatorType);
 
 		static void assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value);
+		static void assign(auto&& variate, auto&& value);
 
 		static std::shared_ptr<InputVariate> defineInputVariate(std::shared_ptr<Type> type);
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -68,6 +54,15 @@ namespace EmbeddedShader::AST
 			}
 		};
 
+		template<typename Type> requires std::is_arithmetic_v<Type>
+		struct ValueConverter<Type>
+		{
+			static std::shared_ptr<Value> convert(Type value)
+			{
+				return createValue(std::forward<Type>(value));
+			}
+		};
+
 		template<typename Type>
 		struct ValueConverter<std::shared_ptr<Type>>
 		{
@@ -76,6 +71,11 @@ namespace EmbeddedShader::AST
 				return value;
 			}
 		};
+
+		static std::shared_ptr<Value> valueConverter(auto&& value)
+		{
+			return ValueConverter<std::remove_cvref_t<decltype(value)>>::convert(std::forward<decltype(value)>(value));
+		}
 	};
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -105,23 +105,6 @@ namespace EmbeddedShader::AST
 		return vecValue;
 	}
 
-	template<typename ValueType, size_t N>
-	std::shared_ptr<VecValue> AST::createVecValue(const std::array<std::shared_ptr<Value>, N>& value)
-	{
-		auto type = VecType::createVecType<ValueType>();
-		auto vecValue = std::make_shared<VecValue>();
-		vecValue->type = type;
-
-		std::string valueStr;
-		for (size_t i = 0; i < value.size() - 1; ++i)
-		{
-			valueStr += value[i]->parse() + ",";
-		}
-		valueStr += value.back()->parse();
-		vecValue->value = std::move(valueStr);
-		return vecValue;
-	}
-
 	template<typename ValueType, typename ... Args>
 	std::shared_ptr<VecValue> AST::createVecValue(Args&&... args)
 	{
@@ -131,8 +114,8 @@ namespace EmbeddedShader::AST
 
 		bool first = true;
 		//ide可能会误报警告
-		vecValue->value = ((first? (first = false,ValueConverter<std::remove_cvref_t<Args>>::convert(std::forward<Args>(args))->parse()) :
-				ValueConverter<std::remove_cvref_t<Args>>::convert(std::forward<Args>(args))->parse() + ",") + ...);
+		vecValue->value = ((first? (first = false,valueConverter(std::forward<Args>(args))->parse()) :
+				valueConverter(std::forward<Args>(args))->parse() + ",") + ...);
 		return vecValue;
 	}
 
@@ -148,17 +131,18 @@ namespace EmbeddedShader::AST
 	template<typename VariateType> requires ktm::is_vector_v<VariateType>
 	std::shared_ptr<LocalVariate> AST::defineLocalVariate(const VariateType& value)
 	{
-		auto vecValue = createValue(vecValue);
+		auto vecValue = createValue(value);
 		return defineLocalVariate(vecValue->type,vecValue);
 	}
 
-	template<typename BaseType> requires std::is_arithmetic_v<BaseType>
-	std::shared_ptr<Value> AST::binaryOperator(std::shared_ptr<Value> value1, BaseType&& value2,
-		std::string operatorType)
+	std::shared_ptr<Value> AST::binaryOperator(auto&& value1, auto&& value2, std::string operatorType)
 	{
-		auto numericValue2 = std::make_shared<BaseValue>();
-		numericValue2->value = BaseValue::getValue(std::forward<BaseType>(value2));
-		return binaryOperator(std::move(value1), std::move(numericValue2), std::move(operatorType));
+		return binaryOperator(valueConverter(std::forward<decltype(value1)>(value1)),valueConverter(std::forward<decltype(value2)>(value2)),std::move(operatorType));
+	}
+
+	void AST::assign(auto&& variate, auto&& value)
+	{
+		assign(valueConverter(std::forward<decltype(variate)>(variate)),valueConverter(std::forward<decltype(value)>(value)));
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
