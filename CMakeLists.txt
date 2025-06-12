@@ -77,20 +77,9 @@ file(GLOB_RECURSE SOURCE_FILES
     "${SOURCE_DIR}/*.*"
 )
 
-file(GLOB_RECURSE AST_SOURCE_FILES
-    "SourceCode/AST/*.*"
-)
 
-file(GLOB_RECURSE SHADER_GENERATOR_SOURCE_FILES
-    "SourceCode/ShaderGenerator/*.*"
-)
-
-list(REMOVE_ITEM SOURCE_FILES ${AST_SOURCE_FILES} ${SHADER_GENERATOR_SOURCE_FILES})
 
 
 # 添加可执行文件
 add_executable(${PROJECT_NAME}  ${SOURCE_FILES})
 set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
-
-add_executable(ASTTest ${AST_SOURCE_FILES})
-add_executable(ShaderGeneratorTest ${SHADER_GENERATOR_SOURCE_FILES})
