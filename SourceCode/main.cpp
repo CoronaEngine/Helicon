@@ -5,68 +5,6 @@
 #include "ShaderEmbededCodegen/CustomLibrary.h"
 
 
-#include <boost/pfr.hpp>
-
-
-struct Proxy
-{
-
-};
-
-struct TEST_GPU_FOR
-{
-	explicit TEST_GPU_FOR(const std::function<void()>& content)
-	{
-		content();
-	}
-};
-
-struct TEST_GPU_FOR_CONDITION
-{
-	struct Proxy
-	{
-		Proxy()
-		{
-			puts("outter");
-		}
-	};
-
-	void operator()() const
-	{
-
-    }
-};
-
-#define TEST_FOR(content) \
-	if (TEST_GPU_FOR gpu_for([&] {content;});true)
-
-void test_func()
-{
-	if (TEST_GPU_FOR gpu_for([&]
-	{
-		struct{
-			struct Proxy
-			{
-				Proxy()
-				{
-					puts("inner");
-				}
-			};
-
-			void operator()() const
-			{
-				Proxy a;
-			}
-		} gpu_for_condition;
-		gpu_for_condition();
-	});
-	true)
-	{
-	}
-}
-
-
-
 using namespace EmbeddedShader;
 
 struct MyStruct1
@@ -91,8 +29,6 @@ struct MyStruct3
 int main(int argc, char* argv[])
 {
 	ast_test_main();
-	test_func();
-
 	auto lambda =
 		[&]{
 			VariateProxy<VariateProxy<int>> arr = { 1, 2 ,8, 1, 72, 11, 48416 };
