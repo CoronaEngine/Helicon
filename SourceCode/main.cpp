@@ -4,6 +4,8 @@
 
 #include "ShaderEmbededCodegen/CustomLibrary.h"
 
+#include <AST/AST.hpp>
+#include <ktm/type/vec.h>
 
 using namespace EmbeddedShader;
 
@@ -26,6 +28,18 @@ struct MyStruct3
 
 int main(int argc, char* argv[])
 {
+	using namespace EmbeddedShader::AST;
+	using namespace ktm;
+
+	auto shaderCode = []()
+	{
+		auto aPos = AST::defineInputVariate<fvec3>();
+		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
+		AST::assign(AST::access(AST::getPositionOutput(), "x"),114.f);
+	};
+
+	puts(Parser::parse(shaderCode).c_str());
+
 	auto lambda =
 		[&]{
 			VariateProxy<VariateProxy<int>> arr = { 1, 2 ,8, 1, 72, 11, 48416 };
