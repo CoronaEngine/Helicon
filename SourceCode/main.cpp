@@ -24,11 +24,8 @@ struct MyStruct3
 	VariateProxy<MyStruct2> int_A;
 };
 
-#include <AST.hpp>
-
 int main(int argc, char* argv[])
 {
-	ast_test_main();
 	auto lambda =
 		[&]{
 			VariateProxy<VariateProxy<int>> arr = { 1, 2 ,8, 1, 72, 11, 48416 };
