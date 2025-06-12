@@ -6,32 +6,7 @@
 
 
 #include <boost/pfr.hpp>
-#include <boost/preprocessor.hpp>
 
-
-
-
-#define PFR_REFLECTABLE_MEMBER_FUNCTION_ONE(r, CLASSNAME, i, MemberFunction) \
-    decltype(std::mem_fn(&CLASSNAME::MemberFunction))                        \
-        BOOST_PP_CAT(MemberFunction, _ptr) = std::mem_fn(&CLASSNAME::MemberFunction);
-
-#define PFR_REFLECTABLE_MEMBER_FUNCTION(CLASSNAME, ...) \
-    BOOST_PP_SEQ_FOR_EACH_I(PFR_REFLECTABLE_MEMBER_FUNCTION_ONE, CLASSNAME, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
-
-
-struct Actor
-{
-	int index;
-
-	int get_index() { return 0; }
-	void set_index(const int& val){}
-	void say(){}
-
-	//PFR_REFLECTABLE_MEMBER_FUNCTION_ONE(Actor,get_index);
-	//PFR_REFLECTABLE_MEMBER_FUNCTION_ONE(Actor,set_index);
-	//PFR_REFLECTABLE_MEMBER_FUNCTION_ONE(Actor,say);
-	PFR_REFLECTABLE_MEMBER_FUNCTION(Actor, get_index, set_index, say);
-};
 
 struct Proxy
 {
@@ -117,19 +92,6 @@ int main(int argc, char* argv[])
 {
 	ast_test_main();
 	test_func();
-
-	Actor test;
-
-	auto lammdaReflect = [&](auto&& structMember, auto name) {
-		// name.c_str() 可以获取成员名称的 C 风格字符串
-		std::cout << "Member Name: "
-			<< ", Member Value Type: " << typeid(structMember).name()
-			<< ", Member Value: " << structMember // 打印成员的实际值
-			<< std::endl;
-		};
-
-	boost::pfr::for_each_field_with_name(test, lammdaReflect);
-
 
 	auto lambda =
 		[&]{
