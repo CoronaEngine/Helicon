@@ -2,12 +2,14 @@
 #include <memory>
 #include <string>
 #include <AST/AST.hpp>
+#include <AST/Enum.hpp>
 
 namespace EmbeddedShader::ShaderGenerator
 {
-	class ShaderGenerator
+	class BaseShaderGenerator
 	{
 	public:
-		virtual ~ShaderGenerator() = default;
+		virtual ~BaseShaderGenerator() = default;
+		virtual std::string getVariateTypeName(Ast::VariateType variateType) = 0;
 	};
 }
