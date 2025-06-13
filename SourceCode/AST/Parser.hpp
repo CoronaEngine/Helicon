@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace EmbeddedShader::AST
+namespace EmbeddedShader::Ast
 {
 	struct Variate;
 	struct Statement;

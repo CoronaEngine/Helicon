@@ -2,7 +2,7 @@
 #include <utility>
 #include <AST/Node.hpp>
 
-std::string EmbeddedShader::AST::Parser::parse(const std::function<void()>& shaderCode)
+std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode)
 {
 	currentParser = new Parser();
 	shaderCode();
@@ -12,7 +12,7 @@ std::string EmbeddedShader::AST::Parser::parse(const std::function<void()>& shad
 	return output;
 }
 
-std::string EmbeddedShader::AST::Parser::getOutput() const
+std::string EmbeddedShader::Ast::Parser::getOutput() const
 {
 	std::string output;
 	output += "#version 330 core\n";
@@ -32,7 +32,7 @@ std::string EmbeddedShader::AST::Parser::getOutput() const
 	return output;
 }
 
-std::string EmbeddedShader::AST::Parser::getUniqueVariateName()
+std::string EmbeddedShader::Ast::Parser::getUniqueVariateName()
 {
 	return "var_" + std::to_string(currentParser->currentVariateIndex++);
 }

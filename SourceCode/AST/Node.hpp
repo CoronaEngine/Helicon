@@ -3,7 +3,7 @@
 #include <memory>
 #include <ktm/type_vec.h>
 
-namespace EmbeddedShader::AST
+namespace EmbeddedShader::Ast
 {
 	struct Statement;
 	struct DefineLocalVariate;

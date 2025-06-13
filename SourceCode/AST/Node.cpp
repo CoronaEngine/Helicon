@@ -1,32 +1,32 @@
 #include <AST/Node.hpp>
 #include <AST/Parser.hpp>
 
-std::string EmbeddedShader::AST::Node::parse()
+std::string EmbeddedShader::Ast::Node::parse()
 {
 	return "";
 }
 
-std::string EmbeddedShader::AST::NameType::parse()
+std::string EmbeddedShader::Ast::NameType::parse()
 {
 	return name;
 }
 
-std::string EmbeddedShader::AST::Variate::parse()
+std::string EmbeddedShader::Ast::Variate::parse()
 {
 	return name;
 }
 
-std::string EmbeddedShader::AST::BaseValue::parse()
+std::string EmbeddedShader::Ast::BaseValue::parse()
 {
 	return value;
 }
 
-std::string EmbeddedShader::AST::VecValue::parse()
+std::string EmbeddedShader::Ast::VecValue::parse()
 {
 	return type->parse() + "(" + value + ")";
 }
 
-std::string EmbeddedShader::AST::DefineLocalVariate::parse()
+std::string EmbeddedShader::Ast::DefineLocalVariate::parse()
 {
 	auto result = localVariate->type->parse() + " " + localVariate->name;
 	if (value)
@@ -35,21 +35,21 @@ std::string EmbeddedShader::AST::DefineLocalVariate::parse()
 	return result;
 }
 
-std::string EmbeddedShader::AST::BinaryOperator::parse()
+std::string EmbeddedShader::Ast::BinaryOperator::parse()
 {
 	return "(" + value1->parse() + " " + type + " " + value2->parse() + ")";
 }
 
-std::string EmbeddedShader::AST::Assign::parse()
+std::string EmbeddedShader::Ast::Assign::parse()
 {
 	return leftValue->parse() + " = " + rightValue->parse() + ";";
 }
 
-std::string EmbeddedShader::AST::DefineInputVariate::parse()
+std::string EmbeddedShader::Ast::DefineInputVariate::parse()
 {
 	return "layout(location = " + std::to_string(variate->index) + ") in " + variate->type->parse() + " " + variate->name + ";";
 }
 
-std::string EmbeddedShader::AST::MemberAccess::parse() {
+std::string EmbeddedShader::Ast::MemberAccess::parse() {
 	return value->parse() + "." + memberName;
 }

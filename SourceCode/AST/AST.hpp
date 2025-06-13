@@ -4,7 +4,7 @@
 #include <AST/Node.hpp>
 #include <utility>
 
-namespace EmbeddedShader::AST
+namespace EmbeddedShader::Ast
 {
 	//AST不会写过多约束，此部分交给前端进行处理
 

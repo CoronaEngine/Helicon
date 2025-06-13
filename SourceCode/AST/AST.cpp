@@ -1,7 +1,7 @@
 #include <AST/AST.hpp>
 #include <utility>
 
-std::shared_ptr<EmbeddedShader::AST::LocalVariate> EmbeddedShader::AST::AST::defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue)
+std::shared_ptr<EmbeddedShader::Ast::LocalVariate> EmbeddedShader::Ast::AST::defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue)
 {
 	auto localVariate = std::make_shared<LocalVariate>();
 	localVariate->name = Parser::getUniqueVariateName();
@@ -13,7 +13,7 @@ std::shared_ptr<EmbeddedShader::AST::LocalVariate> EmbeddedShader::AST::AST::def
 	return localVariate;
 }
 
-std::shared_ptr<EmbeddedShader::AST::Value> EmbeddedShader::AST::AST::binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType)
+std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType)
 {
 	auto binaryOp = std::make_shared<BinaryOperator>();
 	binaryOp->value1 = std::move(value1);
@@ -22,7 +22,7 @@ std::shared_ptr<EmbeddedShader::AST::Value> EmbeddedShader::AST::AST::binaryOper
 	return binaryOp; // 这里需要实现具体的操作符逻辑
 }
 
-void EmbeddedShader::AST::AST::assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value)
+void EmbeddedShader::Ast::AST::assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value)
 {
 	auto assignNode = std::make_shared<Assign>();
 	assignNode->leftValue = std::move(variate);
@@ -30,7 +30,7 @@ void EmbeddedShader::AST::AST::assign(std::shared_ptr<Value> variate, std::share
 	addStatement(assignNode);
 }
 
-std::shared_ptr<EmbeddedShader::AST::InputVariate> EmbeddedShader::AST::AST::defineInputVariate(std::shared_ptr<Type> type)
+std::shared_ptr<EmbeddedShader::Ast::InputVariate> EmbeddedShader::Ast::AST::defineInputVariate(std::shared_ptr<Type> type)
 {
 	auto inputVariate = std::make_shared<InputVariate>();
 	inputVariate->type = std::move(type);
@@ -42,7 +42,7 @@ std::shared_ptr<EmbeddedShader::AST::InputVariate> EmbeddedShader::AST::AST::def
 	return inputVariate;
 }
 
-std::shared_ptr<EmbeddedShader::AST::MemberAccess> EmbeddedShader::AST::AST::access(std::shared_ptr<Value> value,
+std::shared_ptr<EmbeddedShader::Ast::MemberAccess> EmbeddedShader::Ast::AST::access(std::shared_ptr<Value> value,
 	std::string memberName) {
 	auto memberAccess = std::make_shared<MemberAccess>();
 	memberAccess->value = std::move(value);
@@ -50,7 +50,7 @@ std::shared_ptr<EmbeddedShader::AST::MemberAccess> EmbeddedShader::AST::AST::acc
 	return memberAccess;
 }
 
-std::shared_ptr<EmbeddedShader::AST::Variate> EmbeddedShader::AST::AST::getPositionOutput()
+std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPositionOutput()
 {
 	//不会出现currentParser == nullptr这种情况
 	auto& posOutput = Parser::currentParser->positionOutput;
@@ -62,13 +62,13 @@ std::shared_ptr<EmbeddedShader::AST::Variate> EmbeddedShader::AST::AST::getPosit
 	return posOutput;
 }
 
-void EmbeddedShader::AST::AST::addStatement(std::shared_ptr<Statement> statement)
+void EmbeddedShader::Ast::AST::addStatement(std::shared_ptr<Statement> statement)
 {
 	//不会出现currentParser == nullptr这种情况
 	Parser::currentParser->statements.push_back(std::move(statement));
 }
 
-void EmbeddedShader::AST::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
+void EmbeddedShader::Ast::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
 {
 	//不会出现currentParser == nullptr这种情况
 	Parser::currentParser->globalStatements.push_back(std::move(globalStatement));

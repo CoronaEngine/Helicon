@@ -28,7 +28,7 @@ struct MyStruct3
 
 int main(int argc, char* argv[])
 {
-	using namespace EmbeddedShader::AST;
+	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
 	auto shaderCode = []()
