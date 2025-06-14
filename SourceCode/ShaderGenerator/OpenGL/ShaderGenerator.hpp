@@ -40,5 +40,6 @@ namespace EmbeddedShader::ShaderGenerator::OpenGL
 		std::string getValueOutput(const ktm::fmat3x4& value) override;
 		std::string getValueOutput(const ktm::fmat4x2& value) override;
 		std::string getValueOutput(const ktm::fmat4x3& value) override;
+		std::string getDefineLocalVariateOutput(const std::shared_ptr<Ast::LocalVariate>& localVariate,const std::shared_ptr<Ast::Value>& value) override;
 	};
 }

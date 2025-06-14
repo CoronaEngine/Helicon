@@ -212,3 +212,13 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOu
 		std::to_string(array[2][0]) + "," + std::to_string(array[2][1]) + "," + std::to_string(array[2][2]) + "," +
 		std::to_string(array[3][0]) + "," + std::to_string(array[3][1]) + "," + std::to_string(array[3][2]) + ")";
 }
+
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getDefineLocalVariateOutput(
+	const std::shared_ptr<Ast::LocalVariate>& localVariate, const std::shared_ptr<Ast::Value>& value)
+{
+	auto result = localVariate->type->parse() + " " + localVariate->name;
+	if (value)
+		result += " = " + value->parse();
+	result += ";";
+	return result;
+}

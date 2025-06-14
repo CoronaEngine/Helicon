@@ -32,7 +32,9 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	auto shaderCode = []()
+	ShaderGenerator::OpenGL::ShaderGenerator a;
+
+	auto shaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>();
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
