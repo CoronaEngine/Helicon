@@ -68,3 +68,147 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getVariate
 	}
 	return "Undefined";
 }
+
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(int32_t value)
+{
+	return std::to_string(value);
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(uint32_t value)
+{
+	return std::to_string(value);
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(float value)
+{
+	return std::to_string(value);
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(double value)
+{
+	return std::to_string(value);
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(bool value)
+{
+	return value ? "true" : "false";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fvec2& value)
+{
+	return "vec2(" + std::to_string(value.x) + "," + std::to_string(value.y) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fvec3& value)
+{
+	return "vec3(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fvec4& value)
+{
+	return "vec4(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + "," + std::to_string(value.w) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::svec2& value)
+{
+	return "ivec2(" + std::to_string(value.x) + "," + std::to_string(value.y) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::svec3& value)
+{
+	return "ivec3(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::svec4& value)
+{
+	return "ivec4(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + "," + std::to_string(value.w) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::uvec2& value)
+{
+	return "uvec2(" + std::to_string(value.x) + "," + std::to_string(value.y) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::uvec3& value)
+{
+	return "uvec3(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::uvec4& value)
+{
+	return "uvec4(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + "," + std::to_string(value.w) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::dvec2& value)
+{
+	return "dvec2(" + std::to_string(value.x) + "," + std::to_string(value.y) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::dvec3& value)
+{
+	return "dvec3(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::dvec4& value)
+{
+	return "dvec4(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + "," + std::to_string(value.w) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::vec<2, bool>& value)
+{
+	return "bvec2(" + std::to_string(value.x) + "," + std::to_string(value.y) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::vec<3, bool>& value)
+{
+	return "bvec3(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::vec<4, bool>& value)
+{
+	return "bvec4(" + std::to_string(value.x) + "," + std::to_string(value.y) + "," + std::to_string(value.z) + "," + std::to_string(value.w) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat2x2& value)
+{
+	std::array array = value.to_array();
+	return "mat2(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat3x3& value)
+{
+	std::array array = value.to_array();
+	return "mat3(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," + std::to_string(array[0][2]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," + std::to_string(array[1][2]) + "," +
+		std::to_string(array[2][0]) + "," + std::to_string(array[2][1]) + "," + std::to_string(array[2][2]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat4x4& value)
+{
+	std::array array = value.to_array();
+	return "mat4(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," + std::to_string(array[0][2]) + "," + std::to_string(array[0][3]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," + std::to_string(array[1][2]) + "," + std::to_string(array[1][3]) + "," +
+		std::to_string(array[2][0]) + "," + std::to_string(array[2][1]) + "," + std::to_string(array[2][2]) + "," + std::to_string(array[2][3]) + "," +
+		std::to_string(array[3][0]) + "," + std::to_string(array[3][1]) + "," + std::to_string(array[3][2]) + "," + std::to_string(array[3][3]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat2x3& value)
+{
+	std::array array = value.to_array();
+	return "mat2x3(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," + std::to_string(array[0][2]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," + std::to_string(array[1][2]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat2x4& value)
+{
+	std::array array = value.to_array();
+	return "mat2x4(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," + std::to_string(array[0][2]) + "," + std::to_string(array[0][3]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," + std::to_string(array[1][2]) + "," + std::to_string(array[1][3]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat3x2& value)
+{
+	std::array array = value.to_array();
+	return "mat3x2(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," +
+		std::to_string(array[2][0]) + "," + std::to_string(array[2][1]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat3x4& value)
+{
+	std::array array = value.to_array();
+	return "mat3x4(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," + std::to_string(array[0][2]) + "," + std::to_string(array[0][3]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," + std::to_string(array[1][2]) + "," + std::to_string(array[1][3]) + "," +
+		std::to_string(array[2][0]) + "," + std::to_string(array[2][1]) + "," + std::to_string(array[2][2]) + "," + std::to_string(array[2][3]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat4x2& value)
+{
+	std::array array = value.to_array();
+	return "mat4x2(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," +
+		std::to_string(array[2][0]) + "," + std::to_string(array[2][1]) + "," +
+		std::to_string(array[3][0]) + "," + std::to_string(array[3][1]) + ")";
+}
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(const ktm::fmat4x3& value)
+{
+	std::array array = value.to_array();
+	return "mat4x3(" + std::to_string(array[0][0]) + "," + std::to_string(array[0][1]) + "," + std::to_string(array[0][2]) + "," +
+		std::to_string(array[1][0]) + "," + std::to_string(array[1][1]) + "," + std::to_string(array[1][2]) + "," +
+		std::to_string(array[2][0]) + "," + std::to_string(array[2][1]) + "," + std::to_string(array[2][2]) + "," +
+		std::to_string(array[3][0]) + "," + std::to_string(array[3][1]) + "," + std::to_string(array[3][2]) + ")";
+}

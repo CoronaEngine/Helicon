@@ -14,7 +14,7 @@ namespace EmbeddedShader::Ast
 	public:
 
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<BaseValue> createValue(VariateType&& value);
+		static std::shared_ptr<BasicValue> createValue(VariateType&& value);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<VecValue> createValue(const VariateType& value);
 
@@ -79,10 +79,10 @@ namespace EmbeddedShader::Ast
 	};
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<BaseValue> AST::createValue(VariateType&& value)
+	std::shared_ptr<BasicValue> AST::createValue(VariateType&& value)
 	{
-		auto baseValue = std::make_shared<BaseValue>();
-		baseValue->value = BaseValue::getValue(std::forward<VariateType>(value));
+		auto baseValue = std::make_shared<BasicValue>();
+		baseValue->value = BasicValue::getValue(std::forward<VariateType>(value));
 		return baseValue;
 	}
 
@@ -97,9 +97,9 @@ namespace EmbeddedShader::Ast
 		auto vecArr = value.to_array();
 		for (size_t i = 0; i < vecArr.size() - 1; ++i)
 		{
-			valueStr += BaseValue::getValue(vecArr[i]) + ",";
+			valueStr += BasicValue::getValue(vecArr[i]) + ",";
 		}
-		valueStr += BaseValue::getValue(vecArr.back());
+		valueStr += BasicValue::getValue(vecArr.back());
 
 		vecValue->value = std::move(valueStr);
 		return vecValue;
@@ -122,8 +122,8 @@ namespace EmbeddedShader::Ast
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 	std::shared_ptr<LocalVariate> AST::defineLocalVariate(VariateType&& value)
 	{
-		auto type = std::make_shared<BaseType>();
-		type->name = BaseType::typeName<VariateType>;
+		auto type = std::make_shared<BasicType>();
+		type->name = BasicType::typeName<VariateType>;
 
 		return defineLocalVariate(std::move(type), createValue(value));
 	}
@@ -148,8 +148,8 @@ namespace EmbeddedShader::Ast
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 	std::shared_ptr<InputVariate> AST::defineInputVariate()
 	{
-		auto type = std::make_shared<BaseType>();
-		type->name = BaseType::typeName<VariateType>;
+		auto type = std::make_shared<BasicType>();
+		type->name = BasicType::typeName<VariateType>;
 		return defineInputVariate(type);
 	}
 

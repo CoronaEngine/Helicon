@@ -6,6 +6,7 @@
 
 #include <AST/AST.hpp>
 #include <ktm/type/vec.h>
+#include <ShaderGenerator/OpenGL/ShaderGenerator.hpp>
 
 using namespace EmbeddedShader;
 

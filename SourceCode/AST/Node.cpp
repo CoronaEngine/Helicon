@@ -16,7 +16,7 @@ std::string EmbeddedShader::Ast::Variate::parse()
 	return name;
 }
 
-std::string EmbeddedShader::Ast::BaseValue::parse()
+std::string EmbeddedShader::Ast::BasicValue::parse()
 {
 	return value;
 }

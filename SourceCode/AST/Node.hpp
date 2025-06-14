@@ -38,7 +38,7 @@ namespace EmbeddedShader::Ast
 
 	using LocalVariate = Variate;
 
-	struct BaseType : NameType
+	struct BasicType : NameType
 	{
 		template<typename Type>
 		static inline std::string_view typeName = "Unknown";
@@ -90,7 +90,7 @@ namespace EmbeddedShader::Ast
 		return vecType;
 	}
 
-	struct BaseValue : Value
+	struct BasicValue : Value
 	{
 		std::string value;
 		template<typename ValueType>
