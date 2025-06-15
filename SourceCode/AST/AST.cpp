@@ -57,9 +57,7 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 	auto& posOutput = Parser::currentParser->positionOutput;
 	if (posOutput)
 		return posOutput;
-	posOutput = std::make_shared<Variate>();
-	posOutput->name = "gl_Position";
-	posOutput->type = VecType::createVecType(variateTypeToEnum<ktm::fvec4>);
+	posOutput = Parser::getShaderGenerator()->getPositionOutput();
 	return posOutput;
 }
 

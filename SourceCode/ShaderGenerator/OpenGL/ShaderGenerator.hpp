@@ -41,10 +41,13 @@ namespace EmbeddedShader::ShaderGenerator::OpenGL
 		std::string getValueOutput(const ktm::fmat3x4& value) override;
 		std::string getValueOutput(const ktm::fmat4x2& value) override;
 		std::string getValueOutput(const ktm::fmat4x3& value) override;
+
 		std::string getParseOutput(const Ast::DefineLocalVariate* node) override;
 		std::string getParseOutput(const Ast::DefineInputVariate* node) override;
 		std::string getParseOutput(const Ast::Assign* node) override;
 		std::string getParseOutput(const Ast::BinaryOperator* node) override;
 		std::string getParseOutput(const Ast::MemberAccess* node) override;
+
+		std::shared_ptr<Ast::Variate> getPositionOutput() override;
 	};
 }

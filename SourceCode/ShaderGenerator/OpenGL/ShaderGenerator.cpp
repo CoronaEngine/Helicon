@@ -265,3 +265,11 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOu
 {
 	return node->value->parse() + "." + node->memberName;
 }
+
+std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getPositionOutput()
+{
+	auto posOutput = std::make_shared<Ast::Variate>();
+	posOutput->name = "gl_Position";
+	posOutput->type = Ast::VecType::createVecType(Ast::VariateType::Vec4);
+	return posOutput;
+}
