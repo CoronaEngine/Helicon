@@ -16,6 +16,13 @@ std::string EmbeddedShader::Ast::Variate::parse()
 	return name;
 }
 
+std::shared_ptr<EmbeddedShader::Ast::VecType> EmbeddedShader::Ast::VecType::createVecType(VariateType type)
+{
+	auto vecType = std::make_shared<VecType>();
+	vecType->name = Parser::getShaderGenerator()->getVariateTypeName(type);
+	return vecType;
+}
+
 std::string EmbeddedShader::Ast::BasicValue::parse()
 {
 	return value;
@@ -23,33 +30,29 @@ std::string EmbeddedShader::Ast::BasicValue::parse()
 
 std::string EmbeddedShader::Ast::VecValue::parse()
 {
-	return type->parse() + "(" + value + ")";
+	return value;
 }
 
 std::string EmbeddedShader::Ast::DefineLocalVariate::parse()
 {
-	auto result = localVariate->type->parse() + " " + localVariate->name;
-	if (value)
-		result += " = " + value->parse();
-	result += ";";
-	return result;
+	return  Parser::getShaderGenerator()->getParseOutput(this);
 }
 
 std::string EmbeddedShader::Ast::BinaryOperator::parse()
 {
-	return "(" + value1->parse() + " " + type + " " + value2->parse() + ")";
+	return Parser::getShaderGenerator()->getParseOutput(this);
 }
 
 std::string EmbeddedShader::Ast::Assign::parse()
 {
-	return leftValue->parse() + " = " + rightValue->parse() + ";";
+	return Parser::getShaderGenerator()->getParseOutput(this);
 }
 
 std::string EmbeddedShader::Ast::DefineInputVariate::parse()
 {
-	return "layout(location = " + std::to_string(variate->index) + ") in " + variate->type->parse() + " " + variate->name + ";";
+	return Parser::getShaderGenerator()->getParseOutput(this);
 }
 
 std::string EmbeddedShader::Ast::MemberAccess::parse() {
-	return value->parse() + "." + memberName;
+	return Parser::getShaderGenerator()->getParseOutput(this);
 }

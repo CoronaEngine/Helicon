@@ -1,5 +1,6 @@
 #include <AST/AST.hpp>
 #include <utility>
+#include <AST/Parser.hpp>
 
 std::shared_ptr<EmbeddedShader::Ast::LocalVariate> EmbeddedShader::Ast::AST::defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue)
 {
@@ -58,18 +59,18 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 		return posOutput;
 	posOutput = std::make_shared<Variate>();
 	posOutput->name = "gl_Position";
-	posOutput->type = VecType::createVecType<ktm::fvec4>();
+	posOutput->type = VecType::createVecType(variateTypeToEnum<ktm::fvec4>);
 	return posOutput;
 }
 
 void EmbeddedShader::Ast::AST::addStatement(std::shared_ptr<Statement> statement)
 {
 	//不会出现currentParser == nullptr这种情况
-	Parser::currentParser->statements.push_back(std::move(statement));
+	Parser::currentParser->structure.statements.push_back(std::move(statement));
 }
 
 void EmbeddedShader::Ast::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
 {
 	//不会出现currentParser == nullptr这种情况
-	Parser::currentParser->globalStatements.push_back(std::move(globalStatement));
+	Parser::currentParser->structure.globalStatements.push_back(std::move(globalStatement));
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <AST/Parser.hpp>
 #include <AST/Node.hpp>
 #include <utility>
+#include <AST/Parser.hpp>
 
 namespace EmbeddedShader::Ast
 {
@@ -82,33 +82,25 @@ namespace EmbeddedShader::Ast
 	std::shared_ptr<BasicValue> AST::createValue(VariateType&& value)
 	{
 		auto baseValue = std::make_shared<BasicValue>();
-		baseValue->value = BasicValue::getValue(std::forward<VariateType>(value));
+		baseValue->value = Parser::getShaderGenerator()->getValueOutput(std::forward<VariateType>(value));
 		return baseValue;
 	}
 
 	template<typename VariateType> requires ktm::is_vector_v<VariateType>
 	std::shared_ptr<VecValue> AST::createValue(const VariateType& value)
 	{
-		auto type = VecType::createVecType<VariateType>();
+		auto type = VecType::createVecType(variateTypeToEnum<VariateType>);
 		auto vecValue = std::make_shared<VecValue>();
 		vecValue->type = type;
 
-		std::string valueStr;
-		auto vecArr = value.to_array();
-		for (size_t i = 0; i < vecArr.size() - 1; ++i)
-		{
-			valueStr += BasicValue::getValue(vecArr[i]) + ",";
-		}
-		valueStr += BasicValue::getValue(vecArr.back());
-
-		vecValue->value = std::move(valueStr);
+		vecValue->value = Parser::getShaderGenerator()->getValueOutput(value);
 		return vecValue;
 	}
 
 	template<typename ValueType, typename ... Args>
 	std::shared_ptr<VecValue> AST::createVecValue(Args&&... args)
 	{
-		auto type = VecType::createVecType<ValueType>();
+		auto type = VecType::createVecType(variateTypeToEnum<ValueType>);
 		auto vecValue = std::make_shared<VecValue>();
 		vecValue->type = type;
 
@@ -123,7 +115,7 @@ namespace EmbeddedShader::Ast
 	std::shared_ptr<LocalVariate> AST::defineLocalVariate(VariateType&& value)
 	{
 		auto type = std::make_shared<BasicType>();
-		type->name = BasicType::typeName<VariateType>;
+		type->name = Parser::getShaderGenerator()->getVariateTypeName(variateTypeToEnum<VariateType>);
 
 		return defineLocalVariate(std::move(type), createValue(value));
 	}
@@ -149,13 +141,13 @@ namespace EmbeddedShader::Ast
 	std::shared_ptr<InputVariate> AST::defineInputVariate()
 	{
 		auto type = std::make_shared<BasicType>();
-		type->name = BasicType::typeName<VariateType>;
+		type->name = Parser::getShaderGenerator()->getVariateTypeName(variateTypeToEnum<VariateType>);
 		return defineInputVariate(type);
 	}
 
 	template<typename VariateType> requires ktm::is_vector_v<VariateType>
 	std::shared_ptr<InputVariate> AST::defineInputVariate()
 	{
-		return defineInputVariate(VecType::createVecType<VariateType>());
+		return defineInputVariate(VecType::createVecType(variateTypeToEnum<VariateType>));
 	}
 }

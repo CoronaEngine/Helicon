@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <AST/AST.hpp>
 #include <AST/Enum.hpp>
+#include <AST/Node.hpp>
 
 namespace EmbeddedShader::ShaderGenerator
 {
@@ -10,6 +10,8 @@ namespace EmbeddedShader::ShaderGenerator
 	{
 	public:
 		virtual ~BaseShaderGenerator() = default;
+		virtual std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure) = 0;
+
 		virtual std::string getVariateTypeName(Ast::VariateType variateType) = 0;
 
 		virtual std::string getValueOutput(int32_t value) = 0;
@@ -41,6 +43,11 @@ namespace EmbeddedShader::ShaderGenerator
 		virtual std::string getValueOutput(const ktm::fmat3x4& value) = 0;
 		virtual std::string getValueOutput(const ktm::fmat4x2& value) = 0;
 		virtual std::string getValueOutput(const ktm::fmat4x3& value) = 0;
-		virtual std::string getDefineLocalVariateOutput(const std::shared_ptr<Ast::LocalVariate>& localVariate,const std::shared_ptr<Ast::Value>& value) = 0;
+
+		virtual std::string getParseOutput(const Ast::DefineLocalVariate* node) = 0;
+		virtual std::string getParseOutput(const Ast::DefineInputVariate* node) = 0;
+		virtual std::string getParseOutput(const Ast::Assign* node) = 0;
+		virtual std::string getParseOutput(const Ast::BinaryOperator* node) = 0;
+		virtual std::string getParseOutput(const Ast::MemberAccess* node) = 0;
 	};
 }

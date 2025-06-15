@@ -10,6 +10,7 @@ namespace EmbeddedShader::ShaderGenerator::OpenGL
 	class ShaderGenerator final : public BaseShaderGenerator
 	{
 	public:
+		std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure) override;
 		std::string getVariateTypeName(Ast::VariateType variateType) override;
 		std::string getValueOutput(int32_t value) override;
 		std::string getValueOutput(uint32_t value) override;
@@ -40,6 +41,10 @@ namespace EmbeddedShader::ShaderGenerator::OpenGL
 		std::string getValueOutput(const ktm::fmat3x4& value) override;
 		std::string getValueOutput(const ktm::fmat4x2& value) override;
 		std::string getValueOutput(const ktm::fmat4x3& value) override;
-		std::string getDefineLocalVariateOutput(const std::shared_ptr<Ast::LocalVariate>& localVariate,const std::shared_ptr<Ast::Value>& value) override;
+		std::string getParseOutput(const Ast::DefineLocalVariate* node) override;
+		std::string getParseOutput(const Ast::DefineInputVariate* node) override;
+		std::string getParseOutput(const Ast::Assign* node) override;
+		std::string getParseOutput(const Ast::BinaryOperator* node) override;
+		std::string getParseOutput(const Ast::MemberAccess* node) override;
 	};
 }

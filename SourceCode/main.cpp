@@ -4,7 +4,7 @@
 
 #include "ShaderEmbededCodegen/CustomLibrary.h"
 
-#include <AST/AST.hpp>
+#include <AST/Parser.hpp>
 #include <ktm/type/vec.h>
 #include <ShaderGenerator/OpenGL/ShaderGenerator.hpp>
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	ShaderGenerator::OpenGL::ShaderGenerator a;
+	Parser::setShaderGenerator(std::make_unique<ShaderGenerator::OpenGL::ShaderGenerator>());
 
 	auto shaderCode = [&]()
 	{

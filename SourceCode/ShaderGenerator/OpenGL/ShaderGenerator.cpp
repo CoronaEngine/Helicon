@@ -1,5 +1,26 @@
 #include <ShaderGenerator/OpenGL/ShaderGenerator.hpp>
 
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getShaderOutput(
+	const Ast::EmbeddedShaderStructure& structure)
+{
+	std::string output;
+	output += "#version 330 core\n";
+
+	//global statements
+	for (auto& node: structure.globalStatements)
+	{
+		output += node->parse() + '\n';
+	}
+
+	output += "void main() {\n";
+	for (auto& node: structure.statements)
+	{
+		output += '\t' + node->parse() + '\n';
+	}
+	output += "}\n";
+	return output;
+}
+
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getVariateTypeName(Ast::VariateType variateType)
 {
 	switch (variateType)
@@ -213,12 +234,34 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOu
 		std::to_string(array[3][0]) + "," + std::to_string(array[3][1]) + "," + std::to_string(array[3][2]) + ")";
 }
 
-std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getDefineLocalVariateOutput(
-	const std::shared_ptr<Ast::LocalVariate>& localVariate, const std::shared_ptr<Ast::Value>& value)
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
+	const Ast::DefineLocalVariate* node)
 {
-	auto result = localVariate->type->parse() + " " + localVariate->name;
-	if (value)
-		result += " = " + value->parse();
+	auto result = node->localVariate->type->parse() + " " + node->localVariate->name;
+	if (node->value)
+		result += " = " + node->value->parse();
 	result += ";";
 	return result;
+}
+
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
+	const Ast::DefineInputVariate* node)
+{
+	return "layout(location = " + std::to_string(node->variate->index) + ") in " + node->variate->type->parse() + " " + node->variate->name + ";";
+}
+
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
+	const Ast::Assign* node)
+{
+	return node->leftValue->parse() + " = " + node->rightValue->parse() + ";";
+}
+
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(const Ast::BinaryOperator* node)
+{
+	return "(" + node->value1->parse() + " " + std::string(node->type) + " " + node->value2->parse() + ")";
+}
+
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(const Ast::MemberAccess* node)
+{
+	return node->value->parse() + "." + node->memberName;
 }
