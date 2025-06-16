@@ -234,11 +234,6 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOu
 		std::to_string(array[3][0]) + "," + std::to_string(array[3][1]) + "," + std::to_string(array[3][2]) + ")";
 }
 
-std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(Ast::VariateType type, const std::string& value)
-{
-	return getVariateTypeName(type) + "(" + value + ")";
-}
-
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
 	const Ast::DefineLocalVariate* node)
 {

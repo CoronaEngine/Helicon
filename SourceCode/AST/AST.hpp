@@ -113,8 +113,8 @@ namespace EmbeddedShader::Ast
 
 		bool first = true;
 		//ide可能会误报警告
-		vecValue->value = Parser::getShaderGenerator()->getValueOutput(variateEnum,((first? (first = false,valueConverter(std::forward<Args>(args))->parse()) :
-				valueConverter(std::forward<Args>(args))->parse() + ",") + ...));
+		vecValue->value = Parser::getShaderGenerator()->getVariateTypeName(variateEnum) + "(" + ((first? (first = false,valueConverter(std::forward<Args>(args))->parse()) :
+				valueConverter(std::forward<Args>(args))->parse() + ",") + ...) + ")";
 		return vecValue;
 	}
 

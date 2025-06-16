@@ -42,8 +42,6 @@ namespace EmbeddedShader::ShaderGenerator::OpenGL
 		std::string getValueOutput(const ktm::fmat4x2& value) override;
 		std::string getValueOutput(const ktm::fmat4x3& value) override;
 
-		std::string getValueOutput(Ast::VariateType type, const std::string& value) override;
-
 		std::string getParseOutput(const Ast::DefineLocalVariate* node) override;
 		std::string getParseOutput(const Ast::DefineInputVariate* node) override;
 		std::string getParseOutput(const Ast::Assign* node) override;
