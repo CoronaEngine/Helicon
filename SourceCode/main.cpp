@@ -34,14 +34,21 @@ int main(int argc, char* argv[])
 
 	Parser::setShaderGenerator(std::make_unique<ShaderGenerator::OpenGL::ShaderGenerator>());
 
-	auto shaderCode = [&]()
+	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>();
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
 		AST::assign(AST::access(AST::getPositionOutput(), "x"),114.f);
 	};
 
-	puts(Parser::parse(shaderCode).c_str());
+	auto fragShaderCode = [&]()
+	{
+		auto fragColor = AST::defineOutputVariate<fvec4>();
+		AST::assign(fragColor,AST::createVecValue<fvec4>(1.0f, 0.5f, 0.2f, 1.0f));
+	};
+
+	puts(Parser::parse(vertShaderCode).c_str());
+	puts(Parser::parse(fragShaderCode).c_str());
 
 	auto lambda =
 		[&]{

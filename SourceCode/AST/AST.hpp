@@ -41,6 +41,12 @@ namespace EmbeddedShader::Ast
 
 		static std::shared_ptr<MemberAccess> access(std::shared_ptr<Value> value, std::string memberName);
 
+		static std::shared_ptr<OutputVariate> defineOutputVariate(std::shared_ptr<Type> type);
+		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
+		static std::shared_ptr<OutputVariate> defineOutputVariate();
+		template<typename VariateType> requires ktm::is_vector_v<VariateType>
+		static std::shared_ptr<OutputVariate> defineOutputVariate();
+
 		static std::shared_ptr<Variate> getPositionOutput();
 	private:
 		static void addStatement(std::shared_ptr<Statement> statement);
@@ -100,14 +106,15 @@ namespace EmbeddedShader::Ast
 	template<typename ValueType, typename ... Args>
 	std::shared_ptr<VecValue> AST::createVecValue(Args&&... args)
 	{
-		auto type = VecType::createVecType(variateTypeToEnum<ValueType>);
+		auto variateEnum = variateTypeToEnum<ValueType>;
+		auto type = VecType::createVecType(variateEnum);
 		auto vecValue = std::make_shared<VecValue>();
 		vecValue->type = type;
 
 		bool first = true;
 		//ide可能会误报警告
-		vecValue->value = ((first? (first = false,valueConverter(std::forward<Args>(args))->parse()) :
-				valueConverter(std::forward<Args>(args))->parse() + ",") + ...);
+		vecValue->value = Parser::getShaderGenerator()->getValueOutput(variateEnum,((first? (first = false,valueConverter(std::forward<Args>(args))->parse()) :
+				valueConverter(std::forward<Args>(args))->parse() + ",") + ...));
 		return vecValue;
 	}
 
@@ -149,5 +156,19 @@ namespace EmbeddedShader::Ast
 	std::shared_ptr<InputVariate> AST::defineInputVariate()
 	{
 		return defineInputVariate(VecType::createVecType(variateTypeToEnum<VariateType>));
+	}
+
+	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
+	std::shared_ptr<OutputVariate> AST::defineOutputVariate()
+	{
+		auto type = std::make_shared<BasicType>();
+		type->name = Parser::getShaderGenerator()->getVariateTypeName(variateTypeToEnum<VariateType>);
+		return defineOutputVariate(type);
+	}
+
+	template<typename VariateType> requires ktm::is_vector_v<VariateType>
+	std::shared_ptr<OutputVariate> AST::defineOutputVariate()
+	{
+		return defineOutputVariate(VecType::createVecType(variateTypeToEnum<VariateType>));
 	}
 }

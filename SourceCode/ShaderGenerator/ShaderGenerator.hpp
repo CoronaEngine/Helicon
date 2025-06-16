@@ -44,11 +44,14 @@ namespace EmbeddedShader::ShaderGenerator
 		virtual std::string getValueOutput(const ktm::fmat4x2& value) = 0;
 		virtual std::string getValueOutput(const ktm::fmat4x3& value) = 0;
 
+		virtual std::string getValueOutput(Ast::VariateType type, const std::string& value) = 0;
+
 		virtual std::string getParseOutput(const Ast::DefineLocalVariate* node) = 0;
 		virtual std::string getParseOutput(const Ast::DefineInputVariate* node) = 0;
 		virtual std::string getParseOutput(const Ast::Assign* node) = 0;
 		virtual std::string getParseOutput(const Ast::BinaryOperator* node) = 0;
 		virtual std::string getParseOutput(const Ast::MemberAccess* node) = 0;
+		virtual std::string getParseOutput(const Ast::DefineOutputVariate* node) = 0;
 
 		virtual std::shared_ptr<Ast::Variate> getPositionOutput() = 0;
 	};

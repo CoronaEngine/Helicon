@@ -234,6 +234,11 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOu
 		std::to_string(array[3][0]) + "," + std::to_string(array[3][1]) + "," + std::to_string(array[3][2]) + ")";
 }
 
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getValueOutput(Ast::VariateType type, const std::string& value)
+{
+	return getVariateTypeName(type) + "(" + value + ")";
+}
+
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
 	const Ast::DefineLocalVariate* node)
 {
@@ -264,6 +269,12 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOu
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(const Ast::MemberAccess* node)
 {
 	return node->value->parse() + "." + node->memberName;
+}
+
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
+	const Ast::DefineOutputVariate* node)
+{
+	return "out " + node->variate->type->parse() + " " + node->variate->name + ";";
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getPositionOutput()

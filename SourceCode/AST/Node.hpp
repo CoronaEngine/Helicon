@@ -123,4 +123,15 @@ namespace EmbeddedShader::Ast
 		std::string memberName;
 		std::string parse() override;
 	};
+
+	struct OutputVariate : Variate
+	{
+		size_t index = 0;
+	};
+
+	struct DefineOutputVariate : Statement
+	{
+		std::shared_ptr<OutputVariate> variate;
+		std::string parse() override;
+	};
 }

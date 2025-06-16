@@ -53,6 +53,12 @@ std::string EmbeddedShader::Ast::DefineInputVariate::parse()
 	return Parser::getShaderGenerator()->getParseOutput(this);
 }
 
-std::string EmbeddedShader::Ast::MemberAccess::parse() {
+std::string EmbeddedShader::Ast::MemberAccess::parse()
+{
+	return Parser::getShaderGenerator()->getParseOutput(this);
+}
+
+std::string EmbeddedShader::Ast::DefineOutputVariate::parse()
+{
 	return Parser::getShaderGenerator()->getParseOutput(this);
 }

@@ -51,6 +51,18 @@ std::shared_ptr<EmbeddedShader::Ast::MemberAccess> EmbeddedShader::Ast::AST::acc
 	return memberAccess;
 }
 
+std::shared_ptr<EmbeddedShader::Ast::OutputVariate> EmbeddedShader::Ast::AST::defineOutputVariate(std::shared_ptr<Type> type)
+{
+	auto outputVariate = std::make_shared<OutputVariate>();
+	outputVariate->type = std::move(type);
+	outputVariate->name = Parser::getUniqueVariateName();
+	outputVariate->index = Parser::currentParser->currentInputVariateIndex++;
+	auto defineNode = std::make_shared<DefineOutputVariate>();
+	defineNode->variate = outputVariate;
+	addGlobalStatement(defineNode);
+	return outputVariate;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPositionOutput()
 {
 	//不会出现currentParser == nullptr这种情况
