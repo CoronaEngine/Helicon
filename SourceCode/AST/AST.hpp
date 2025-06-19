@@ -10,6 +10,7 @@ namespace EmbeddedShader::Ast
 
 	class AST
 	{
+		friend class ShaderGenerator::BaseShaderGenerator;
 		AST() = default;
 	public:
 

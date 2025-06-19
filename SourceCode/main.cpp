@@ -45,8 +45,11 @@ int main(int argc, char* argv[])
 	{
 		auto fragColor = AST::defineOutputVariate<fvec4>();
 		auto outColor = AST::defineUniformVariate<fvec4>();
-		AST::beginIf(AST::createValue(true));
+		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
 		AST::assign(fragColor,outColor);
+			AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
+			AST::assign(fragColor,outColor);
+			AST::endIf();
 		AST::endIf();
 	};
 

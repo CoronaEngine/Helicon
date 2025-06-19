@@ -288,11 +288,13 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOu
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(const Ast::IfStatement* node)
 {
 	auto result = "if (" + node->condition->parse() + ") {\n";
+	nestHierarchy++;
 	for (auto& statement: node->statements)
 	{
-		result += "\t" + statement->parse() + "\n";
+		result += getCodeIndentation() + statement->parse() + "\n";
 	}
-	result += "}";
+	nestHierarchy--;
+	result += getCodeIndentation() + "}";
 	return result;
 }
 

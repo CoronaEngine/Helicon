@@ -55,5 +55,8 @@ namespace EmbeddedShader::ShaderGenerator
 		virtual std::string getParseOutput(const Ast::IfStatement* node) = 0;
 
 		virtual std::shared_ptr<Ast::Variate> getPositionOutput() = 0;
+	protected:
+		static thread_local inline size_t nestHierarchy = 1;
+		static std::string getCodeIndentation();
 	};
 }
