@@ -53,10 +53,16 @@ namespace EmbeddedShader::Ast
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<UniformVariate> defineUniformVariate();
 
+		static void beginIf(std::shared_ptr<Value> condition);
+		static void endIf();
+
 		static std::shared_ptr<Variate> getPositionOutput();
 	private:
 		static void addStatement(std::shared_ptr<Statement> statement);
 		static void addGlobalStatement(std::shared_ptr<Statement> globalStatement);
+		static std::stack<std::vector<std::shared_ptr<Statement>>*>& getStatementStack();
+		static EmbeddedShaderStructure& getEmbeddedShaderStructure();
+
 		template<typename Type>
 		struct ValueConverter
 		{

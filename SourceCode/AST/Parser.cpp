@@ -5,6 +5,7 @@
 std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode)
 {
 	currentParser = std::unique_ptr<Parser>(new Parser);
+	currentParser->statementStack.push(&currentParser->structure.statements);
 	shaderCode();
 	std::string output = shaderGenerator->getShaderOutput(currentParser->structure);
 	currentParser.reset();

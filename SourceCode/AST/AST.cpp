@@ -75,6 +75,19 @@ std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::d
 	return variate;
 }
 
+void EmbeddedShader::Ast::AST::beginIf(std::shared_ptr<Value> condition)
+{
+	auto ifStatement = std::make_shared<IfStatement>();
+	ifStatement->condition = std::move(condition);
+	addStatement(ifStatement);
+	getStatementStack().push(&ifStatement->statements);
+}
+
+void EmbeddedShader::Ast::AST::endIf()
+{
+	getStatementStack().pop();
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPositionOutput()
 {
 	//不会出现currentParser == nullptr这种情况
@@ -88,11 +101,22 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 void EmbeddedShader::Ast::AST::addStatement(std::shared_ptr<Statement> statement)
 {
 	//不会出现currentParser == nullptr这种情况
-	Parser::currentParser->structure.statements.push_back(std::move(statement));
+	getStatementStack().top()->push_back(std::move(statement));
 }
 
 void EmbeddedShader::Ast::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
 {
 	//不会出现currentParser == nullptr这种情况
 	Parser::currentParser->structure.globalStatements.push_back(std::move(globalStatement));
+}
+
+std::stack<std::vector<std::shared_ptr<EmbeddedShader::Ast::Statement>>*>& EmbeddedShader::Ast::AST::getStatementStack()
+{
+	return Parser::currentParser->statementStack;
+}
+
+EmbeddedShader::Ast::EmbeddedShaderStructure& EmbeddedShader::Ast::AST::getEmbeddedShaderStructure()
+{
+	//不会出现currentParser == nullptr这种情况
+	return Parser::currentParser->structure;
 }

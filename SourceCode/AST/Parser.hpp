@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <memory>
+#include <stack>
 #include <string>
 #include <AST/Struct.hpp>
 #include <ShaderGenerator/ShaderGenerator.hpp>
@@ -19,6 +20,7 @@ namespace EmbeddedShader::Ast
 		Parser() = default;
 
 		EmbeddedShaderStructure structure;
+		std::stack<std::vector<std::shared_ptr<Statement>>*> statementStack;
 
 		size_t currentVariateIndex = 0;
 		size_t currentInputVariateIndex = 0;

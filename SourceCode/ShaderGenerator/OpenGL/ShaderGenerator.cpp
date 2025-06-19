@@ -285,6 +285,17 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOu
 	return "layout(location = " + std::to_string(node->variate->index) + ") uniform " + node->variate->type->parse() + " " + node->variate->name + ";";
 }
 
+std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(const Ast::IfStatement* node)
+{
+	auto result = "if (" + node->condition->parse() + ") {\n";
+	for (auto& statement: node->statements)
+	{
+		result += "\t" + statement->parse() + "\n";
+	}
+	result += "}";
+	return result;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getPositionOutput()
 {
 	auto posOutput = std::make_shared<Ast::Variate>();

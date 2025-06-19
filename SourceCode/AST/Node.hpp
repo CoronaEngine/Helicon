@@ -146,4 +146,11 @@ namespace EmbeddedShader::Ast
         std::shared_ptr<UniformVariate> variate;
         std::string parse() override;
     };
+
+	struct IfStatement : Statement
+    {
+        std::shared_ptr<Value> condition;
+        std::vector<std::shared_ptr<Statement>> statements;
+        std::string parse() override;
+    };
 }

@@ -52,6 +52,7 @@ namespace EmbeddedShader::ShaderGenerator
 		virtual std::string getParseOutput(const Ast::DefineOutputVariate* node) = 0;
 		virtual std::string getParseOutput(const Ast::UniformVariate* node) = 0;
 		virtual std::string getParseOutput(const Ast::DefineUniformVariate* node) = 0;
+		virtual std::string getParseOutput(const Ast::IfStatement* node) = 0;
 
 		virtual std::shared_ptr<Ast::Variate> getPositionOutput() = 0;
 	};

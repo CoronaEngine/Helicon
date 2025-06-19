@@ -50,6 +50,7 @@ namespace EmbeddedShader::ShaderGenerator::OpenGL
 		std::string getParseOutput(const Ast::DefineOutputVariate* node) override;
 		std::string getParseOutput(const Ast::UniformVariate* node) override;
 		std::string getParseOutput(const Ast::DefineUniformVariate* node) override;
+		std::string getParseOutput(const Ast::IfStatement* node) override;
 
 		std::shared_ptr<Ast::Variate> getPositionOutput() override;
 	};

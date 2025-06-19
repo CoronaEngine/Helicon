@@ -45,7 +45,9 @@ int main(int argc, char* argv[])
 	{
 		auto fragColor = AST::defineOutputVariate<fvec4>();
 		auto outColor = AST::defineUniformVariate<fvec4>();
+		AST::beginIf(AST::createValue(true));
 		AST::assign(fragColor,outColor);
+		AST::endIf();
 	};
 
 	puts(Parser::parse(vertShaderCode).c_str());
