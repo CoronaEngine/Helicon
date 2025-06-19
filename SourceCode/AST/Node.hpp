@@ -134,4 +134,16 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<OutputVariate> variate;
 		std::string parse() override;
 	};
+
+	struct UniformVariate : Variate
+	{
+		size_t index = 0;
+		std::string parse() override;
+	};
+
+	struct DefineUniformVariate : Statement
+    {
+        std::shared_ptr<UniformVariate> variate;
+        std::string parse() override;
+    };
 }

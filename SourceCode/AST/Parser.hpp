@@ -22,6 +22,8 @@ namespace EmbeddedShader::Ast
 
 		size_t currentVariateIndex = 0;
 		size_t currentInputVariateIndex = 0;
+		size_t currentOutputVariateIndex = 0;
+		size_t currentUniformVariateIndex = 0;
 
 		std::shared_ptr<Variate> positionOutput;
 

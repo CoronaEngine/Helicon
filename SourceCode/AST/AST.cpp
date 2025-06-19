@@ -56,11 +56,23 @@ std::shared_ptr<EmbeddedShader::Ast::OutputVariate> EmbeddedShader::Ast::AST::de
 	auto outputVariate = std::make_shared<OutputVariate>();
 	outputVariate->type = std::move(type);
 	outputVariate->name = Parser::getUniqueVariateName();
-	outputVariate->index = Parser::currentParser->currentInputVariateIndex++;
+	outputVariate->index = Parser::currentParser->currentOutputVariateIndex++;
 	auto defineNode = std::make_shared<DefineOutputVariate>();
 	defineNode->variate = outputVariate;
 	addGlobalStatement(defineNode);
 	return outputVariate;
+}
+
+std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::defineUniformVariate(std::shared_ptr<Type> type)
+{
+	auto variate = std::make_shared<UniformVariate>();
+	variate->type = std::move(type);
+	variate->name = Parser::getUniqueVariateName();
+	variate->index = Parser::currentParser->currentUniformVariateIndex++;
+	auto defineNode = std::make_shared<DefineUniformVariate>();
+	defineNode->variate = variate;
+	addGlobalStatement(defineNode);
+	return variate;
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPositionOutput()
