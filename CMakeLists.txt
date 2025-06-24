@@ -81,9 +81,27 @@ file(GLOB_RECURSE SOURCE_FILES
     "${SOURCE_DIR}/*.*"
 )
 
-
-
-
 # 添加可执行文件
 add_executable(${PROJECT_NAME}  ${SOURCE_FILES})
 set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
+
+# --- glslang ---
+set(ENABLE_OPT OFF) # 通常用于关闭 glslang 的优化，可能用于调试或加速编译。
+add_subdirectory(glslang EXCLUDE_FROM_ALL)
+
+# --- SPIRV-Cross ---
+set(SPIRV_CROSS_SHARED OFF) # 显式要求 SPIRV-Cross 不构建共享库（与全局 BUILD_SHARED_LIBS 一致）。
+set(SPIRV_CROSS_STATIC ON) # 显式要求 SPIRV-Cross 构建静态库。
+set(SPIRV_CROSS_ENABLE_TESTS OFF) # 禁用测试目标，可以减少配置和编译时间。
+set(SPIRV_CROSS_CLI OFF) # 禁用命令行接口工具的构建。
+add_subdirectory(SPIRV-Cross EXCLUDE_FROM_ALL)
+
+# --- 链接库到主项目 ---
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    glslang
+    glslang-default-resource-limits # glslang 的一个组件
+    spirv-cross-core
+    spirv-cross-c
+    spirv-cross-cpp
+    spirv-cross-util
+)
