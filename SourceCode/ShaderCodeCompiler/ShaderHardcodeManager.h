@@ -13,6 +13,7 @@ public:
 
 private:
 	static bool hardcodeFileOpened;
+	static const std::string hardcodeShaderPath;
 	static bool generateHardcodeFiles();
 	static std::string ShaderLanguageFlagToString(ShaderLanguage language);
 };

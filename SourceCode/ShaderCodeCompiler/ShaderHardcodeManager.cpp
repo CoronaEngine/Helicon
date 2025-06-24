@@ -1,4 +1,5 @@
 #include <regex>
+#include <filesystem>
 
 #include"ShaderHardcodeManager.h"
 
@@ -6,6 +7,28 @@
 
 
 bool ShaderHardcodeManager::hardcodeFileOpened = false;
+
+const std::string ShaderHardcodeManager::hardcodeShaderPath =
+    [] {
+        std::string resultPath = "";
+        std::string runtimePath = std::filesystem::current_path().string();
+        // std::replace(runtimePath.begin(), runtimePath.end(), '\\', '/');
+        std::regex pattern(R"((.*)CabbageEngine\b)");
+        std::smatch matches;
+        if (std::regex_search(runtimePath, matches, pattern))
+        {
+            if (matches.size() > 1)
+            {
+                resultPath = matches[1].str() + "CabbageEngine";
+            }
+            else
+            {
+                throw std::runtime_error("Failed to resolve source path.");
+            }
+        }
+        std::replace(resultPath.begin(), resultPath.end(), '\\', '/');
+        return resultPath + "/SourceCode" + "/CabbageFramework/CabbageFoundation/ShaderCodeCompiler/HardcodeShaders";
+    }();
 
 
 std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_location& sourceLocation, ShaderStage inputStage)
@@ -84,7 +107,7 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::string& shaderCode, Sh
 		hardcodeFileOpened = true;
 	}
 
-    std::fstream sourceFileStream(CabbageFiles::hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
+    std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
 
 	if (sourceFileStream.is_open())
 	{
@@ -138,7 +161,7 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::vector<uint32_t>& shad
 		hardcodeFileOpened = true;
 	}
 
-	std::fstream sourceFileStream(CabbageFiles::hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
+	std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
 
 	if (sourceFileStream.is_open())
 	{
@@ -169,7 +192,7 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::vector<uint32_t>& shad
 bool ShaderHardcodeManager::generateHardcodeFiles()
 {
 	{
-        std::fstream fileStream(CabbageFiles::hardcodeShaderPath + "/HardcodeShaders.h", std::ios::out);
+        std::fstream fileStream(std::string(hardcodeShaderPath + "/HardcodeShaders.h"), std::ios::out);
 
 		fileStream << "#pragma once" << std::endl;
         fileStream << "#include <unordered_map>" << std::endl;
@@ -190,7 +213,7 @@ bool ShaderHardcodeManager::generateHardcodeFiles()
 
 	auto createCodeFile = [&](const std::string &lang)->void
 		{
-        std::fstream fileStream(CabbageFiles::hardcodeShaderPath + "/HardcodeShaders" + lang + ".cpp", std::ios::out);
+			std::fstream fileStream(std::string(hardcodeShaderPath + "/HardcodeShaders" + lang + ".cpp"), std::ios::out);
 
 			fileStream << "#include\"HardcodeShaders.h\"" << std::endl;
 			fileStream << "std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShaders" + lang + " = {" << std::endl;
