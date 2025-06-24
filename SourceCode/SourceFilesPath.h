@@ -9,10 +9,6 @@
 
 struct CabbageFiles
 {
-    static std::vector<uint32_t> readBinaryFile(const std::string_view filename);
-
-    static std::string readStringFile(const std::string_view file_path);
-
     static const std::string runtimePath;
 
     static const std::string rootPath;
