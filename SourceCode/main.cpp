@@ -29,6 +29,15 @@ struct MyStruct3
 
 int main(int argc, char* argv[])
 {
+	auto lammdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
+		std::cout << "Member index: " << i
+			<< ", Member Value Type: " << typeid(structMember).name()
+			<< ", Member Name: " << name
+			<< std::endl;
+		};
+	boost::pfr::for_each_field_with_name(MyStruct2{}, lammdaReflect);
+
+
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
