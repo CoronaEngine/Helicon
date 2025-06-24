@@ -13,8 +13,6 @@
 [submodule "SPIRV-Cross"]
 	path = SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
-	ignore = all
 [submodule "glslang"]
 	path = glslang
 	url = https://github.com/KhronosGroup/glslang.git
-	ignore = all
