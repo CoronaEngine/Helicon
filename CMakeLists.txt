@@ -39,7 +39,7 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 设置Debug模式
-set(CMAKE_BUILD_TYPE "Debug")
+# set(CMAKE_BUILD_TYPE "Debug")
 
 # 仅对 Visual Studio 编译器生效
 if(MSVC)
@@ -56,8 +56,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/build/${CMAKE_H
 # 设置目标输出目录
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG})
+    add_definitions(-DCABBAGE_ENGINE_DEBUG)
 elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE})
+    add_definitions(-DCABBAGE_ENGINE_RELEASE)
 endif()
 
 # 头文件目录
@@ -65,6 +67,8 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/ktm/
     ${PROJECT_SOURCE_DIR}/pfr/include/
     ${PROJECT_SOURCE_DIR}/preprocessor/include/
+    ${PROJECT_SOURCE_DIR}/glslang/
+    ${PROJECT_SOURCE_DIR}/SPIRV-Cross/
     ${PROJECT_SOURCE_DIR}/SourceCode/
 )
 

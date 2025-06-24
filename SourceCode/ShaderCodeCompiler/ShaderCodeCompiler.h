@@ -6,7 +6,7 @@
 #include <variant>
 #include <vector>
 
-#include"CabbageFramework/CabbageCommon/CabbageCommon.h"
+#include"../SourceFilesPath.h"
 
 
 enum class ShaderLanguage : uint16_t
