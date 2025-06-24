@@ -1,4 +1,5 @@
 #include <regex>
+#include <fstream>
 #include <filesystem>
 
 #include"ShaderHardcodeManager.h"

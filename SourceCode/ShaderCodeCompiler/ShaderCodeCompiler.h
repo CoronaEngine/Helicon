@@ -6,8 +6,6 @@
 #include <variant>
 #include <vector>
 
-#include"../SourceFilesPath.h"
-
 
 enum class ShaderLanguage : uint16_t
 {
