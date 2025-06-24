@@ -4,6 +4,8 @@
 
 #include "ShaderEmbededCodegen/CustomLibrary.h"
 
+#include"ShaderCodeCompiler/ShaderCodeCompiler.h"
+
 #include <AST/Parser.hpp>
 #include <ktm/type/vec.h>
 #include <ShaderGenerator/OpenGL/ShaderGenerator.hpp>
@@ -62,8 +64,8 @@ int main(int argc, char* argv[])
 		AST::endIf();
 	};
 
-	puts(Parser::parse(vertShaderCode).c_str());
-	puts(Parser::parse(fragShaderCode).c_str());
+	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode), ShaderStage::VertexShader);
+	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode), ShaderStage::FragmentShader);
 
 	auto lambda =
 		[&]{

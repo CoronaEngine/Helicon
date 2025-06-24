@@ -5,7 +5,7 @@
 #include "ShaderLanguageConverter.h"
 
 
-ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCodePath, ShaderStage inputStage, ShaderLanguage language, const std::source_location &sourceLocation)
+ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language, const std::source_location &sourceLocation)
 {
     hardcodeVariableName = ShaderHardcodeManager::getHardcodeVariableName(sourceLocation, inputStage);
 
@@ -17,22 +17,22 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCodePath, Shader
     switch (language)
     {
     case ShaderLanguage::GLSL:
-        codeGLSL = CabbageFiles::readStringFile(shaderCodePath);
+        codeGLSL = shaderCode;
         codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeGLSL, language, inputStage);
         codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
         codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
         break;
     case ShaderLanguage::HLSL:
-        codeHLSL = CabbageFiles::readStringFile(shaderCodePath);
+        codeHLSL = shaderCode;
         codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeHLSL, language, inputStage);
         codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
         codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
         break;
-    case ShaderLanguage::SpirV:
-        codeSpirV = CabbageFiles::readBinaryFile(shaderCodePath);
-        codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
-        codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
-        break;
+    //case ShaderLanguage::SpirV:
+    //    codeSpirV = shaderCode;
+    //    codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
+    //    codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
+    //    break;
     default:
         break;
     }
