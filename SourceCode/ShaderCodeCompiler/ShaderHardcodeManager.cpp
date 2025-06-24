@@ -192,7 +192,7 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::vector<uint32_t>& shad
 bool ShaderHardcodeManager::generateHardcodeFiles()
 {
 	{
-        std::fstream fileStream(std::string(hardcodeShaderPath + "/HardcodeShaders.h"), std::ios::out);
+        std::fstream fileStream(hardcodeShaderPath + "/HardcodeShaders.h", std::ios::out);
 
 		fileStream << "#pragma once" << std::endl;
         fileStream << "#include <unordered_map>" << std::endl;
@@ -213,7 +213,7 @@ bool ShaderHardcodeManager::generateHardcodeFiles()
 
 	auto createCodeFile = [&](const std::string &lang)->void
 		{
-			std::fstream fileStream(std::string(hardcodeShaderPath + "/HardcodeShaders" + lang + ".cpp"), std::ios::out);
+			std::fstream fileStream(hardcodeShaderPath + "/HardcodeShaders" + lang + ".cpp", std::ios::out);
 
 			fileStream << "#include\"HardcodeShaders.h\"" << std::endl;
 			fileStream << "std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShaders" + lang + " = {" << std::endl;
