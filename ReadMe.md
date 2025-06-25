@@ -1,3 +1,8 @@
+## 框架设计
+- edsl生成slang，slang自带兼容各种奇怪的平台
+- slang代码生成spirv，hlsl和glsl通过glslang生成spirv（vulkan），dx的hlsl通过dxc，支持跨语言include
+- spirv通过spirv-cross生成hlsl、glsl等
+
 ## 特性说明
 - 变量定义：
   - 基本类型、数学库类型（不支持默认构造）
