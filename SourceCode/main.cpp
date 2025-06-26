@@ -70,15 +70,25 @@ int main(int argc, char* argv[])
 	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode), ShaderStage::VertexShader);
 	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode), ShaderStage::FragmentShader);
 
-	auto lambda =
+
+
+	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
+
+	VariateProxy<ktm::fvec3> vertexOutput1 = ktm::fvec3(1, 2, 3);
+	VariateProxy<ktm::fmat4x4> vertexOutput2 = ktm::fmat4x4::from_eye();
+	VariateProxy<VariateProxy<int>> vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
+
+	VariateProxy<MyStruct1> buffer1;//ubo or ssbo
+	VariateProxy<MyStruct2> buffer2;//ubo or ssbo
+	VariateProxy<MyStruct3> buffer3;//ubo or ssbo
+
+	auto vertexShaderDemo =
 		[&]{
-			VariateProxy<VariateProxy<int>> arr = { 1, 2 ,8, 1, 72, 11, 48416 };
+			vertexOutput1 = ktm::fvec3(1, 2, 3);
+			vertexOutput2 = ktm::fmat4x4::from_eye();
+			vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
 
-			VariateProxy<MyStruct1> myStruct1;
-			VariateProxy<MyStruct2> myStruct2;
-			VariateProxy<MyStruct3> myStruct3;
-
-			myStruct1->int_A = 1;
+			buffer1->int_A = 1;
 
 			VariateProxy<ktm::fvec3> fvec3_A = ktm::fvec3(1, 2, 3);
 			VariateProxy<ktm::fvec3> fvec3_B = ktm::fvec3(1, 2, 3);
@@ -107,6 +117,16 @@ int main(int argc, char* argv[])
 			// }
 		};
 
-	std::string parseRes = EmbeddedShader::shaderParse(lambda);
-	std::cout << parseRes;
+	auto fragShaderDemo =
+		[&] {
+			VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
+			//outputColor = fvec4(1, 0, 0, 1); //globle output color
+		};
+
+	auto computeShaderDemo =
+		[&] {
+			buffer2->int_A;
+		};
+	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
+
 }
