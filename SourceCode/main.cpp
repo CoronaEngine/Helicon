@@ -29,6 +29,23 @@ struct MyStruct3
 	VariateProxy<MyStruct2> int_A;
 };
 
+//
+//void test(float fov)//45.0
+//{
+//	VariateProxy<float> fov = ...;
+//
+//	auto vertShaderCode = [&]()
+//		{
+//			fov;
+//		};
+//
+//	auto fragShaderCode = [&]()
+//		{
+//			fov;
+//		};
+//}
+
+
 int main(int argc, char* argv[])
 {
 	auto lammdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
@@ -65,7 +82,7 @@ int main(int argc, char* argv[])
 	};
 
 	puts(Parser::parse(vertShaderCode).c_str());
-	puts(Parser::parse(fragShaderCode).c_str());
+	puts(Parser::parse(vertShaderCode).c_str());
 
 	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode), ShaderStage::VertexShader);
 	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode), ShaderStage::FragmentShader);
@@ -74,7 +91,12 @@ int main(int argc, char* argv[])
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 
+
+
 	VariateProxy<ktm::fvec3> vertexOutput1 = ktm::fvec3(1, 2, 3);
+
+
+
 	VariateProxy<ktm::fmat4x4> vertexOutput2 = ktm::fmat4x4::from_eye();
 	VariateProxy<VariateProxy<int>> vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
 
@@ -84,7 +106,7 @@ int main(int argc, char* argv[])
 
 	auto vertexShaderDemo =
 		[&]{
-			vertexOutput1 = ktm::fvec3(1, 2, 3);
+			//vertexOutput1 = ktm::fvec3(1, 2, 3);
 			vertexOutput2 = ktm::fmat4x4::from_eye();
 			vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
 
@@ -128,6 +150,12 @@ int main(int argc, char* argv[])
 		[&] {
 			VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
 			//outputColor = fvec4(1, 0, 0, 1); //globle output color
+		};
+
+	auto fragShaderDemo2 =
+		[&] {
+		VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
+		//outputColor = fvec4(1, 0, 0, 1); //globle output color
 		};
 
 	auto computeShaderDemo =
