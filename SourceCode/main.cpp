@@ -111,10 +111,17 @@ int main(int argc, char* argv[])
 
 			}
 
-			// $FOR(VariateProxy i = 0; i < 10; ++i)
-			// {
-			//
-			// }
+			$IF(fvec3_A)
+			{
+				$IF(fvec3_A)
+				{
+				}
+			}
+
+			$FOR(VariateProxy i = 0; true; ++i)
+			{
+			}
+
 		};
 
 	auto fragShaderDemo =

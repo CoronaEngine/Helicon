@@ -68,15 +68,36 @@ namespace EmbeddedShader
 
 	struct GPU_FOR
 	{
-		GPU_FOR(const std::function<void()>& content)
+		static void beginCatchCondition()
 		{
-			content();
+            //for begin pattern
+        }
+
+		GPU_FOR(const std::function<void()>& condition)
+		{
+			condition();
 		}
 
 		~GPU_FOR()
 		{
 			//...
 		}
+
+		struct BREAK_FLAG_PROCESS
+		{
+			explicit BREAK_FLAG_PROCESS(bool& breakFlag)
+            {
+                if (breakFlag)
+                {
+                    beginCatchCondition();
+                    breakFlag = false; // Reset the break flag
+                }
+            }
+		};
 	};
-#define $FOR(condition) if constexpr (GPU_FOR gpuForD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9([&]{condition;});true)
+#define $FOR(condition) \
+	if constexpr (GPU_FOR gpuForL8kM3qW5xG1vY7dR4nP9tS2{[&]{condition;}};true)\
+		if constexpr (bool breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3 = true; true)\
+			for (condition)\
+				if (GPU_FOR::BREAK_FLAG_PROCESS gpuForBreakFlagProcessU7gD2sH5nB9yR4vM8kL3wZ6{breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3}; breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3)
 }
