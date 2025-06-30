@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ppltasks.h>
 
 #include "ShaderEmbededCodegen/ControlFlows.h"
 
@@ -44,7 +45,6 @@ struct MyStruct3
 //			fov;
 //		};
 //}
-
 
 int main(int argc, char* argv[])
 {
@@ -140,11 +140,27 @@ int main(int argc, char* argv[])
 				}
 			}
 
-			$FOR(VariateProxy i = 0; true; ++i)
-			{
-			}
+			// $FOR(VariateProxy i = 0; true; ++i)
+			// {
+			// }
 
+			$DO
+			{
+
+				$WHILE(fvec3_A)
+				{
+				}
+
+				$WHILE(fvec3_A)
+				{
+				}
+			}
+			$WHILE(fvec3_A);
 		};
+
+
+	puts("");
+
 
 	auto fragShaderDemo =
 		[&] {

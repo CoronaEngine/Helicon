@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stack>
+
 #include "VariateProxy.h"
 
 namespace EmbeddedShader
@@ -51,20 +53,70 @@ namespace EmbeddedShader
 	};
 #define $ELSE if constexpr (GPU_ELSE gpuElse3Tg8Hp2K6nQ9rV4xY7wB1mZ5cF0sD9;true)
 
-	template<typename Type>
+	struct GPU_WHILE_INFO
+	{
+		bool isDoWhile = false; // 是否为do while循环
+		int loopCount = 0; // 循环次数计数
+		bool isDoWhileInside = false; // 是否在do while循环内部
+		static std::stack<GPU_WHILE_INFO> gpuWhileStack;
+	};
+
+	std::stack<GPU_WHILE_INFO> GPU_WHILE_INFO::gpuWhileStack{};
+
 	struct GPU_WHILE
 	{
-		GPU_WHILE(VariateProxy<Type>& condition)
+		template<typename Type>
+		static bool conditionProcess(VariateProxy<Type> condition)
 		{
-			//while begin pattern
-		}
+			auto& gpuWhileStack = GPU_WHILE_INFO::gpuWhileStack;
+			if (gpuWhileStack.empty() || gpuWhileStack.top().isDoWhileInside)
+			{
+				//说明这是一个新的while
+				gpuWhileStack.push({});
+			}
 
-		~GPU_WHILE()
-		{
-			//while end pattern
+			auto& top = gpuWhileStack.top();
+			if (top.isDoWhile)
+			{
+				gpuWhileStack.pop();
+				/////////////////////do while end/////////////////////
+				//xxx
+				return false;
+			}
+
+			//说明是while
+			//while 时，第一次条件为true
+			//while 时，第一次条件为false
+
+			++top.loopCount;
+			if (top.loopCount == 2)
+			{
+				gpuWhileStack.pop();
+				/////////////////////while end/////////////////////
+				return false;
+			}
+			/////////////////////while begin/////////////////////
+			//xxx
+			return true;
 		}
 	};
-#define $WHILE(condition) if constexpr (GPU_WHILE gpuWhileD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9(condition);true)
+
+	struct GPU_DO_WHILE
+	{
+		GPU_DO_WHILE()
+		{
+			GPU_WHILE_INFO::gpuWhileStack.push({true, 0, true});
+			/////////////////////do while begin/////////////////////
+		}
+
+		~GPU_DO_WHILE()
+		{
+			GPU_WHILE_INFO::gpuWhileStack.top().isDoWhileInside = false;
+		}
+	};
+
+#define $DO do if constexpr (GPU_DO_WHILE gpuDoWhileL8kM3qW5xG1vY7dR4nP9tS2;true)
+#define $WHILE(condition) while (GPU_WHILE::conditionProcess(condition))
 
 	struct GPU_FOR
 	{
