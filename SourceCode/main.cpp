@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 			<< ", Member Value Type: " << typeid(structMember).name()
 			<< ", Member Name: " << name
 			<< std::endl;
-		};
+	};
 	boost::pfr::for_each_field_with_name(MyStruct2{}, lammdaReflect);
 
 
@@ -75,9 +75,9 @@ int main(int argc, char* argv[])
 		auto outColor = AST::defineUniformVariate<fvec4>();
 		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
 		AST::assign(fragColor,outColor);
-			AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
-			AST::assign(fragColor,outColor);
-			AST::endIf();
+		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
+		AST::assign(fragColor,outColor);
+		AST::endIf();
 		AST::endIf();
 	};
 
@@ -118,6 +118,7 @@ int main(int argc, char* argv[])
 			fvec3_B = max(fvec3_A, fvec3_B);
 			fvec3_B = min(fvec3_A, fvec3_B);
 
+
 			$IF(fvec3_A)
 			{
 			}
@@ -156,11 +157,64 @@ int main(int argc, char* argv[])
 				}
 			}
 			$WHILE(fvec3_A);
-		};
+	};
 
+	struct GpuIf
+	{
+		int64_t currentIndex = 0;
+		int64_t lastMaxIndex = -1;
+		int64_t maxCount = 0;
 
-	puts("");
+		int index = 0;
+	};
 
+	struct GpuIfBranch
+	{
+		explicit GpuIfBranch(bool condition)
+		{
+			//begin
+			puts(("if (" + std::to_string(condition) + ") {").c_str());
+		}
+		~GpuIfBranch()
+		{
+			//end
+			puts("}");
+		}
+
+		int index = 0;
+	};
+
+	struct GpuElseIfBranch
+	{
+		explicit GpuElseIfBranch(bool condition)
+		{
+			//begin
+			puts(("else if (" + std::to_string(condition) + ") {").c_str());
+		}
+		~GpuElseIfBranch()
+		{
+			//end
+			puts("}");
+		}
+
+		int index = 0;
+	};
+
+	struct GpuElseBranch
+	{
+		explicit GpuElseBranch()
+		{
+			//begin
+			puts("else {");
+		}
+		~GpuElseBranch()
+		{
+			//end
+			puts("}");
+		}
+
+		int index = 0;
+	};
 
 	auto fragShaderDemo =
 		[&] {

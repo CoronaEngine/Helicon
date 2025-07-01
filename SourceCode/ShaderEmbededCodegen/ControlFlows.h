@@ -6,52 +6,69 @@
 
 namespace EmbeddedShader
 {
-
-	template<typename Type>
+#define GPU_PUSH_VARIATE_WITH_CONDITION(define,name,condition) for (define; name.index < 1 && (condition); ++name.index)
+#define GPU_PUSH_VARIATE(define,name) for (define;name.index < 1; ++name.index)
+#define GPU_IF_CONDITION TheIfElseStatementMustBeGuidedByIf.currentIndex++ == TheIfElseStatementMustBeGuidedByIf.maxCount ? (++TheIfElseStatementMustBeGuidedByIf.maxCount,true) : (++TheIfElseStatementMustBeGuidedByIf.lastMaxIndex,false)
 	struct GPU_IF
 	{
-		GPU_IF(VariateProxy<Type>& condition)
+		int64_t currentIndex = 0;
+		int64_t lastMaxIndex = -1;
+		int64_t maxCount = 0;
+
+		int8_t index = 0;
+	};
+
+	template<typename Type>
+	struct GPU_IF_BRANCH
+	{
+		GPU_IF_BRANCH(VariateProxy<Type>& condition)
 		{
 			//if begin pattern
 		}
 
-		~GPU_IF()
+		~GPU_IF_BRANCH()
 		{
 			//if end pattern
 		}
-	};
-#define $IF(condition) if constexpr (GPU_IF gpuIfD5Hj7K3nP9rT2vX6cB8yN1mQ4zR0sF9(condition);true)
 
+		int8_t index = 0;
+	};
+#define $IF(condition) GPU_PUSH_VARIATE(GPU_IF TheIfElseStatementMustBeGuidedByIf,TheIfElseStatementMustBeGuidedByIf)\
+while (TheIfElseStatementMustBeGuidedByIf.currentIndex = 0,TheIfElseStatementMustBeGuidedByIf.lastMaxIndex != TheIfElseStatementMustBeGuidedByIf.maxCount)\
+if (GPU_IF_CONDITION)\
+GPU_PUSH_VARIATE(GPU_IF_BRANCH gpuIfBranchJ6hF4rT9mK2zV8cX5bN1pQ3{condition}, gpuIfBranchJ6hF4rT9mK2zV8cX5bN1pQ3)
 
 	template<typename Type>
-	struct GPU_ELSEIF
+	struct GPU_ELSEIF_BRANCH
 	{
-		GPU_ELSEIF(VariateProxy<Type>& condition)
+		GPU_ELSEIF_BRANCH(VariateProxy<Type>& condition)
 		{
 			//elseif begin pattern
 		}
 
-		~GPU_ELSEIF()
+		~GPU_ELSEIF_BRANCH()
 		{
 			//elseif end pattern
 		}
+		int8_t index = 0;
 	};
-#define $ELIF(condition) if constexpr (GPU_ELSEIF gpuElseIfQ7Jk3P9mR2vX5nB8tW4yL6cZ1dG0sF9(condition);true)
+#define $ELIF(condition) else if (GPU_IF_CONDITION)\
+GPU_PUSH_VARIATE(GPU_ELSEIF_BRANCH gpuElseIfBranchJ6hF4rT9mK2zV8cX5bN1pQ3{condition}, gpuElseIfBranchJ6hF4rT9mK2zV8cX5bN1pQ3)
 
-
-	struct GPU_ELSE
+	struct GPU_ELSE_BRANCH
 	{
-		GPU_ELSE()
+		GPU_ELSE_BRANCH()
 		{
 			//else begin pattern
 		}
 
-		~GPU_ELSE()
+		~GPU_ELSE_BRANCH()
 		{
 			//else end pattern
 		}
+		int8_t index = 0;
 	};
-#define $ELSE if constexpr (GPU_ELSE gpuElse3Tg8Hp2K6nQ9rV4xY7wB1mZ5cF0sD9;true)
+#define $ELSE else GPU_PUSH_VARIATE_WITH_CONDITION(GPU_ELSE_BRANCH gpuElseBranchJ6hF4rT9mK2zV8cX5bN1pQ3,gpuElseBranchJ6hF4rT9mK2zV8cX5bN1pQ3,GPU_IF_CONDITION)
 
 	struct GPU_WHILE_INFO
 	{
@@ -113,9 +130,10 @@ namespace EmbeddedShader
 		{
 			GPU_WHILE_INFO::gpuWhileStack.top().isDoWhileInside = false;
 		}
+		int8_t index = 0;
 	};
 
-#define $DO do if constexpr (GPU_DO_WHILE gpuDoWhileL8kM3qW5xG1vY7dR4nP9tS2;true)
+#define $DO do GPU_PUSH_VARIATE(GPU_DO_WHILE gpuDoWhileL8kM3qW5xG1vY7dR4nP9tS2,gpuDoWhileL8kM3qW5xG1vY7dR4nP9tS2)
 #define $WHILE(condition) while (GPU_WHILE::conditionProcess(condition))
 
 	struct GPU_FOR
@@ -135,6 +153,12 @@ namespace EmbeddedShader
 			//...
 		}
 
+		struct BREAK_FLAG
+		{
+			bool breakFlag = true;
+			int8_t index = 0;
+		};
+
 		struct BREAK_FLAG_PROCESS
 		{
 			explicit BREAK_FLAG_PROCESS(bool& breakFlag)
@@ -145,11 +169,14 @@ namespace EmbeddedShader
                     breakFlag = false; // Reset the break flag
                 }
             }
+
+			int8_t index = 0;
 		};
+		int8_t index = 0;
 	};
 #define $FOR(condition) \
-	if constexpr (GPU_FOR gpuForL8kM3qW5xG1vY7dR4nP9tS2{[&]{condition;}};true)\
-		if constexpr (bool breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3 = true; true)\
+	GPU_PUSH_VARIATE(GPU_FOR gpuForL8kM3qW5xG1vY7dR4nP9tS2{[&]{condition;}},gpuForL8kM3qW5xG1vY7dR4nP9tS2)\
+		GPU_PUSH_VARIATE(BREAK_FLAG breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3,breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3)\
 			for (condition)\
-				if (GPU_FOR::BREAK_FLAG_PROCESS gpuForBreakFlagProcessU7gD2sH5nB9yR4vM8kL3wZ6{breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3}; breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3)
+				GPU_PUSH_VARIATE_WITH_CONDITION(GPU_FOR::BREAK_FLAG_PROCESS gpuForBreakFlagProcessU7gD2sH5nB9yR4vM8kL3wZ6{breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3.breakFlag},gpuForBreakFlagProcessU7gD2sH5nB9yR4vM8kL3wZ6,breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3.breakFlag)
 }
