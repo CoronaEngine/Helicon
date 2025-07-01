@@ -25,9 +25,9 @@ endif()
 # -------------------------------------------------------------------------------
 set(IS_ROOT_DIR FALSE)
 
-# if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-#     set(IS_ROOT_DIR TRUE)
-# endif()
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(IS_ROOT_DIR TRUE)
+endif()
 
 if(IS_ROOT_DIR)
     message(STATUS "[Helicon] 当前为项目根目录: ${CMAKE_CURRENT_SOURCE_DIR}")
