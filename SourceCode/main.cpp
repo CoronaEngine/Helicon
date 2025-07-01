@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 	};
 
 	puts(Parser::parse(vertShaderCode).c_str());
-	puts(Parser::parse(vertShaderCode).c_str());
+	puts(Parser::parse(fragShaderCode).c_str());
 
 	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode), ShaderStage::VertexShader);
 	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode), ShaderStage::FragmentShader);
