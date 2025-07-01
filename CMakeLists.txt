@@ -170,14 +170,14 @@ if(IS_ROOT_DIR)
 
     # --- glslang ---
     set(ENABLE_OPT OFF) # 禁用 glslang 的优化模块
-    add_subdirectory(ExternalEnvironment/vulkan/glslang EXCLUDE_FROM_ALL)
+    add_subdirectory(ExternalEnvironment/glslang EXCLUDE_FROM_ALL)
 
     # --- SPIRV-Cross ---
     set(SPIRV_CROSS_SHARED OFF)         # 禁用 SPIRV-Cross 动态库
     set(SPIRV_CROSS_STATIC ON)          # 启用 SPIRV-Cross 静态库
     set(SPIRV_CROSS_ENABLE_TESTS OFF)   # 禁用 SPIRV-Cross 测试
     set(SPIRV_CROSS_CLI OFF)            # 禁用 SPIRV-Cross 命令行工具
-    add_subdirectory(ExternalEnvironment/vulkan/SPIRV-Cross EXCLUDE_FROM_ALL)
+    add_subdirectory(ExternalEnvironment/SPIRV-Cross EXCLUDE_FROM_ALL)
 
     # --- 链接第三方库 ---
     # 链接 glslang 及 SPIRV-Cross 相关静态库
