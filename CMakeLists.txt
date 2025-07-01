@@ -25,9 +25,9 @@ endif()
 # -------------------------------------------------------------------------------
 set(IS_ROOT_DIR FALSE)
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set(IS_ROOT_DIR TRUE)
-endif()
+# if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+#     set(IS_ROOT_DIR TRUE)
+# endif()
 
 if(IS_ROOT_DIR)
     message(STATUS "[Helicon] 当前为项目根目录: ${CMAKE_CURRENT_SOURCE_DIR}")
@@ -85,17 +85,11 @@ foreach(file ${IGNORE_FILES})
 endforeach()
 
 # -------------------------------------------------------------------------------
-# 主目标配置（仅根目录下）
+# 公共目标配置函数
 # -------------------------------------------------------------------------------
-if(IS_ROOT_DIR)
-    add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-    # add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
-    set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
-
-    # ---------------------------------------------------------------------------
+function(setup_helicon_target TARGET_NAME)
     # 编译器选项
-    # ---------------------------------------------------------------------------
-    target_compile_options(${PROJECT_NAME} PRIVATE
+    target_compile_options(${TARGET_NAME} PRIVATE
 
         # RelWithDebInfo: 保留调试信息
         $<$<AND:$<CONFIG:RelWithDebInfo>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-omit-frame-pointer>
@@ -113,9 +107,45 @@ if(IS_ROOT_DIR)
         $<$<CXX_COMPILER_ID:MSVC>:/execution-charset:utf-8>
     )
 
-    # ---------------------------------------------------------------------------
-    # 链接器选项
-    # ---------------------------------------------------------------------------
+    # 预处理器定义
+    target_compile_definitions(${TARGET_NAME} PRIVATE
+        $<$<CONFIG:RelWithDebInfo>:ENABLE_DETAILED_LOGGING=1>
+        $<$<CONFIG:RelWithDebInfo>:CABBAGE_ENGINE_DEBUG>
+        $<$<CONFIG:MinSizeRel>:DISABLE_EXTRA_FEATURES=1>
+        $<$<CONFIG:MinSizeRel>:CABBAGE_ENGINE_RELEASE>
+        $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
+        NOMINMAX
+    )
+
+    # 包含目录
+    target_include_directories(${TARGET_NAME} PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/SourceCode"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/ktm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/pfr/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/preprocessor/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/glslang"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/SPIRV-Cross"
+    )
+
+    # 链接第三方库
+    target_link_libraries(${TARGET_NAME} PRIVATE
+        glslang
+        glslang-default-resource-limits
+        spirv-cross-core
+        spirv-cross-c
+        spirv-cross-cpp
+        spirv-cross-util
+    )
+endfunction()
+
+# -------------------------------------------------------------------------------
+# 主目标配置（仅根目录下）
+# -------------------------------------------------------------------------------
+if(IS_ROOT_DIR)
+    add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+    set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
+
+    # 链接器选项（仅可执行目标需要）
     target_link_options(${PROJECT_NAME} PRIVATE
 
         # MinSizeRel: 链接优化
@@ -126,25 +156,7 @@ if(IS_ROOT_DIR)
         $<$<AND:$<CONFIG:MinSizeRel>,$<CXX_COMPILER_ID:MSVC>>:/OPT:ICF>
     )
 
-    # ---------------------------------------------------------------------------
-    # 预处理器定义
-    # ---------------------------------------------------------------------------
-    target_compile_definitions(${PROJECT_NAME} PRIVATE
-
-        # 配置相关
-        $<$<CONFIG:RelWithDebInfo>:ENABLE_DETAILED_LOGGING=1>
-        $<$<CONFIG:RelWithDebInfo>:CABBAGE_ENGINE_DEBUG>
-        $<$<CONFIG:MinSizeRel>:DISABLE_EXTRA_FEATURES=1>
-        $<$<CONFIG:MinSizeRel>:CABBAGE_ENGINE_RELEASE>
-
-        # MSVC 特定
-        $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
-        NOMINMAX
-    )
-
-    # ---------------------------------------------------------------------------
     # 目标属性
-    # ---------------------------------------------------------------------------
     set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
@@ -153,60 +165,46 @@ if(IS_ROOT_DIR)
         VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 
-    # ---------------------------------------------------------------------------
     # 全局属性
-    # ---------------------------------------------------------------------------
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-    # ---------------------------------------------------------------------------
     # 子仓库与第三方库
-    # ---------------------------------------------------------------------------
-    set(BUILD_SHARED_LIBS OFF) # 禁用所有第三方库的动态库构建，全部使用静态库
-
-    # 添加 pfr、ktm、preprocessor 子模块
+    set(BUILD_SHARED_LIBS OFF)
     add_subdirectory(ExternalEnvironment/pfr EXCLUDE_FROM_ALL)
     add_subdirectory(ExternalEnvironment/ktm EXCLUDE_FROM_ALL)
     add_subdirectory(ExternalEnvironment/preprocessor EXCLUDE_FROM_ALL)
-
-    # --- glslang ---
-    set(ENABLE_OPT OFF) # 禁用 glslang 的优化模块
+    set(ENABLE_OPT OFF)
     add_subdirectory(ExternalEnvironment/glslang EXCLUDE_FROM_ALL)
-
-    # --- SPIRV-Cross ---
-    set(SPIRV_CROSS_SHARED OFF) # 禁用 SPIRV-Cross 动态库
-    set(SPIRV_CROSS_STATIC ON) # 启用 SPIRV-Cross 静态库
-    set(SPIRV_CROSS_ENABLE_TESTS OFF) # 禁用 SPIRV-Cross 测试
-    set(SPIRV_CROSS_CLI OFF) # 禁用 SPIRV-Cross 命令行工具
+    set(SPIRV_CROSS_SHARED OFF)
+    set(SPIRV_CROSS_STATIC ON)
+    set(SPIRV_CROSS_ENABLE_TESTS OFF)
+    set(SPIRV_CROSS_CLI OFF)
     add_subdirectory(ExternalEnvironment/SPIRV-Cross EXCLUDE_FROM_ALL)
 
-    # --- 链接第三方库 ---
-    # 链接 glslang 及 SPIRV-Cross 相关静态库
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        glslang
-        glslang-default-resource-limits
-        spirv-cross-core
-        spirv-cross-c
-        spirv-cross-cpp
-        spirv-cross-util
-    )
-
-    # ---------------------------------------------------------------------------
     # Windows 平台专用配置
-    # ---------------------------------------------------------------------------
     if(WIN32)
-        # 添加各依赖的 include 路径
-        target_include_directories(${PROJECT_NAME} PRIVATE
-            "${CMAKE_CURRENT_SOURCE_DIR}/SourceCode"
-            "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/ktm"
-            "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/pfr/include"
-            "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/preprocessor/include"
-            "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/glslang"
-            "${CMAKE_CURRENT_SOURCE_DIR}/ExternalEnvironment/SPIRV-Cross"
-        )
         message(STATUS "[Helicon] 已为 Windows 平台配置 include 路径")
     endif()
 
+    # 公共目标配置
+    setup_helicon_target(${PROJECT_NAME})
+
     message(STATUS "[Helicon] 主目标与第三方库配置完成")
 else()
+    # ===================================================================
+    # 非根目录时构建静态库
+    # ===================================================================
+    message(STATUS "[Helicon] 正在配置静态库目标")
+    add_library(${PROJECT_NAME}_static STATIC ${SOURCE_FILES})
+    set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
+    set_target_properties(${PROJECT_NAME}_static PROPERTIES
+        OUTPUT_NAME ${PROJECT_NAME}
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
+        VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}_static>
+    )
+
+    # 公共目标配置
+    setup_helicon_target(${PROJECT_NAME}_static)
+    message(STATUS "[Helicon] 静态库目标配置完成: ${PROJECT_NAME}_static")
 endif()
