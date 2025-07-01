@@ -159,63 +159,6 @@ int main(int argc, char* argv[])
 			$WHILE(fvec3_A);
 	};
 
-	struct GpuIf
-	{
-		int64_t currentIndex = 0;
-		int64_t lastMaxIndex = -1;
-		int64_t maxCount = 0;
-
-		int index = 0;
-	};
-
-	struct GpuIfBranch
-	{
-		explicit GpuIfBranch(bool condition)
-		{
-			//begin
-			puts(("if (" + std::to_string(condition) + ") {").c_str());
-		}
-		~GpuIfBranch()
-		{
-			//end
-			puts("}");
-		}
-
-		int index = 0;
-	};
-
-	struct GpuElseIfBranch
-	{
-		explicit GpuElseIfBranch(bool condition)
-		{
-			//begin
-			puts(("else if (" + std::to_string(condition) + ") {").c_str());
-		}
-		~GpuElseIfBranch()
-		{
-			//end
-			puts("}");
-		}
-
-		int index = 0;
-	};
-
-	struct GpuElseBranch
-	{
-		explicit GpuElseBranch()
-		{
-			//begin
-			puts("else {");
-		}
-		~GpuElseBranch()
-		{
-			//end
-			puts("}");
-		}
-
-		int index = 0;
-	};
-
 	auto fragShaderDemo =
 		[&] {
 			VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
