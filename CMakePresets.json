@@ -1,0 +1,87 @@
+{
+    "version": 8,
+    "cmakeMinimumRequired": {
+        "major": 4,
+        "minor": 0,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "win-base",
+            "hidden": true,
+            "cacheVariables": {
+                "USED_PRESET_CONFIG": true,
+                "CMAKE_C_STANDARD": "11",
+                "CMAKE_C_STANDARD_REQUIRED": "ON",
+                "CMAKE_C_EXTENSIONS": "ON",
+                "CMAKE_CXX_STANDARD": "20",
+                "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+                "CMAKE_CXX_EXTENSIONS": "ON",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
+                "Python3_ROOT_DIR": "${sourceDir}/ExternalEnvironment/Python313/Windows"
+            }
+        },
+        {
+            "name": "win-ninja-multi",
+            "inherits": "win-base",
+            "hidden": false,
+            "displayName": "Win Ninja Multi-Config",
+            "description": "使用 Ninja Multi-Config 为 Windows 构建 (支持 RelWithDebInfo, MinSizeRel)。",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;MinSizeRel"
+            }
+        },
+        {
+            "name": "win-vs-x64",
+            "inherits": "win-base",
+            "hidden": false,
+            "displayName": "Win VS x64",
+            "description": "为 Windows x64 上的 Visual Studio 配置 (支持 RelWithDebInfo, MinSizeRel)。",
+            "generator": "Visual Studio 17 2022",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;MinSizeRel"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "ninja-multi-rwd",
+            "configurePreset": "win-ninja-multi",
+            "configuration": "RelWithDebInfo",
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "ninja-multi-msr",
+            "configurePreset": "win-ninja-multi",
+            "configuration": "MinSizeRel",
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "vs-x64-rwd",
+            "configurePreset": "win-vs-x64",
+            "configuration": "RelWithDebInfo",
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "vs-x64-msr",
+            "configurePreset": "win-vs-x64",
+            "configuration": "MinSizeRel",
+            "targets": [
+                "all"
+            ]
+        }
+    ]
+}
