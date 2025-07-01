@@ -110,7 +110,7 @@ namespace EmbeddedShader
 #define CREATE_OPERATOR_BINARY_BOOL(Operator) \
 	VariateProxy<bool>& operator Operator(const VariateProxy& rhs) \
 	{ \
-		return *(new VariateProxy<bool>()); \
+		return *(new VariateProxy<bool>(true)); \
 	}
 
 		CREATE_OPERATOR_UNARY(+);
@@ -121,9 +121,6 @@ namespace EmbeddedShader
 		CREATE_OPERATOR_BINARY(*);
 		CREATE_OPERATOR_BINARY(/ );
 		CREATE_OPERATOR_BINARY(%);
-
-		CREATE_OPERATOR_UNARY(++);
-		CREATE_OPERATOR_UNARY(--);
 
 		CREATE_OPERATOR_UNARY(!);
 		CREATE_OPERATOR_BINARY(|| );
@@ -154,18 +151,7 @@ namespace EmbeddedShader
 		CREATE_OPERATOR_BINARY(>>= );
 		CREATE_OPERATOR_BINARY(<<= );
 
-		//CREATE_OPERATOR_PARAMETER_INT(++);
-		//CREATE_OPERATOR_PARAMETER_INT(--);
-
 	private:
 		Type* value;
 	};
-
-
-
-	inline std::string shaderParse(std::function<void()> func)
-	{
-		return "";
-	}
-
 }
