@@ -89,6 +89,7 @@ endforeach()
 # -------------------------------------------------------------------------------
 if(IS_ROOT_DIR)
     add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+    # add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
     set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
 
     # ---------------------------------------------------------------------------
@@ -173,10 +174,10 @@ if(IS_ROOT_DIR)
     add_subdirectory(ExternalEnvironment/glslang EXCLUDE_FROM_ALL)
 
     # --- SPIRV-Cross ---
-    set(SPIRV_CROSS_SHARED OFF)         # 禁用 SPIRV-Cross 动态库
-    set(SPIRV_CROSS_STATIC ON)          # 启用 SPIRV-Cross 静态库
-    set(SPIRV_CROSS_ENABLE_TESTS OFF)   # 禁用 SPIRV-Cross 测试
-    set(SPIRV_CROSS_CLI OFF)            # 禁用 SPIRV-Cross 命令行工具
+    set(SPIRV_CROSS_SHARED OFF) # 禁用 SPIRV-Cross 动态库
+    set(SPIRV_CROSS_STATIC ON) # 启用 SPIRV-Cross 静态库
+    set(SPIRV_CROSS_ENABLE_TESTS OFF) # 禁用 SPIRV-Cross 测试
+    set(SPIRV_CROSS_CLI OFF) # 禁用 SPIRV-Cross 命令行工具
     add_subdirectory(ExternalEnvironment/SPIRV-Cross EXCLUDE_FROM_ALL)
 
     # --- 链接第三方库 ---
@@ -207,4 +208,5 @@ if(IS_ROOT_DIR)
     endif()
 
     message(STATUS "[Helicon] 主目标与第三方库配置完成")
+else()
 endif()
