@@ -75,6 +75,26 @@ namespace EmbeddedShader
 			return *this;
 		}
 
+		VariateProxy& operator++()
+		{
+			return *this;
+		}
+
+		VariateProxy& operator--()
+		{
+			return *this;
+		}
+
+		VariateProxy& operator++(int)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator--(int)
+		{
+			return *this;
+		}
+
 #define CREATE_OPERATOR_UNARY(Operator) \
 	VariateProxy& operator Operator() \
 	{ \
@@ -85,6 +105,12 @@ namespace EmbeddedShader
 	VariateProxy& operator Operator(const VariateProxy& rhs) \
 	{ \
 		return *(new VariateProxy()); \
+	}
+
+#define CREATE_OPERATOR_BINARY_BOOL(Operator) \
+	VariateProxy<bool>& operator Operator(const VariateProxy& rhs) \
+	{ \
+		return *(new VariateProxy<bool>()); \
 	}
 
 		CREATE_OPERATOR_UNARY(+);
@@ -103,12 +129,12 @@ namespace EmbeddedShader
 		CREATE_OPERATOR_BINARY(|| );
 		CREATE_OPERATOR_BINARY(&&);
 
-		CREATE_OPERATOR_BINARY(> );
-		CREATE_OPERATOR_BINARY(>= );
-		CREATE_OPERATOR_BINARY(< );
-		CREATE_OPERATOR_BINARY(<= );
-		CREATE_OPERATOR_BINARY(!= );
-		CREATE_OPERATOR_BINARY(== );
+		CREATE_OPERATOR_BINARY_BOOL(> );
+		CREATE_OPERATOR_BINARY_BOOL(>= );
+		CREATE_OPERATOR_BINARY_BOOL(< );
+		CREATE_OPERATOR_BINARY_BOOL(<= );
+		CREATE_OPERATOR_BINARY_BOOL(!= );
+		CREATE_OPERATOR_BINARY_BOOL(== );
 
 		CREATE_OPERATOR_UNARY(~);
 		CREATE_OPERATOR_BINARY(&);
