@@ -23,9 +23,6 @@ namespace EmbeddedShader::Ast
 		std::stack<std::vector<std::shared_ptr<Statement>>*> statementStack;
 
 		size_t currentVariateIndex = 0;
-		size_t currentInputVariateIndex = 0;
-		size_t currentOutputVariateIndex = 0;
-		size_t currentUniformVariateIndex = 0;
 
 		std::shared_ptr<Variate> positionOutput;
 

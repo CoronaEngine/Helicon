@@ -247,7 +247,7 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOu
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
 	const Ast::DefineInputVariate* node)
 {
-	return "layout(location = " + std::to_string(node->variate->index) + ") in " + node->variate->type->parse() + " " + node->variate->name + ";";
+	return "layout(location = " + std::to_string(node->variate->location) + ") in " + node->variate->type->parse() + " " + node->variate->name + ";";
 }
 
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
@@ -269,7 +269,7 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOu
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(
 	const Ast::DefineOutputVariate* node)
 {
-	return "layout(location = " + std::to_string(node->variate->index) + ") out " + node->variate->type->parse() + " " + node->variate->name + ";";
+	return "layout(location = " + std::to_string(node->variate->location) + ") out " + node->variate->type->parse() + " " + node->variate->name + ";";
 }
 
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(const Ast::UniformVariate* node)
@@ -282,7 +282,7 @@ std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOu
 	const Ast::DefineUniformVariate* node)
 {
 	//后续对于聚合类型得改改
-	return "layout(location = " + std::to_string(node->variate->index) + ") uniform " + node->variate->type->parse() + " " + node->variate->name + ";";
+	return "layout(location = " + std::to_string(node->variate->location) + ") uniform " + node->variate->type->parse() + " " + node->variate->name + ";";
 }
 
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getParseOutput(const Ast::IfStatement* node)

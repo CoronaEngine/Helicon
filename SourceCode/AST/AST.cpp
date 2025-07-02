@@ -31,12 +31,12 @@ void EmbeddedShader::Ast::AST::assign(std::shared_ptr<Value> variate, std::share
 	addStatement(assignNode);
 }
 
-std::shared_ptr<EmbeddedShader::Ast::InputVariate> EmbeddedShader::Ast::AST::defineInputVariate(std::shared_ptr<Type> type)
+std::shared_ptr<EmbeddedShader::Ast::InputVariate> EmbeddedShader::Ast::AST::defineInputVariate(std::shared_ptr<Type> type, size_t location)
 {
 	auto inputVariate = std::make_shared<InputVariate>();
 	inputVariate->type = std::move(type);
 	inputVariate->name = Parser::getUniqueVariateName();
-	inputVariate->index = Parser::currentParser->currentInputVariateIndex++;
+	inputVariate->location = location;
 	auto defineNode = std::make_shared<DefineInputVariate>();
 	defineNode->variate = inputVariate;
 	addGlobalStatement(defineNode);
@@ -51,24 +51,24 @@ std::shared_ptr<EmbeddedShader::Ast::MemberAccess> EmbeddedShader::Ast::AST::acc
 	return memberAccess;
 }
 
-std::shared_ptr<EmbeddedShader::Ast::OutputVariate> EmbeddedShader::Ast::AST::defineOutputVariate(std::shared_ptr<Type> type)
+std::shared_ptr<EmbeddedShader::Ast::OutputVariate> EmbeddedShader::Ast::AST::defineOutputVariate(std::shared_ptr<Type> type, size_t location)
 {
 	auto outputVariate = std::make_shared<OutputVariate>();
 	outputVariate->type = std::move(type);
 	outputVariate->name = Parser::getUniqueVariateName();
-	outputVariate->index = Parser::currentParser->currentOutputVariateIndex++;
+	outputVariate->location = location;
 	auto defineNode = std::make_shared<DefineOutputVariate>();
 	defineNode->variate = outputVariate;
 	addGlobalStatement(defineNode);
 	return outputVariate;
 }
 
-std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::defineUniformVariate(std::shared_ptr<Type> type)
+std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::defineUniformVariate(std::shared_ptr<Type> type, size_t location)
 {
 	auto variate = std::make_shared<UniformVariate>();
 	variate->type = std::move(type);
 	variate->name = Parser::getUniqueVariateName();
-	variate->index = Parser::currentParser->currentUniformVariateIndex++;
+	variate->location = location;
 	auto defineNode = std::make_shared<DefineUniformVariate>();
 	defineNode->variate = variate;
 	addGlobalStatement(defineNode);
