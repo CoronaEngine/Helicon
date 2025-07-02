@@ -158,10 +158,10 @@ if(IS_ROOT_DIR)
 
     # 目标属性
     set_target_properties(${PROJECT_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
-        PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/$<CONFIG>
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/$<CONFIG>
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/$<CONFIG>
+        PDB_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/$<CONFIG>
         VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 
@@ -196,15 +196,15 @@ else()
     # 非根目录时构建静态库
     # ===================================================================
     message(STATUS "[Helicon] 正在配置静态库目标")
-    add_library(${PROJECT_NAME}_static STATIC ${SOURCE_FILES})
+    add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
     set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
-    set_target_properties(${PROJECT_NAME}_static PROPERTIES
+    set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME ${PROJECT_NAME}
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
-        VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}_static>
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/$<CONFIG>
+        VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 
     # 公共目标配置
-    setup_helicon_target(${PROJECT_NAME}_static)
-    message(STATUS "[Helicon] 静态库目标配置完成: ${PROJECT_NAME}_static")
+    setup_helicon_target(${PROJECT_NAME})
+    message(STATUS "[Helicon] 静态库目标配置完成: ${PROJECT_NAME}")
 endif()

@@ -34,25 +34,25 @@ namespace EmbeddedShader::Ast
 		static void assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value);
 		static void assign(auto&& variate, auto&& value);
 
-		static std::shared_ptr<InputVariate> defineInputVariate(std::shared_ptr<Type> type);
+		static std::shared_ptr<InputVariate> defineInputVariate(std::shared_ptr<Type> type, size_t location);
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<InputVariate> defineInputVariate();
+		static std::shared_ptr<InputVariate> defineInputVariate(size_t location);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
-		static std::shared_ptr<InputVariate> defineInputVariate();
+		static std::shared_ptr<InputVariate> defineInputVariate(size_t location);
 
 		static std::shared_ptr<MemberAccess> access(std::shared_ptr<Value> value, std::string memberName);
 
-		static std::shared_ptr<OutputVariate> defineOutputVariate(std::shared_ptr<Type> type);
+		static std::shared_ptr<OutputVariate> defineOutputVariate(std::shared_ptr<Type> type, size_t location);
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<OutputVariate> defineOutputVariate();
+		static std::shared_ptr<OutputVariate> defineOutputVariate(size_t location);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
-		static std::shared_ptr<OutputVariate> defineOutputVariate();
+		static std::shared_ptr<OutputVariate> defineOutputVariate(size_t location);
 
-		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type);
+		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type, size_t location);
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<UniformVariate> defineUniformVariate();
+		static std::shared_ptr<UniformVariate> defineUniformVariate(size_t location);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
-		static std::shared_ptr<UniformVariate> defineUniformVariate();
+		static std::shared_ptr<UniformVariate> defineUniformVariate(size_t location);
 
 		static void beginIf(std::shared_ptr<Value> condition);
 		static void endIf();
@@ -158,44 +158,44 @@ namespace EmbeddedShader::Ast
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<InputVariate> AST::defineInputVariate()
+	std::shared_ptr<InputVariate> AST::defineInputVariate(size_t location)
 	{
 		auto type = std::make_shared<BasicType>();
 		type->name = Parser::getShaderGenerator()->getVariateTypeName(variateTypeToEnum<VariateType>);
-		return defineInputVariate(type);
+		return defineInputVariate(type, location);
 	}
 
 	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<InputVariate> AST::defineInputVariate()
+	std::shared_ptr<InputVariate> AST::defineInputVariate(size_t location)
 	{
-		return defineInputVariate(VecType::createVecType(variateTypeToEnum<VariateType>));
+		return defineInputVariate(VecType::createVecType(variateTypeToEnum<VariateType>), location);
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<OutputVariate> AST::defineOutputVariate()
+	std::shared_ptr<OutputVariate> AST::defineOutputVariate(size_t location)
 	{
 		auto type = std::make_shared<BasicType>();
 		type->name = Parser::getShaderGenerator()->getVariateTypeName(variateTypeToEnum<VariateType>);
-		return defineOutputVariate(type);
+		return defineOutputVariate(type, location);
 	}
 
 	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<OutputVariate> AST::defineOutputVariate()
+	std::shared_ptr<OutputVariate> AST::defineOutputVariate(size_t location)
 	{
-		return defineOutputVariate(VecType::createVecType(variateTypeToEnum<VariateType>));
+		return defineOutputVariate(VecType::createVecType(variateTypeToEnum<VariateType>), location);
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<UniformVariate> AST::defineUniformVariate()
+	std::shared_ptr<UniformVariate> AST::defineUniformVariate(size_t location)
 	{
 		auto type = std::make_shared<BasicType>();
 		type->name = Parser::getShaderGenerator()->getVariateTypeName(variateTypeToEnum<VariateType>);
-		return defineUniformVariate(type);
+		return defineUniformVariate(type, location);
 	}
 
 	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<UniformVariate> AST::defineUniformVariate()
+	std::shared_ptr<UniformVariate> AST::defineUniformVariate(size_t location)
 	{
-		return defineUniformVariate(VecType::createVecType(variateTypeToEnum<VariateType>));
+		return defineUniformVariate(VecType::createVecType(variateTypeToEnum<VariateType>), location);
 	}
 }

@@ -64,15 +64,15 @@ int main(int argc, char* argv[])
 
 	auto vertShaderCode = [&]()
 	{
-		auto aPos = AST::defineInputVariate<fvec3>();
+		auto aPos = AST::defineInputVariate<fvec3>(0);
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
 		AST::assign(AST::access(AST::getPositionOutput(), "x"),114.f);
 	};
 
 	auto fragShaderCode = [&]()
 	{
-		auto fragColor = AST::defineOutputVariate<fvec4>();
-		auto outColor = AST::defineUniformVariate<fvec4>();
+		auto fragColor = AST::defineOutputVariate<fvec4>(0);
+		auto outColor = AST::defineUniformVariate<fvec4>(0);
 		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
 		AST::assign(fragColor,outColor);
 		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));

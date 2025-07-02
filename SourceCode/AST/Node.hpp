@@ -108,7 +108,7 @@ namespace EmbeddedShader::Ast
 
 	struct InputVariate : Variate
 	{
-		size_t index = 0;
+		size_t location = 0;
 	};
 
 	struct DefineInputVariate : Statement
@@ -126,7 +126,7 @@ namespace EmbeddedShader::Ast
 
 	struct OutputVariate : Variate
 	{
-		size_t index = 0;
+		size_t location = 0;
 	};
 
 	struct DefineOutputVariate : Statement
@@ -137,7 +137,7 @@ namespace EmbeddedShader::Ast
 
 	struct UniformVariate : Variate
 	{
-		size_t index = 0;
+		size_t location = 0;
 		std::string parse() override;
 	};
 
