@@ -204,6 +204,19 @@ else()
         VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 
+    # 子仓库与第三方库
+    set(BUILD_SHARED_LIBS OFF)
+    add_subdirectory(ExternalEnvironment/pfr EXCLUDE_FROM_ALL)
+    add_subdirectory(ExternalEnvironment/ktm EXCLUDE_FROM_ALL)
+    add_subdirectory(ExternalEnvironment/preprocessor EXCLUDE_FROM_ALL)
+    set(ENABLE_OPT OFF)
+    add_subdirectory(ExternalEnvironment/glslang EXCLUDE_FROM_ALL)
+    set(SPIRV_CROSS_SHARED OFF)
+    set(SPIRV_CROSS_STATIC ON)
+    set(SPIRV_CROSS_ENABLE_TESTS OFF)
+    set(SPIRV_CROSS_CLI OFF)
+    add_subdirectory(ExternalEnvironment/SPIRV-Cross EXCLUDE_FROM_ALL)
+
     # 公共目标配置
     setup_helicon_target(${PROJECT_NAME})
     message(STATUS "[Helicon] 静态库目标配置完成: ${PROJECT_NAME}")
