@@ -65,7 +65,7 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "${SOURCE_DIR}/*.*")
 # ----------------------------------------------------------------------------
 set(IGNORE_FILES "")
 if(NOT IS_ROOT_DIR)
-    set(IGNORE_FILES "SourceCode/main.cpp")
+    set(IGNORE_FILES "Src/main.cpp")
 endif()
 foreach(file ${IGNORE_FILES})
     list(FILTER SOURCE_FILES EXCLUDE REGEX ${file})
