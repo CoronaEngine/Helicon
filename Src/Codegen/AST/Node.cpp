@@ -1,5 +1,5 @@
-#include <AST/Node.hpp>
-#include <AST/Parser.hpp>
+#include "Node.hpp"
+#include "Parser.hpp"
 
 std::string EmbeddedShader::Ast::Node::parse()
 {

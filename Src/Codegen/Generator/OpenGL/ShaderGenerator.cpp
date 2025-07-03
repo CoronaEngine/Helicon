@@ -1,4 +1,4 @@
-#include <Generator/OpenGL/ShaderGenerator.hpp>
+#include "ShaderGenerator.hpp"
 
 std::string EmbeddedShader::ShaderGenerator::OpenGL::ShaderGenerator::getShaderOutput(
 	const Ast::EmbeddedShaderStructure& structure)

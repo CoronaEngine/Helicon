@@ -7,9 +7,9 @@
 
 #include"Compiler/ShaderCodeCompiler.h"
 
-#include <AST/Parser.hpp>
+#include <Codegen/AST/Parser.hpp>
 #include <ktm/type/vec.h>
-#include <Generator/OpenGL/ShaderGenerator.hpp>
+#include <Codegen/Generator/OpenGL/ShaderGenerator.hpp>
 
 using namespace EmbeddedShader;
 

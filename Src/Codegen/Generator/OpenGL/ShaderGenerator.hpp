@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <AST/AST.hpp>
-#include <AST/Enum.hpp>
-#include <Generator/ShaderGenerator.hpp>
+#include <Codegen/AST/AST.hpp>
+#include <Codegen/AST/Enum.hpp>
+#include "../ShaderGenerator.hpp"
 
 namespace EmbeddedShader::ShaderGenerator::OpenGL
 {

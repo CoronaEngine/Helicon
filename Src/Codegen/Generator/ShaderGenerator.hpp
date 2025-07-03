@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <AST/Enum.hpp>
-#include <AST/Node.hpp>
+#include <Codegen/AST/Enum.hpp>
+#include <Codegen/AST/Node.hpp>
 
 namespace EmbeddedShader::ShaderGenerator
 {

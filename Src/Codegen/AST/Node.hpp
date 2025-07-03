@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <AST/Enum.hpp>
+#include "Enum.hpp"
 
 namespace EmbeddedShader::Ast
 {

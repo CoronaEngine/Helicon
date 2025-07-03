@@ -1,5 +1,5 @@
-#include <AST/AST.hpp>
-#include <Generator/ShaderGenerator.hpp>
+#include <Codegen/AST/AST.hpp>
+#include <Codegen/Generator/ShaderGenerator.hpp>
 
 std::string EmbeddedShader::ShaderGenerator::BaseShaderGenerator::getCodeIndentation()
 {

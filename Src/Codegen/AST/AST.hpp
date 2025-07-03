@@ -1,8 +1,8 @@
 #pragma once
 
-#include <AST/Node.hpp>
+#include "Node.hpp"
 #include <utility>
-#include <AST/Parser.hpp>
+#include "Parser.hpp"
 
 namespace EmbeddedShader::Ast
 {

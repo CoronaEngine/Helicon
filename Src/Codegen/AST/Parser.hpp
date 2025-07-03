@@ -3,8 +3,8 @@
 #include <memory>
 #include <stack>
 #include <string>
-#include <AST/Struct.hpp>
-#include <Generator/ShaderGenerator.hpp>
+#include "Struct.hpp"
+#include "../Generator/ShaderGenerator.hpp"
 
 namespace EmbeddedShader::Ast
 {

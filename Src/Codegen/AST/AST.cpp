@@ -1,6 +1,6 @@
-#include <AST/AST.hpp>
+#include "AST.hpp"
 #include <utility>
-#include <AST/Parser.hpp>
+#include "Parser.hpp"
 
 std::shared_ptr<EmbeddedShader::Ast::LocalVariate> EmbeddedShader::Ast::AST::defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue)
 {
