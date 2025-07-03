@@ -1,15 +1,15 @@
 #include <iostream>
 #include <ppltasks.h>
 
-#include "ShaderEmbededCodegen/ControlFlows.h"
+#include "Codegen/ControlFlows.h"
 
-#include "ShaderEmbededCodegen/CustomLibrary.h"
+#include "Codegen/CustomLibrary.h"
 
-#include"ShaderCodeCompiler/ShaderCodeCompiler.h"
+#include"Compiler/ShaderCodeCompiler.h"
 
 #include <AST/Parser.hpp>
 #include <ktm/type/vec.h>
-#include <ShaderGenerator/OpenGL/ShaderGenerator.hpp>
+#include <Generator/OpenGL/ShaderGenerator.hpp>
 
 using namespace EmbeddedShader;
 

@@ -1,20 +1,20 @@
 [submodule "pfr"]
-	path = ExternalEnvironment/pfr
+	path = Env/pfr
 	url = https://github.com/boostorg/pfr.git
 	ignore = all
 [submodule "ktm"]
-	path = ExternalEnvironment/ktm
+	path = Env/ktm
 	url = https://github.com/YGXXD/ktm.git
 	ignore = all
 [submodule "preprocessor"]
-	path = ExternalEnvironment/preprocessor
+	path = Env/preprocessor
 	url = https://github.com/boostorg/preprocessor.git
 	ignore = all
 [submodule "SPIRV-Cross"]
-	path = ExternalEnvironment/SPIRV-Cross
+	path = Env/SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
 	ignore = all
 [submodule "glslang"]
-	path = ExternalEnvironment/glslang
+	path = Env/glslang
 	url = https://github.com/KhronosGroup/glslang.git
 	ignore = all

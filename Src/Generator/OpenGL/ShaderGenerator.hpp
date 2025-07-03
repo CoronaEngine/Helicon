@@ -3,7 +3,7 @@
 #include <string>
 #include <AST/AST.hpp>
 #include <AST/Enum.hpp>
-#include <ShaderGenerator/ShaderGenerator.hpp>
+#include <Generator/ShaderGenerator.hpp>
 
 namespace EmbeddedShader::ShaderGenerator::OpenGL
 {

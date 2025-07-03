@@ -28,7 +28,7 @@ const std::string ShaderHardcodeManager::hardcodeShaderPath =
             }
         }
         std::replace(resultPath.begin(), resultPath.end(), '\\', '/');
-        return resultPath + "/SourceCode" + "/CabbageFramework/CabbageFoundation/ShaderCodeCompiler/HardcodeShaders";
+        return resultPath + "/Src" + "/CabbageFramework/CabbageFoundation/Compiler/HardcodeShaders";
     }();
 
 

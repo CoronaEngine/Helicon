@@ -4,7 +4,7 @@
 #include <stack>
 #include <string>
 #include <AST/Struct.hpp>
-#include <ShaderGenerator/ShaderGenerator.hpp>
+#include <Generator/ShaderGenerator.hpp>
 
 namespace EmbeddedShader::Ast
 {

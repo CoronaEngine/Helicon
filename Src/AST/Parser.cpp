@@ -1,6 +1,6 @@
 #include <AST/Parser.hpp>
 #include <utility>
-#include <ShaderGenerator/ShaderGenerator.hpp>
+#include <Generator/ShaderGenerator.hpp>
 
 std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode)
 {
