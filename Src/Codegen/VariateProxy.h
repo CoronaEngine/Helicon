@@ -246,40 +246,40 @@ namespace EmbeddedShader
 		}
 
 
-		VariateProxy& operator+() { return *(new VariateProxy()); }
-		VariateProxy& operator-() { return *(new VariateProxy()); }
-		VariateProxy& operator!() { return *(new VariateProxy()); }
-		VariateProxy& operator~() { return *(new VariateProxy()); }
+		//VariateProxy& operator+() { return *(new VariateProxy()); }
+		//VariateProxy& operator-() { return *(new VariateProxy()); }
+		//VariateProxy& operator!() { return *(new VariateProxy()); }
+		//VariateProxy& operator~() { return *(new VariateProxy()); }
 
-		VariateProxy& operator+(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator-(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator*(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator/(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator%(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator||(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator&&(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator&(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator|(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator^(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator<<(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator>>(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator+=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator-=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator*=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator/=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator%=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator&=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator|=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator^=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator>>=(const VariateProxy& rhs) { return *(new VariateProxy()); }
-		VariateProxy& operator<<=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator+(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator-(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator*(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator/(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator%(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator||(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator&&(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator&(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator|(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator^(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator<<(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator>>(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator+=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator-=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator*=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator/=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator%=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator&=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator|=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator^=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator>>=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		//VariateProxy& operator<<=(const VariateProxy& rhs) { return *(new VariateProxy()); }
 
-		VariateProxy<bool>& operator>(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
-		VariateProxy<bool>& operator>=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
-		VariateProxy<bool>& operator<(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
-		VariateProxy<bool>& operator<=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
-		VariateProxy<bool>& operator!=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
-		VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }    
+		//VariateProxy<bool>& operator>(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		//VariateProxy<bool>& operator>=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		//VariateProxy<bool>& operator<(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		//VariateProxy<bool>& operator<=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		//VariateProxy<bool>& operator!=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		//VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }    
 
 
 	private:
