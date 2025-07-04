@@ -24,6 +24,7 @@ endif()
 # 根目录判定与日志输出
 # ----------------------------------------------------------------------------
 set(IS_ROOT_DIR FALSE)
+
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(IS_ROOT_DIR TRUE)
     message(STATUS "[Helicon] 当前为项目根目录: ${CMAKE_CURRENT_SOURCE_DIR}")
@@ -45,6 +46,7 @@ function(set_source_groups SOURCE_FILES SOURCE_DIR SOURCE_DIR_NAME)
     foreach(each_source_file IN LISTS SOURCE_FILES)
         get_filename_component(each_source_path "${each_source_file}" PATH)
         file(RELATIVE_PATH each_source_path_rel ${SOURCE_DIR} ${each_source_path})
+
         if("${each_source_path_rel}" STREQUAL "")
             source_group("${SOURCE_DIR_NAME}" FILES ${each_source_file})
         else()
@@ -60,13 +62,21 @@ endfunction()
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Src)
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "${SOURCE_DIR}/*.*")
 
+if(NOT IS_ROOT_DIR)
+    set(HELICON_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+else()
+    set(HELICON_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 # ----------------------------------------------------------------------------
 # 忽略特定文件
 # ----------------------------------------------------------------------------
 set(IGNORE_FILES "")
+
 if(NOT IS_ROOT_DIR)
     set(IGNORE_FILES "Src/main.cpp")
 endif()
+
 foreach(file ${IGNORE_FILES})
     list(FILTER SOURCE_FILES EXCLUDE REGEX ${file})
 endforeach()
@@ -79,6 +89,7 @@ if(IS_ROOT_DIR)
 else()
     add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 endif()
+
 set_source_groups("${SOURCE_FILES}" ${SOURCE_DIR} "SourceCode")
 
 # ----------------------------------------------------------------------------
@@ -98,6 +109,7 @@ else()
         VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif()
+
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 # ----------------------------------------------------------------------------
@@ -137,6 +149,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:MinSizeRel>:CABBAGE_ENGINE_RELEASE>
     $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
     NOMINMAX
+    HELICON_ROOT_PATH="${HELICON_ROOT_PATH}"
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
