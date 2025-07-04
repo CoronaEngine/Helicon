@@ -30,7 +30,7 @@ target_compile_definitions(HeliconExamples PRIVATE
     NOMINMAX
 )
 
-target_link_options(CabbageFrameworkExamples PRIVATE
+target_link_options(HeliconExamples PRIVATE
     $<$<AND:$<CONFIG:MinSizeRel>,$<PLATFORM_ID:Linux>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:LINKER:--gc-sections>
     $<$<AND:$<CONFIG:MinSizeRel>,$<PLATFORM_ID:Darwin>>:-dead_strip>
     $<$<AND:$<CONFIG:MinSizeRel>,$<CXX_COMPILER_ID:MSVC>>:/LTCG;/OPT:REF;/OPT:ICF>
