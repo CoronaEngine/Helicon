@@ -95,61 +95,192 @@ namespace EmbeddedShader
 			return *this;
 		}
 
-#define CREATE_OPERATOR_UNARY(Operator) \
-	VariateProxy& operator Operator() \
-	{ \
-		return *(new VariateProxy()); \
-	}
+		VariateProxy& operator+(const Type& rhs)
+		{
+			return *this;
+		}
 
-#define CREATE_OPERATOR_BINARY(Operator) \
-	VariateProxy& operator Operator(const VariateProxy& rhs) \
-	{ \
-		return *(new VariateProxy()); \
-	}
+		VariateProxy& operator-(const Type& rhs)
+		{
+			return *this;
+		}
 
-#define CREATE_OPERATOR_BINARY_BOOL(Operator) \
-	VariateProxy<bool>& operator Operator(const VariateProxy& rhs) \
-	{ \
-		return *(new VariateProxy<bool>(true)); \
-	}
+		VariateProxy& operator*(const Type& rhs)
+		{
+			return *this;
+		}
 
-		CREATE_OPERATOR_UNARY(+);
-		CREATE_OPERATOR_UNARY(-);
+		VariateProxy& operator/(const Type& rhs)
+		{
+			return *this;
+		}
 
-		CREATE_OPERATOR_BINARY(+);
-		CREATE_OPERATOR_BINARY(-);
-		CREATE_OPERATOR_BINARY(*);
-		CREATE_OPERATOR_BINARY(/ );
-		CREATE_OPERATOR_BINARY(%);
+		VariateProxy& operator%(const Type& rhs)
+		{
+			return *this;
+		}
 
-		CREATE_OPERATOR_UNARY(!);
-		CREATE_OPERATOR_BINARY(|| );
-		CREATE_OPERATOR_BINARY(&&);
+		VariateProxy& operator!()
+		{
+			return *this;
+		}
 
-		CREATE_OPERATOR_BINARY_BOOL(> );
-		CREATE_OPERATOR_BINARY_BOOL(>= );
-		CREATE_OPERATOR_BINARY_BOOL(< );
-		CREATE_OPERATOR_BINARY_BOOL(<= );
-		CREATE_OPERATOR_BINARY_BOOL(!= );
-		CREATE_OPERATOR_BINARY_BOOL(== );
+		VariateProxy& operator||(const VariateProxy& rhs)
+		{
+			return *this;
+		}
 
-		CREATE_OPERATOR_UNARY(~);
-		CREATE_OPERATOR_BINARY(&);
-		CREATE_OPERATOR_BINARY(| );
-		CREATE_OPERATOR_BINARY(^);
-		CREATE_OPERATOR_BINARY(<< );
-		CREATE_OPERATOR_BINARY(>> );
+		VariateProxy& operator&&(const VariateProxy& rhs)
+		{
+			return *this;
+		}
 
-		CREATE_OPERATOR_BINARY(+= );
-		CREATE_OPERATOR_BINARY(-= );
-		CREATE_OPERATOR_BINARY(*= );
-		CREATE_OPERATOR_BINARY(/= );
-		CREATE_OPERATOR_BINARY(%= );
-		CREATE_OPERATOR_BINARY(&= );
-		CREATE_OPERATOR_BINARY(|= );
-		CREATE_OPERATOR_BINARY(^= );
-		CREATE_OPERATOR_BINARY(>>= );
-		CREATE_OPERATOR_BINARY(<<= );
+		VariateProxy& operator~()
+		{
+			return *this;
+		}
+
+		VariateProxy& operator&(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator|(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator^(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator<<(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator>>(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator+=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator-=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator*=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator/=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator%=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator&=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator|=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator^=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator>>=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+
+		VariateProxy& operator<<=(const VariateProxy& rhs)
+		{
+			return *this;
+		}
+		
+		VariateProxy<bool>& operator>(const VariateProxy& rhs)
+		{
+			return *(new VariateProxy<bool>(true));
+		}
+
+		VariateProxy<bool>& operator>=(const VariateProxy& rhs)
+		{
+			return *(new VariateProxy<bool>(true));
+		}
+
+		VariateProxy<bool>& operator<(const VariateProxy& rhs)
+		{
+			return *(new VariateProxy<bool>(true));
+		}
+
+		VariateProxy<bool>& operator<=(const VariateProxy& rhs)
+		{
+			return *(new VariateProxy<bool>(true));
+		}
+
+		VariateProxy<bool>& operator!=(const VariateProxy& rhs)
+		{
+			return *(new VariateProxy<bool>(true));
+		}
+
+		VariateProxy<bool>& operator==(const VariateProxy& rhs)
+		{
+			return *(new VariateProxy<bool>(true));
+		}
+
+
+		VariateProxy& operator+() { return *(new VariateProxy()); }
+		VariateProxy& operator-() { return *(new VariateProxy()); }
+		VariateProxy& operator!() { return *(new VariateProxy()); }
+		VariateProxy& operator~() { return *(new VariateProxy()); }
+
+		VariateProxy& operator+(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator-(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator*(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator/(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator%(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator||(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator&&(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator&(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator|(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator^(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator<<(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator>>(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator+=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator-=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator*=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator/=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator%=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator&=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator|=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator^=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator>>=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+		VariateProxy& operator<<=(const VariateProxy& rhs) { return *(new VariateProxy()); }
+
+		VariateProxy<bool>& operator>(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		VariateProxy<bool>& operator>=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		VariateProxy<bool>& operator<(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		VariateProxy<bool>& operator<=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		VariateProxy<bool>& operator!=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
+		VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }    
+
 
 	private:
 		Type* value;
