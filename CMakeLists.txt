@@ -62,12 +62,6 @@ endfunction()
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Src)
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "${SOURCE_DIR}/*.*")
 
-if(NOT IS_ROOT_DIR)
-    set(HELICON_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-else()
-    set(HELICON_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
-
 # ----------------------------------------------------------------------------
 # 忽略特定文件
 # ----------------------------------------------------------------------------
@@ -142,14 +136,17 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/execution-charset:utf-8>
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
     $<$<CONFIG:RelWithDebInfo>:ENABLE_DETAILED_LOGGING=1>
     $<$<CONFIG:RelWithDebInfo>:CABBAGE_ENGINE_DEBUG>
     $<$<CONFIG:MinSizeRel>:DISABLE_EXTRA_FEATURES=1>
     $<$<CONFIG:MinSizeRel>:CABBAGE_ENGINE_RELEASE>
     $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
     NOMINMAX
-    HELICON_ROOT_PATH="${HELICON_ROOT_PATH}"
+
+    PUBLIC
+    HELICON_ROOT_PATH="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
