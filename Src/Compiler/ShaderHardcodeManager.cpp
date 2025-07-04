@@ -9,7 +9,7 @@
 
 bool ShaderHardcodeManager::hardcodeFileOpened = false;
 
-const std::string ShaderHardcodeManager::hardcodeShaderPath = HELICON_ROOT_PATH + "/Src/Compiler/HardcodeShaders";
+const std::string ShaderHardcodeManager::hardcodeShaderPath = (std::filesystem::path(HELICON_ROOT_PATH) / "Src" / "Compiler" / "HardcodeShaders").string();
 
 
 std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_location& sourceLocation, ShaderStage inputStage)
