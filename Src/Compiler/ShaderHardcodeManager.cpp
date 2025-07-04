@@ -9,27 +9,7 @@
 
 bool ShaderHardcodeManager::hardcodeFileOpened = false;
 
-const std::string ShaderHardcodeManager::hardcodeShaderPath =
-    [] {
-        std::string resultPath = "";
-        std::string runtimePath = std::filesystem::current_path().string();
-        // std::replace(runtimePath.begin(), runtimePath.end(), '\\', '/');
-        std::regex pattern(R"((.*)CabbageEngine\b)");
-        std::smatch matches;
-        if (std::regex_search(runtimePath, matches, pattern))
-        {
-            if (matches.size() > 1)
-            {
-                resultPath = matches[1].str() + "CabbageEngine";
-            }
-            else
-            {
-                throw std::runtime_error("Failed to resolve source path.");
-            }
-        }
-        std::replace(resultPath.begin(), resultPath.end(), '\\', '/');
-        return resultPath + "/Src" + "/CabbageFramework/CabbageFoundation/Compiler/HardcodeShaders";
-    }();
+const std::string ShaderHardcodeManager::hardcodeShaderPath = HELICON_ROOT_PATH + "/Src/Compiler/HardcodeShaders";
 
 
 std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_location& sourceLocation, ShaderStage inputStage)
@@ -124,6 +104,7 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::string& shaderCode, Sh
 	}
 	else
 	{
+		throw std::runtime_error("Failed to open source path.");
 		return false;
 	}
 #endif
@@ -182,6 +163,7 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::vector<uint32_t>& shad
 	}
 	else
 	{
+		throw std::runtime_error("Failed to open source path.");
 		return false;
 	}
 #endif
