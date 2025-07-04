@@ -1,0 +1,16 @@
+file(GLOB_RECURSE EXAMPLES_SOURCE_FILES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+)
+
+add_executable(Helicon-main ${EXAMPLES_SOURCE_FILES})
+
+set_target_properties(Helicon-main PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/$<CONFIG>
+    PDB_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/$<CONFIG>
+    VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:Helicon-main>
+)
+
+target_link_libraries(Helicon-main PRIVATE Helicon)
