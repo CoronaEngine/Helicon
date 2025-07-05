@@ -40,7 +40,7 @@ target_include_directories(Helicon PUBLIC
     "${PROJECT_SOURCE_DIR}/Env/SPIRV-Cross"
 )
 
-target_link_libraries(Helicon PRIVATE
+target_link_libraries(Helicon PUBLIC
     glslang
     glslang-default-resource-limits
     spirv-cross-core
