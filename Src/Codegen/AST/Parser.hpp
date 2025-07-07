@@ -27,7 +27,7 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<Variate> positionOutput;
 
 		static inline thread_local std::unique_ptr<Generator::BaseShaderGenerator> shaderGenerator;
-		static inline thread_local std::unique_ptr<Parser> currentParser;
+		static thread_local std::unique_ptr<Parser> currentParser;
 	public:
 		static std::string getUniqueVariateName();
 		static void setShaderGenerator(std::unique_ptr<Generator::BaseShaderGenerator> generator);

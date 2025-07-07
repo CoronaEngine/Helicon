@@ -2,13 +2,14 @@
 #include <utility>
 #include "../Generator/ShaderGenerator.hpp"
 
+thread_local std::unique_ptr<EmbeddedShader::Ast::Parser> EmbeddedShader::Ast::Parser::currentParser = std::unique_ptr<Parser>(new Parser);
+
 std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode)
 {
-	currentParser = std::unique_ptr<Parser>(new Parser);
 	currentParser->statementStack.push(&currentParser->structure.statements);
 	shaderCode();
 	std::string output = shaderGenerator->getShaderOutput(currentParser->structure);
-	currentParser.reset();
+	currentParser.reset(new Parser);
 	return output;
 }
 
