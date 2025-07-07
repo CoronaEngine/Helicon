@@ -8,9 +8,30 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES})
 add_library(Helicon STATIC ${SOURCE_FILES})
 
-set_library_properties(Helicon)
+set_target_properties(Helicon PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/$<CONFIG>
+)
 
-target_compile_definitions(Helicon PUBLIC HELICON_ROOT_PATH="${PROJECT_SOURCE_DIR}")
+target_compile_options(Helicon PRIVATE
+    $<$<AND:$<CONFIG:RelWithDebInfo>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-omit-frame-pointer -g>
+    $<$<AND:$<CONFIG:MinSizeRel>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-ffunction-sections -fdata-sections>
+    $<$<AND:$<CONFIG:MinSizeRel>,$<CXX_COMPILER_ID:Clang>>:-Oz>
+    $<$<AND:$<CONFIG:MinSizeRel>,$<CXX_COMPILER_ID:MSVC>>:/GL>
+    $<$<CXX_COMPILER_ID:MSVC>:/W1 /source-charset:utf-8 /execution-charset:utf-8>
+)
+
+target_compile_definitions(Helicon
+    PRIVATE
+    $<$<CONFIG:RelWithDebInfo>:ENABLE_DETAILED_LOGGING=1>
+    $<$<CONFIG:RelWithDebInfo>:CABBAGE_ENGINE_DEBUG>
+    $<$<CONFIG:MinSizeRel>:DISABLE_EXTRA_FEATURES=1>
+    $<$<CONFIG:MinSizeRel>:CABBAGE_ENGINE_RELEASE>
+    $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
+    NOMINMAX
+
+    PUBLIC
+    HELICON_ROOT_PATH="${PROJECT_SOURCE_DIR}"
+)
 
 target_include_directories(Helicon PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}"

@@ -9,8 +9,6 @@ project(
     LANGUAGES C CXX
 )
 
-include(utils.cmake)
-
 # 是否构建示例
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     option(HELICON_BUILD_EXAMPLES "是否构建 Helicon 示例" ON)
