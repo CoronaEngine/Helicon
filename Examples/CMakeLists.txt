@@ -6,7 +6,7 @@ file(GLOB_RECURSE EXAMPLES_SOURCE_FILES CONFIGURE_DEPENDS
 )
 
 add_executable(HeliconExamples ${EXAMPLES_SOURCE_FILES})
-set_source_groups(${EXAMPLES_SOURCE_FILES} ${PROJECT_SOURCE_DIR} "Source Code")
+set_source_groups(${EXAMPLES_SOURCE_FILES} ${CMAKE_CURRENT_SOURCE_DIR} "Source Code")
 
 set_binary_properties(HeliconExamples)
 

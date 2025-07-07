@@ -6,7 +6,7 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 )
 
 add_library(Helicon STATIC ${SOURCE_FILES})
-set_source_groups(${SOURCE_FILES} ${PROJECT_SOURCE_DIR} "Source Code")
+set_source_groups(${SOURCE_FILES} ${CMAKE_CURRENT_SOURCE_DIR} "Source Code")
 
 set_library_properties(Helicon)
 
