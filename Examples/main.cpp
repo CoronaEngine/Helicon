@@ -46,6 +46,14 @@ struct MyStruct3
 //		};
 //}
 
+
+template<typename Type>
+using Image2D = VariateProxy<VariateProxy<VariateProxy<Type>>>;
+
+template<typename Type>
+using Buffer = VariateProxy<VariateProxy<Type>>;
+
+
 int main(int argc, char* argv[])
 {
 	auto lammdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
@@ -98,6 +106,10 @@ int main(int argc, char* argv[])
 	VariateProxy<ktm::fmat4x4> vertexOutput2 = ktm::fmat4x4::from_eye();
 	VariateProxy<VariateProxy<int>> vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
 	VariateProxy<VariateProxy<VariateProxy<int>>> vertexOutput4 = { { 1, 2 ,8, 1}, {72, 11, 48416 } };
+
+
+	Image2D<ktm::fvec3> image0 = { { ktm::fvec3(1, 2, 3)}, { ktm::fvec3(1, 2, 3) } };
+	Buffer<ktm::fvec3> buffer0 = { ktm::fvec3(1, 2, 3),  ktm::fvec3(1, 2, 3) };
 
 	VariateProxy<MyStruct1> buffer1;//ubo or ssbo
 	VariateProxy<MyStruct2> buffer2;//ubo or ssbo
