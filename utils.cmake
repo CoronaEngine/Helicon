@@ -1,19 +1,3 @@
-function(set_source_groups SOURCE_FILES SOURCE_DIR SOURCE_DIR_NAME)
-    foreach(each_source_file IN LISTS SOURCE_FILES)
-        get_filename_component(each_source_path "${each_source_file}" PATH)
-        file(RELATIVE_PATH each_source_path_rel ${SOURCE_DIR} ${each_source_path})
-
-        # 检查字符串是否为空 空的不分组
-        if("${each_source_path_rel}" STREQUAL "")
-            source_group("${SOURCE_DIR_NAME}" FILES ${each_source_file})
-            continue()
-        endif()
-
-        string(REPLACE "/" "\\" each_source_group_path ${each_source_path_rel})
-        source_group("${SOURCE_DIR_NAME}/${each_source_group_path}" FILES ${each_source_file})
-    endforeach()
-endfunction()
-
 function(set_library_properties TARGET_NAME)
     set_target_properties(${TARGET_NAME} PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/$<CONFIG>
