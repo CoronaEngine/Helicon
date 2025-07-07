@@ -3,8 +3,9 @@
 #include <string>
 #include <Codegen/AST/Enum.hpp>
 #include <Codegen/AST/Node.hpp>
+#include <Codegen/AST/Struct.hpp>
 
-namespace EmbeddedShader::ShaderGenerator
+namespace EmbeddedShader::Generator
 {
 	class BaseShaderGenerator
 	{

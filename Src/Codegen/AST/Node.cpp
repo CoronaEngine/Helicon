@@ -77,3 +77,13 @@ std::string EmbeddedShader::Ast::IfStatement::parse()
 {
 	return Parser::getShaderGenerator()->getParseOutput(this);
 }
+
+std::string EmbeddedShader::Ast::UniversalVariate::parse()
+{
+	return Variate::parse();
+}
+
+std::string EmbeddedShader::Ast::DefineUniversalVariate::parse()
+{
+	return Statement::parse();
+}

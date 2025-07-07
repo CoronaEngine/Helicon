@@ -71,4 +71,12 @@ namespace EmbeddedShader::Ast
 	template<> inline auto variateTypeToEnum<ktm::fmat3x4> = VariateType::Mat3x4;
 	template<> inline auto variateTypeToEnum<ktm::fmat4x2> = VariateType::Mat4x2;
 	template<> inline auto variateTypeToEnum<ktm::fmat4x3> = VariateType::Mat4x3;
+
+	enum class VariateAccessPermissions
+	{
+		None,
+		ReadOnly,
+		WriteOnly,
+		ReadAndWrite,
+	};
 }

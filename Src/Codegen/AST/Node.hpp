@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <Codegen/AST/Node.hpp>
+
 #include "Enum.hpp"
 
 namespace EmbeddedShader::Ast
@@ -153,4 +155,17 @@ namespace EmbeddedShader::Ast
         std::vector<std::shared_ptr<Statement>> statements;
         std::string parse() override;
     };
+
+	//UBO or SSBO
+	struct UniversalVariate : Variate
+	{
+		VariateAccessPermissions permissions = VariateAccessPermissions::None;
+		std::string parse() override;
+	};
+
+	struct DefineUniversalVariate : Statement
+	{
+		std::shared_ptr<UniversalVariate> variate;
+		std::string parse() override;
+	};
 }

@@ -5,7 +5,7 @@
 #include <Codegen/AST/Enum.hpp>
 #include "../ShaderGenerator.hpp"
 
-namespace EmbeddedShader::ShaderGenerator::OpenGL
+namespace EmbeddedShader::Generator::OpenGL
 {
 	class ShaderGenerator final : public BaseShaderGenerator
 	{
