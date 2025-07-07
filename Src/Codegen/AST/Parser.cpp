@@ -17,12 +17,12 @@ std::string EmbeddedShader::Ast::Parser::getUniqueVariateName()
 	return "var_" + std::to_string(currentParser->currentVariateIndex++);
 }
 
-void EmbeddedShader::Ast::Parser::setShaderGenerator(std::unique_ptr<ShaderGenerator::BaseShaderGenerator> generator)
+void EmbeddedShader::Ast::Parser::setShaderGenerator(std::unique_ptr<Generator::BaseShaderGenerator> generator)
 {
 	shaderGenerator = std::move(generator);
 }
 
-const std::unique_ptr<EmbeddedShader::ShaderGenerator::BaseShaderGenerator>& EmbeddedShader::Ast::Parser::getShaderGenerator()
+const std::unique_ptr<EmbeddedShader::Generator::BaseShaderGenerator>& EmbeddedShader::Ast::Parser::getShaderGenerator()
 {
 	return shaderGenerator;
 }

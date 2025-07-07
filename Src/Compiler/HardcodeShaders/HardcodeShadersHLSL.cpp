@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_C__Github_Helicon_Examples_main_cpp_87_21",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_EDSL_Examples_main_cpp_95_32",
 ShaderCodeModule(R"(static float4 gl_Position;
 static float3 var_0;
 
@@ -28,7 +28,7 @@ SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
     return stage_output;
 }
  )")
-},{"FragmentShader_C__Github_Helicon_Examples_main_cpp_88_21",
+},{"FragmentShader_D__Files_Code_Projects_EDSL_Examples_main_cpp_96_31",
 ShaderCodeModule(R"( )")
 },
 };

@@ -10,7 +10,7 @@ namespace EmbeddedShader::Ast
 
 	class AST
 	{
-		friend class ShaderGenerator::BaseShaderGenerator;
+		friend class Generator::BaseShaderGenerator;
 		AST() = default;
 	public:
 
@@ -56,6 +56,8 @@ namespace EmbeddedShader::Ast
 
 		static void beginIf(std::shared_ptr<Value> condition);
 		static void endIf();
+
+		static std::shared_ptr<UniversalVariate> defineUniversalVariate(std::shared_ptr<Type> type);
 
 		static std::shared_ptr<Variate> getPositionOutput();
 	private:

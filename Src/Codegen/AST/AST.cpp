@@ -88,6 +88,17 @@ void EmbeddedShader::Ast::AST::endIf()
 	getStatementStack().pop();
 }
 
+std::shared_ptr<EmbeddedShader::Ast::UniversalVariate> EmbeddedShader::Ast::AST::defineUniversalVariate(std::shared_ptr<Type> type)
+{
+	auto variate = std::make_shared<UniversalVariate>();
+	variate->type = std::move(type);
+	variate->name = Parser::getUniqueVariateName();
+	auto defineNode = std::make_shared<DefineUniversalVariate>();
+	defineNode->variate = variate;
+	addGlobalStatement(defineNode);
+	return variate;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPositionOutput()
 {
 	//不会出现currentParser == nullptr这种情况

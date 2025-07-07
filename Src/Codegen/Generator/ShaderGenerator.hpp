@@ -4,7 +4,7 @@
 #include <Codegen/AST/Enum.hpp>
 #include <Codegen/AST/Node.hpp>
 
-namespace EmbeddedShader::ShaderGenerator
+namespace EmbeddedShader::Generator
 {
 	class BaseShaderGenerator
 	{

@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	Parser::setShaderGenerator(std::make_unique<ShaderGenerator::OpenGL::ShaderGenerator>());
+	Parser::setShaderGenerator(std::make_unique<Generator::OpenGL::ShaderGenerator>());
 
 	auto vertShaderCode = [&]()
 	{
