@@ -24,6 +24,7 @@ add_subdirectory(Env/ktm EXCLUDE_FROM_ALL)
 add_subdirectory(Env/preprocessor EXCLUDE_FROM_ALL)
 
 set(ENABLE_OPT OFF)
+set(ENABLE_GLSLANG_BINARIES OFF)
 add_subdirectory(Env/glslang EXCLUDE_FROM_ALL)
 
 set(SPIRV_CROSS_SHARED OFF)
