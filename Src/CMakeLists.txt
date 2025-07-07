@@ -5,8 +5,8 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES})
 add_library(Helicon STATIC ${SOURCE_FILES})
-set_source_groups(${SOURCE_FILES} ${CMAKE_CURRENT_SOURCE_DIR} "Source Code")
 
 set_library_properties(Helicon)
 
