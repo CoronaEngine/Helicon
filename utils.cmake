@@ -1,40 +1,16 @@
 function(set_source_groups SOURCE_FILES SOURCE_DIR SOURCE_DIR_NAME)
-    # 验证输入参数
-    if(NOT SOURCE_FILES)
-        message(WARNING "Empty SOURCE_FILES passed to set_source_groups")
-        return()
-    endif()
-
-    # 确定平台适配的分隔符（Windows用\，其他平台用/）
-    if(CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_HOST_WIN32)
-        set(SEP "\\")
-    else()
-        set(SEP "/")
-    endif()
-
-    # 处理根目录名称的空值情况
-    if("${SOURCE_DIR_NAME}" STREQUAL "")
-        set(SOURCE_DIR_NAME "Source Files")
-    endif()
-
     foreach(each_source_file IN LISTS SOURCE_FILES)
-        # 获取文件的规范化和绝对路径
-        get_filename_component(abs_path "${each_source_file}" ABSOLUTE)
+        get_filename_component(each_source_path "${each_source_file}" PATH)
+        file(RELATIVE_PATH each_source_path_rel ${SOURCE_DIR} ${each_source_path})
 
-        # 计算相对于源目录的相对路径
-        file(RELATIVE_PATH rel_path "${SOURCE_DIR}" "${abs_path}")
-
-        # 提取目录部分（去掉文件名）
-        get_filename_component(dir_path "${rel_path}" DIRECTORY)
-
-        if(dir_path STREQUAL "")
-            # 根目录下的文件
+        # 检查字符串是否为空 空的不分组
+        if("${each_source_path_rel}" STREQUAL "")
             source_group("${SOURCE_DIR_NAME}" FILES ${each_source_file})
-        else()
-            # 转换路径分隔符并创建分组
-            string(REPLACE "/" "${SEP}" group_path "${dir_path}")
-            source_group("${SOURCE_DIR_NAME}${SEP}${group_path}" FILES ${each_source_file})
+            continue()
         endif()
+
+        string(REPLACE "/" "\\" each_source_group_path ${each_source_path_rel})
+        source_group("${SOURCE_DIR_NAME}/${each_source_group_path}" FILES ${each_source_file})
     endforeach()
 endfunction()
 
