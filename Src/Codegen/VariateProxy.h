@@ -60,7 +60,7 @@ namespace EmbeddedShader
 		{
 		}
 
-		VariateProxy& operator[](int input)
+		VariateProxy& operator[](uint32_t input)
 		{
 			return *(new VariateProxy());
 		}

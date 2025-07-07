@@ -117,6 +117,9 @@ int main(int argc, char* argv[])
 
 	auto vertexShaderDemo =
 		[&]{
+			//uint32_t vertexIndex = 0; //globle vertex index
+			//auto vertex = buffer0[vertexIndex];
+
 			vertexInput1;
 			//vertexOutput1 = ktm::fvec3(1, 2, 3);
 			vertexOutput2 = ktm::fmat4x4::from_eye();
