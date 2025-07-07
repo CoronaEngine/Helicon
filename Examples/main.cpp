@@ -91,11 +91,9 @@ int main(int argc, char* argv[])
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 
-
+	VariateProxy<ktm::fvec3> vertexInput1 = ktm::fvec3(1, 2, 3);
 
 	VariateProxy<ktm::fvec3> vertexOutput1 = ktm::fvec3(1, 2, 3);
-
-
 
 	VariateProxy<ktm::fmat4x4> vertexOutput2 = ktm::fmat4x4::from_eye();
 	VariateProxy<VariateProxy<int>> vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
@@ -106,6 +104,7 @@ int main(int argc, char* argv[])
 
 	auto vertexShaderDemo =
 		[&]{
+			vertexInput1;
 			//vertexOutput1 = ktm::fvec3(1, 2, 3);
 			vertexOutput2 = ktm::fmat4x4::from_eye();
 			vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
