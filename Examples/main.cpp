@@ -97,6 +97,7 @@ int main(int argc, char* argv[])
 
 	VariateProxy<ktm::fmat4x4> vertexOutput2 = ktm::fmat4x4::from_eye();
 	VariateProxy<VariateProxy<int>> vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
+	VariateProxy<VariateProxy<VariateProxy<int>>> vertexOutput4 = { { 1, 2 ,8, 1}, {72, 11, 48416 } };
 
 	VariateProxy<MyStruct1> buffer1;//ubo or ssbo
 	VariateProxy<MyStruct2> buffer2;//ubo or ssbo
