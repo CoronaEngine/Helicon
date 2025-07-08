@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
 
 	Parser::setShaderGenerator(std::make_unique<Generator::OpenGL::ShaderGenerator>());
 
+	auto color = AST::defineUniversalVariate<fvec4>();
 	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>(0);

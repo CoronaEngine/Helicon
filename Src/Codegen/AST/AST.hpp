@@ -58,6 +58,10 @@ namespace EmbeddedShader::Ast
 		static void endIf();
 
 		static std::shared_ptr<UniversalVariate> defineUniversalVariate(std::shared_ptr<Type> type);
+		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
+		static std::shared_ptr<UniversalVariate> defineUniversalVariate();
+		template<typename VariateType> requires ktm::is_vector_v<VariateType>
+		static std::shared_ptr<UniversalVariate> defineUniversalVariate();
 
 		static std::shared_ptr<Variate> getPositionOutput();
 	private:
@@ -199,5 +203,19 @@ namespace EmbeddedShader::Ast
 	std::shared_ptr<UniformVariate> AST::defineUniformVariate(size_t location)
 	{
 		return defineUniformVariate(VecType::createVecType(variateTypeToEnum<VariateType>), location);
+	}
+
+	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
+	std::shared_ptr<UniversalVariate> AST::defineUniversalVariate()
+	{
+		auto type = std::make_shared<BasicType>();
+		type->name = Parser::getShaderGenerator()->getVariateTypeName(variateTypeToEnum<VariateType>);
+		return defineUniversalVariate(type);
+	}
+
+	template<typename VariateType> requires ktm::is_vector_v<VariateType>
+	std::shared_ptr<UniversalVariate> AST::defineUniversalVariate()
+	{
+		return defineUniversalVariate(VecType::createVecType(variateTypeToEnum<VariateType>));
 	}
 }
