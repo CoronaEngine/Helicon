@@ -84,13 +84,13 @@ int main(int argc, char* argv[])
 		AST::assign(fragColor,color);
 	};
 
-	puts(Parser::parse(vertShaderCode).c_str());
-	puts(Parser::parse(fragShaderCode).c_str());
+	puts(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex).c_str());
+	puts(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment).c_str());
 
 	std::cout << "color permissions:" << color->permissions << std::endl;
 
-	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode), ShaderStage::VertexShader);
-	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode), ShaderStage::FragmentShader);
+	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex), ::ShaderStage::VertexShader);
+	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment), ::ShaderStage::FragmentShader);
 
 
 

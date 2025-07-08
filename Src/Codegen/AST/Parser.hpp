@@ -15,7 +15,7 @@ namespace EmbeddedShader::Ast
 	{
 		friend class AST;
 	public:
-		static std::string parse(const std::function<void()>& shaderCode);
+		static std::string parse(const std::function<void()>& shaderCode, ShaderStage stage);
 	private:
 		Parser() = default;
 

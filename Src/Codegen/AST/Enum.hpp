@@ -6,6 +6,13 @@
 
 namespace EmbeddedShader::Ast
 {
+	enum class ShaderStage
+	{
+		Vertex,
+		Fragment,
+		Compute,
+	};
+
 	enum class VariateType
 	{
 		Undefined = -1,
