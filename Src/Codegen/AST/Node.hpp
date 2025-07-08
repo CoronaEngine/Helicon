@@ -140,18 +140,6 @@ namespace EmbeddedShader::Ast
 		std::string parse() override;
 	};
 
-	struct UniformVariate : Variate
-	{
-		size_t location = 0;
-		std::string parse() override;
-	};
-
-	struct DefineUniformVariate : Statement
-    {
-        std::shared_ptr<UniformVariate> variate;
-        std::string parse() override;
-    };
-
 	struct IfStatement : Statement
     {
         std::shared_ptr<Value> condition;

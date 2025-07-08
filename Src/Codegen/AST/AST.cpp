@@ -67,18 +67,6 @@ std::shared_ptr<EmbeddedShader::Ast::OutputVariate> EmbeddedShader::Ast::AST::de
 	return outputVariate;
 }
 
-std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::defineUniformVariate(std::shared_ptr<Type> type, size_t location)
-{
-	auto variate = std::make_shared<UniformVariate>();
-	variate->type = std::move(type);
-	variate->name = Parser::getUniqueVariateName();
-	variate->location = location;
-	auto defineNode = std::make_shared<DefineUniformVariate>();
-	defineNode->variate = variate;
-	addGlobalStatement(defineNode);
-	return variate;
-}
-
 void EmbeddedShader::Ast::AST::beginIf(std::shared_ptr<Value> condition)
 {
 	auto ifStatement = std::make_shared<IfStatement>();

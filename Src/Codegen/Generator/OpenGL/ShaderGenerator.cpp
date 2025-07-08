@@ -272,19 +272,6 @@ std::string EmbeddedShader::Generator::OpenGL::ShaderGenerator::getParseOutput(
 	return "layout(location = " + std::to_string(node->variate->location) + ") out " + node->variate->type->parse() + " " + node->variate->name + ";";
 }
 
-std::string EmbeddedShader::Generator::OpenGL::ShaderGenerator::getParseOutput(const Ast::UniformVariate* node)
-{
-	//后续对于聚合类型得改改
-	return node->name;
-}
-
-std::string EmbeddedShader::Generator::OpenGL::ShaderGenerator::getParseOutput(
-	const Ast::DefineUniformVariate* node)
-{
-	//后续对于聚合类型得改改
-	return "layout(location = " + std::to_string(node->variate->location) + ") uniform " + node->variate->type->parse() + " " + node->variate->name + ";";
-}
-
 std::string EmbeddedShader::Generator::OpenGL::ShaderGenerator::getParseOutput(const Ast::IfStatement* node)
 {
 	auto result = "if (" + node->condition->parse() + ") {\n";

@@ -81,13 +81,6 @@ int main(int argc, char* argv[])
 	auto fragShaderCode = [&]()
 	{
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
-		auto outColor = AST::defineUniformVariate<fvec4>(0);
-		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
-		AST::assign(fragColor,outColor);
-		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
-		AST::assign(fragColor,outColor);
-		AST::endIf();
-		AST::endIf();
 	};
 
 	puts(Parser::parse(vertShaderCode).c_str());
