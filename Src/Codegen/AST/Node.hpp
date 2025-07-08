@@ -29,6 +29,8 @@ namespace EmbeddedShader::Ast
 
 	class Value : public Node
 	{
+	public:
+		virtual void access(AccessPermissions permissions);
 	};
 
 	struct Variate : Value
@@ -124,6 +126,7 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<Value> value;
 		std::string memberName;
 		std::string parse() override;
+		void access(AccessPermissions permissions) override;
 	};
 
 	struct OutputVariate : Variate
@@ -159,8 +162,9 @@ namespace EmbeddedShader::Ast
 	//UBO or SSBO
 	struct UniversalVariate : Variate
 	{
-		VariateAccessPermissions permissions = VariateAccessPermissions::None;
+		AccessPermissions permissions = AccessPermissions::None;
 		std::string parse() override;
+		void access(AccessPermissions permissions) override;
 	};
 
 	struct DefineUniversalVariate : Statement

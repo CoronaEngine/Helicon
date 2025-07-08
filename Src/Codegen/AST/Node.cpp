@@ -11,6 +11,8 @@ std::string EmbeddedShader::Ast::NameType::parse()
 	return name;
 }
 
+void EmbeddedShader::Ast::Value::access(AccessPermissions permissions) {}
+
 std::string EmbeddedShader::Ast::Variate::parse()
 {
 	return name;
@@ -58,6 +60,11 @@ std::string EmbeddedShader::Ast::MemberAccess::parse()
 	return Parser::getShaderGenerator()->getParseOutput(this);
 }
 
+void EmbeddedShader::Ast::MemberAccess::access(AccessPermissions permissions)
+{
+	value->access(permissions);
+}
+
 std::string EmbeddedShader::Ast::DefineOutputVariate::parse()
 {
 	return Parser::getShaderGenerator()->getParseOutput(this);
@@ -81,6 +88,11 @@ std::string EmbeddedShader::Ast::IfStatement::parse()
 std::string EmbeddedShader::Ast::UniversalVariate::parse()
 {
 	return Variate::parse();
+}
+
+void EmbeddedShader::Ast::UniversalVariate::access(AccessPermissions permissions)
+{
+	this->permissions = this->permissions | permissions;
 }
 
 std::string EmbeddedShader::Ast::DefineUniversalVariate::parse()

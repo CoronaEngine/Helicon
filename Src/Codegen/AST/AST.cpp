@@ -16,6 +16,8 @@ std::shared_ptr<EmbeddedShader::Ast::LocalVariate> EmbeddedShader::Ast::AST::def
 
 std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType)
 {
+	value1->access(AccessPermissions::ReadOnly);
+	value2->access(AccessPermissions::ReadOnly);
 	auto binaryOp = std::make_shared<BinaryOperator>();
 	binaryOp->value1 = std::move(value1);
 	binaryOp->value2 = std::move(value2);
@@ -25,6 +27,8 @@ std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOper
 
 void EmbeddedShader::Ast::AST::assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value)
 {
+	variate->access(AccessPermissions::WriteOnly);
+	value->access(AccessPermissions::ReadOnly);
 	auto assignNode = std::make_shared<Assign>();
 	assignNode->leftValue = std::move(variate);
 	assignNode->rightValue = std::move(value);

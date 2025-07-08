@@ -75,6 +75,7 @@ int main(int argc, char* argv[])
 		auto aPos = AST::defineInputVariate<fvec3>(0);
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
 		AST::assign(AST::access(AST::getPositionOutput(), "x"),114.f);
+		AST::assign(AST::access(color, "r"), 1.f);
 	};
 
 	auto fragShaderCode = [&]()
@@ -91,6 +92,8 @@ int main(int argc, char* argv[])
 
 	puts(Parser::parse(vertShaderCode).c_str());
 	puts(Parser::parse(fragShaderCode).c_str());
+
+	std::cout << "color permissions:" << color->permissions << std::endl;
 
 	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode), ShaderStage::VertexShader);
 	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode), ShaderStage::FragmentShader);
