@@ -9,13 +9,22 @@ namespace EmbeddedShader::Generator
 	class SlangGenerator final
 	{
 		template<typename T>
-		static constexpr std::string_view variateTypeNameMap = "unknown";
+		static constexpr std::string variateBasicTypeNameMap = "unknown";
 
 	public:
 		std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure);
 		std::string getVariateTypeName(Ast::VariateType variateType);
 
-//		std::string getVariateTypeName
+		template<typename T>
+		static std::string getVariateTypeName() {return "unknown";}
+		template<typename T> requires std::is_arithmetic_v<T>
+		static std::string getVariateTypeName() {return variateBasicTypeNameMap<T>;}
+		template<typename T> requires ktm::is_vector_v<T>
+		static std::string getVariateTypeName();
+		template<typename T> requires ktm::is_matrix_v<T>
+		static std::string getVariateTypeName();
+
+		//		std::string getVariateTypeName
 
 		std::string getParseOutput(const Ast::DefineLocalVariate* node);
 		std::string getParseOutput(const Ast::DefineInputVariate* node);
@@ -26,22 +35,60 @@ namespace EmbeddedShader::Generator
 		std::string getParseOutput(const Ast::IfStatement* node);
 
 		std::shared_ptr<Ast::Variate> getPositionOutput();
+	private:
+		template<typename T>
+		struct vec_traits
+		{
+
+		};
+
+		template<size_t N,typename T>
+		struct vec_traits<ktm::vec<N,T>>
+		{
+			static constexpr size_t element_count = N;
+			using scalar_type = T;
+		};
+
+		template<typename T>
+		struct mat_traits
+		{
+
+		};
+
+		template<size_t Row,size_t Col,typename T>
+		struct mat_traits<ktm::mat<Row,Col,T>>
+		{
+			static constexpr size_t row = Row;
+			static constexpr size_t column = Col;
+			using scalar_type = T;
+		};
 	};
 
-#define DEFINE_VARIATE_TYPE_NAME_MAP(type, name) \
-	template<> constexpr std::string_view SlangGenerator::variateTypeNameMap<type> = #name
+#define DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(type, name) \
+template<> constexpr std::string SlangGenerator::variateBasicTypeNameMap<type> = #name
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int8_t, int8_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int16_t, int16_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int, int);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int64_t, int64_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint8_t, uint8_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint16_t, uint16_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint32_t, uint);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint64_t, uint64_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(float, float);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(double, double);
+	//DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(std::float16_t, half);
+#undef DEFINE_VARIATE_BASIC_TYPE_NAME_MAP
 
-	DEFINE_VARIATE_TYPE_NAME_MAP(int8_t, int8_t);
-	DEFINE_VARIATE_TYPE_NAME_MAP(int16_t, int16_t);
-	DEFINE_VARIATE_TYPE_NAME_MAP(int, int);
-	DEFINE_VARIATE_TYPE_NAME_MAP(int64_t, int64_t);
-	DEFINE_VARIATE_TYPE_NAME_MAP(uint8_t, uint8_t);
-	DEFINE_VARIATE_TYPE_NAME_MAP(uint16_t, uint16_t);
-	DEFINE_VARIATE_TYPE_NAME_MAP(uint32_t, uint);
-	DEFINE_VARIATE_TYPE_NAME_MAP(uint64_t, uint64_t);
-	DEFINE_VARIATE_TYPE_NAME_MAP(float, float);
-	DEFINE_VARIATE_TYPE_NAME_MAP(double, double);
-	//DEFINE_VARIATE_TYPE_NAME_MAP(std::float16_t, half);
+	template<typename T> requires ktm::is_vector_v<T>
+	std::string SlangGenerator::getVariateTypeName()
+	{
+		return getVariateTypeName<typename vec_traits<T>::scalar_type>() + std::to_string(vec_traits<T>::element_count);
+	}
 
-#undef DEFINE_VARIATE_TYPE_NAME_MAP
+	template<typename T> requires ktm::is_matrix_v<T>
+	std::string SlangGenerator::getVariateTypeName()
+	{
+		return getVariateTypeName<typename mat_traits<T>::scalar_type>() +
+			std::to_string(mat_traits<T>::row) + "x" + std::to_string(mat_traits<T>::column);
+	}
 }

@@ -7,6 +7,7 @@
 #include"Compiler/ShaderCodeCompiler.h"
 
 #include <Codegen/AST/Parser.hpp>
+#include <Codegen/Generator/SlangGenerator.hpp>
 #include <ktm/type/vec.h>
 #include <Codegen/Generator/OpenGL/ShaderGenerator.hpp>
 
@@ -87,7 +88,13 @@ int main(int argc, char* argv[])
 	puts(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex).c_str());
 	puts(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment).c_str());
 
-	std::cout << "color permissions:" << color->permissions << std::endl;
+	std::cout << "color permissions:" << color->permissions << "\n";
+
+	puts("generator 'getVariateTypeName' test:");
+	std::cout << Generator::SlangGenerator::getVariateTypeName<fvec2>() << "\n";
+	std::cout << Generator::SlangGenerator::getVariateTypeName<float>() << "\n";
+	std::cout << Generator::SlangGenerator::getVariateTypeName<int>() << "\n";
+	std::cout << Generator::SlangGenerator::getVariateTypeName<fmat2x2>() << "\n";
 
 	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex), ::ShaderStage::VertexShader);
 	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment), ::ShaderStage::FragmentShader);
