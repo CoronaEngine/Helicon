@@ -1,3 +1,4 @@
+#include <Codegen/AST/Parser.hpp>
 #include <Codegen/Generator/SlangGenerator.hpp>
 std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast::EmbeddedShaderStructure& structure)
 {
@@ -86,6 +87,17 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	nestHierarchy--;
 	result += getCodeIndentation() + "}";
 	return result;
+}
+
+std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()
+{
+	//思考Slang的语义问题，先这样写，后续修改
+
+	auto positionOutput = std::make_shared<Ast::OutputVariate>();
+	positionOutput->type = Ast::VecType::createVecType(Ast::VariateType::Vec4); //后续接入Slang Generator的type mapping之后这里需要修改
+	positionOutput->name = "position_output";
+	positionOutput->location = 0;
+	return positionOutput;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getCodeIndentation()

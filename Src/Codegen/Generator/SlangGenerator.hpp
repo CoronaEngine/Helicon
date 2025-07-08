@@ -33,7 +33,7 @@ namespace EmbeddedShader::Generator
 		static std::string getParseOutput(const Ast::DefineOutputVariate* node);
 		static std::string getParseOutput(const Ast::IfStatement* node);
 
-		std::shared_ptr<Ast::Variate> getPositionOutput();
+		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:
 		static thread_local inline size_t nestHierarchy = 1;
 		static std::string getCodeIndentation();
