@@ -81,6 +81,7 @@ int main(int argc, char* argv[])
 	auto fragShaderCode = [&]()
 	{
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
+		AST::assign(fragColor,color);
 	};
 
 	puts(Parser::parse(vertShaderCode).c_str());

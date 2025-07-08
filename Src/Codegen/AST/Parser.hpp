@@ -19,10 +19,13 @@ namespace EmbeddedShader::Ast
 	private:
 		Parser() = default;
 
+		void reset();
+
 		EmbeddedShaderStructure structure;
 		std::stack<std::vector<std::shared_ptr<Statement>>*> statementStack;
 
 		size_t currentVariateIndex = 0;
+		size_t currentGlobalVariateIndex = 0;
 
 		std::shared_ptr<Variate> positionOutput;
 
@@ -30,6 +33,7 @@ namespace EmbeddedShader::Ast
 		static thread_local std::unique_ptr<Parser> currentParser;
 	public:
 		static std::string getUniqueVariateName();
+		static std::string getUniqueGlobalVariateName();
 		static void setShaderGenerator(std::unique_ptr<Generator::BaseShaderGenerator> generator);
 		static const std::unique_ptr<Generator::BaseShaderGenerator>& getShaderGenerator();
 	};

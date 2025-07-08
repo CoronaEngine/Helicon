@@ -59,7 +59,8 @@ namespace EmbeddedShader::Ast
 
 		static std::shared_ptr<Variate> getPositionOutput();
 	private:
-		static void addStatement(std::shared_ptr<Statement> statement);
+		static void addLocalStatement(std::shared_ptr<Statement> statement);
+		static void addShaderOnlyStatement(std::shared_ptr<Statement> shaderOnlyStatement);
 		static void addGlobalStatement(std::shared_ptr<Statement> globalStatement);
 		static std::stack<std::vector<std::shared_ptr<Statement>>*>& getStatementStack();
 		static EmbeddedShaderStructure& getEmbeddedShaderStructure();

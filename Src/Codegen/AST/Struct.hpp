@@ -9,6 +9,7 @@ namespace EmbeddedShader::Ast
 	struct EmbeddedShaderStructure
 	{
 		std::vector<std::shared_ptr<Statement>> globalStatements;
-		std::vector<std::shared_ptr<Statement>> statements;
+		std::vector<std::shared_ptr<Statement>> shaderOnlyStatements;
+		std::vector<std::shared_ptr<Statement>> localStatements;
 	};
 }

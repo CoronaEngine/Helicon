@@ -12,8 +12,14 @@ std::string EmbeddedShader::Generator::OpenGL::ShaderGenerator::getShaderOutput(
 		output += node->parse() + '\n';
 	}
 
+	//shader only statements
+	for (auto& node: structure.shaderOnlyStatements)
+	{
+		output += node->parse() + '\n';
+	}
+
 	output += "void main() {\n";
-	for (auto& node: structure.statements)
+	for (auto& node: structure.localStatements)
 	{
 		output += '\t' + node->parse() + '\n';
 	}

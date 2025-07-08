@@ -10,7 +10,7 @@ std::shared_ptr<EmbeddedShader::Ast::LocalVariate> EmbeddedShader::Ast::AST::def
 	auto defineNode = std::make_shared<DefineLocalVariate>();
 	defineNode->localVariate = localVariate;
 	defineNode->value = std::move(initValue);
-	addStatement(defineNode);
+	addLocalStatement(defineNode);
 	return localVariate;
 }
 
@@ -32,7 +32,7 @@ void EmbeddedShader::Ast::AST::assign(std::shared_ptr<Value> variate, std::share
 	auto assignNode = std::make_shared<Assign>();
 	assignNode->leftValue = std::move(variate);
 	assignNode->rightValue = std::move(value);
-	addStatement(assignNode);
+	addLocalStatement(assignNode);
 }
 
 std::shared_ptr<EmbeddedShader::Ast::InputVariate> EmbeddedShader::Ast::AST::defineInputVariate(std::shared_ptr<Type> type, size_t location)
@@ -43,7 +43,7 @@ std::shared_ptr<EmbeddedShader::Ast::InputVariate> EmbeddedShader::Ast::AST::def
 	inputVariate->location = location;
 	auto defineNode = std::make_shared<DefineInputVariate>();
 	defineNode->variate = inputVariate;
-	addGlobalStatement(defineNode);
+	addShaderOnlyStatement(defineNode);
 	return inputVariate;
 }
 
@@ -63,7 +63,7 @@ std::shared_ptr<EmbeddedShader::Ast::OutputVariate> EmbeddedShader::Ast::AST::de
 	outputVariate->location = location;
 	auto defineNode = std::make_shared<DefineOutputVariate>();
 	defineNode->variate = outputVariate;
-	addGlobalStatement(defineNode);
+	addShaderOnlyStatement(defineNode);
 	return outputVariate;
 }
 
@@ -71,7 +71,7 @@ void EmbeddedShader::Ast::AST::beginIf(std::shared_ptr<Value> condition)
 {
 	auto ifStatement = std::make_shared<IfStatement>();
 	ifStatement->condition = std::move(condition);
-	addStatement(ifStatement);
+	addLocalStatement(ifStatement);
 	getStatementStack().push(&ifStatement->statements);
 }
 
@@ -84,7 +84,7 @@ std::shared_ptr<EmbeddedShader::Ast::UniversalVariate> EmbeddedShader::Ast::AST:
 {
 	auto variate = std::make_shared<UniversalVariate>();
 	variate->type = std::move(type);
-	variate->name = Parser::getUniqueVariateName();
+	variate->name = Parser::getUniqueGlobalVariateName();
 	auto defineNode = std::make_shared<DefineUniversalVariate>();
 	defineNode->variate = variate;
 	addGlobalStatement(defineNode);
@@ -93,7 +93,6 @@ std::shared_ptr<EmbeddedShader::Ast::UniversalVariate> EmbeddedShader::Ast::AST:
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPositionOutput()
 {
-	//不会出现currentParser == nullptr这种情况
 	auto& posOutput = Parser::currentParser->positionOutput;
 	if (posOutput)
 		return posOutput;
@@ -101,15 +100,18 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 	return posOutput;
 }
 
-void EmbeddedShader::Ast::AST::addStatement(std::shared_ptr<Statement> statement)
+void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)
 {
-	//不会出现currentParser == nullptr这种情况
 	getStatementStack().top()->push_back(std::move(statement));
+}
+
+void EmbeddedShader::Ast::AST::addShaderOnlyStatement(std::shared_ptr<Statement> shaderOnlyStatement)
+{
+	Parser::currentParser->structure.shaderOnlyStatements.push_back(std::move(shaderOnlyStatement));
 }
 
 void EmbeddedShader::Ast::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
 {
-	//不会出现currentParser == nullptr这种情况
 	Parser::currentParser->structure.globalStatements.push_back(std::move(globalStatement));
 }
 
@@ -120,6 +122,5 @@ std::stack<std::vector<std::shared_ptr<EmbeddedShader::Ast::Statement>>*>& Embed
 
 EmbeddedShader::Ast::EmbeddedShaderStructure& EmbeddedShader::Ast::AST::getEmbeddedShaderStructure()
 {
-	//不会出现currentParser == nullptr这种情况
 	return Parser::currentParser->structure;
 }
