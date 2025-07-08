@@ -43,85 +43,53 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 	return output;
 }
 
-std::string EmbeddedShader::Generator::SlangGenerator::getVariateTypeName(Ast::VariateType variateType)
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineLocalVariate* node)
 {
-	switch (variateType)
+	return node->localVariate->type->parse() + " " + node->localVariate->name +
+		(node->value ? " = " + node->value->parse() : "") + ";";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineInputVariate* node)
+{
+	//这段内容应放在Generator生成的input struct中
+	return node->variate->type->parse() + " " + node->variate->name + " : LOCATION" + std::to_string(node->variate->location) + ";";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::Assign* node)
+{
+	return node->leftValue->parse() + " = " + node->rightValue->parse() + ";";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::BinaryOperator* node)
+{
+	return node->value1->parse() + " " + node->type + " " + node->value2->parse() + ";";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::MemberAccess* node)
+{
+	return node->value->parse() + "." + node->memberName + ";";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineOutputVariate* node)
+{
+	return node->variate->type->parse() + " " + node->variate->name + " : LOCATION" + std::to_string(node->variate->location) + ";";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::IfStatement* node)
+{
+	auto result = "if (" + node->condition->parse() + ") {\n";
+	nestHierarchy++;
+	for (auto& statement: node->statements)
 	{
-		case Ast::VariateType::Undefined:
-			break;
-		case Ast::VariateType::Int8:
-			return "int8_t";
-		case Ast::VariateType::Int16:
-			return "int16_t";
-		case Ast::VariateType::Int:
-			return "int";
-		case Ast::VariateType::Int64:
-			return "int64_t";
-		case Ast::VariateType::Uint8:
-			return "uint8_t";
-		case Ast::VariateType::Uint16:
-			return "uint16_t";
-		case Ast::VariateType::Uint:
-			return "uint";
-		case Ast::VariateType::Uint64:
-			return "uint64_t";
-		case Ast::VariateType::Float:
-			return "float";
-		case Ast::VariateType::Double:
-			return "double";
-		case Ast::VariateType::Half:
-			return "half";
-		case Ast::VariateType::Bool:
-			return "bool";
-		case Ast::VariateType::Vec2:
-			return "float2";
-		case Ast::VariateType::Vec3:
-			return "float3";
-		case Ast::VariateType::Vec4:
-			return "float4";
-		case Ast::VariateType::IVec2:
-			return "int2";
-		case Ast::VariateType::IVec3:
-			return "int3";
-		case Ast::VariateType::IVec4:
-			return "int4";
-		case Ast::VariateType::UVec2:
-			return "uint2";
-		case Ast::VariateType::UVec3:
-			return "uint3";
-		case Ast::VariateType::UVec4:
-			return "uint4";
-		case Ast::VariateType::DVec2:
-			return "double2";
-		case Ast::VariateType::DVec3:
-			return "double3";
-		case Ast::VariateType::DVec4:
-			return "double4";
-		case Ast::VariateType::BVec2:
-			return "bool2";
-		case Ast::VariateType::BVec3:
-			return "bool3";
-		case Ast::VariateType::BVec4:
-			return "bool4";
-		case Ast::VariateType::Mat2:
-			return "float2x2";
-		case Ast::VariateType::Mat3:
-			return "float3x3";
-		case Ast::VariateType::Mat4:
-			return "float4x4";
-		case Ast::VariateType::Mat2x3:
-			return "float2x3";
-		case Ast::VariateType::Mat2x4:
-			return "float2x4";
-		case Ast::VariateType::Mat3x2:
-			return "float3x2";
-		case Ast::VariateType::Mat3x4:
-			return "float3x4";
-		case Ast::VariateType::Mat4x2:
-			return "float4x2";
-		case Ast::VariateType::Mat4x3:
-			return "float4x3";
-		default:break;
+		result += getCodeIndentation() + statement->parse() + "\n";
 	}
-	return "Undefined";
+	nestHierarchy--;
+	result += getCodeIndentation() + "}";
+	return result;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getCodeIndentation()
+{
+	//ide可能会误报warning
+	return std::string(nestHierarchy, '\t');
 }

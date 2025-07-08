@@ -13,7 +13,6 @@ namespace EmbeddedShader::Generator
 
 	public:
 		std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure);
-		std::string getVariateTypeName(Ast::VariateType variateType);
 
 		template<typename T>
 		static std::string getVariateTypeName() {return "unknown";}
@@ -26,16 +25,19 @@ namespace EmbeddedShader::Generator
 
 		//		std::string getVariateTypeName
 
-		std::string getParseOutput(const Ast::DefineLocalVariate* node);
-		std::string getParseOutput(const Ast::DefineInputVariate* node);
-		std::string getParseOutput(const Ast::Assign* node);
-		std::string getParseOutput(const Ast::BinaryOperator* node);
-		std::string getParseOutput(const Ast::MemberAccess* node);
-		std::string getParseOutput(const Ast::DefineOutputVariate* node);
-		std::string getParseOutput(const Ast::IfStatement* node);
+		static std::string getParseOutput(const Ast::DefineLocalVariate* node);
+		static std::string getParseOutput(const Ast::DefineInputVariate* node);
+		static std::string getParseOutput(const Ast::Assign* node);
+		static std::string getParseOutput(const Ast::BinaryOperator* node);
+		static std::string getParseOutput(const Ast::MemberAccess* node);
+		static std::string getParseOutput(const Ast::DefineOutputVariate* node);
+		static std::string getParseOutput(const Ast::IfStatement* node);
 
 		std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:
+		static thread_local inline size_t nestHierarchy = 1;
+		static std::string getCodeIndentation();
+
 		template<typename T>
 		struct vec_traits
 		{
