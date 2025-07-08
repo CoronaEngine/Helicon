@@ -10,17 +10,24 @@ namespace EmbeddedShader::Ast
 	{
 		Vertex,
 		Fragment,
-		Compute,
+		//Compute,
 	};
 
 	enum class VariateType
 	{
 		Undefined = -1,
+		Int8,
+		Int16,
 		Int,
+		Int64,
+		Uint8,
+		Uint16,
 		Uint,
+		Uint64,
 		Float,
 		Double,
 		Bool,
+		Half,
 
 		Vec2,
 		Vec3,
