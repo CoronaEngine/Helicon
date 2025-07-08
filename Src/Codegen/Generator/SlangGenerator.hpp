@@ -1,5 +1,6 @@
 #pragma once
 #include <Codegen/Generator/ShaderGenerator.hpp>
+//#include <stdfloat>
 
 namespace EmbeddedShader::Generator
 {
@@ -40,7 +41,7 @@ namespace EmbeddedShader::Generator
 	DEFINE_VARIATE_TYPE_NAME_MAP(uint64_t, uint64_t);
 	DEFINE_VARIATE_TYPE_NAME_MAP(float, float);
 	DEFINE_VARIATE_TYPE_NAME_MAP(double, double);
-	//DEFINE_VARIATE_TYPE_NAME_MAP(std::float32_t, half);
+	//DEFINE_VARIATE_TYPE_NAME_MAP(std::float16_t, half);
 
 #undef DEFINE_VARIATE_TYPE_NAME_MAP
 }
