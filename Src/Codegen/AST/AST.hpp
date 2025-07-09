@@ -20,7 +20,6 @@ namespace EmbeddedShader::Ast
 
 	class AST
 	{
-		friend class Generator::BaseShaderGenerator;
 		friend class Generator::OpenGL::ShaderGenerator;
 		friend class Generator::SlangGenerator;
 		AST() = default;

@@ -1,6 +1,6 @@
 #pragma once
-#include <Codegen/Generator/ShaderGenerator.hpp>
-//#include <stdfloat>
+#include <Codegen/AST/Node.hpp>
+#include <Codegen/AST/Struct.hpp>
 
 namespace EmbeddedShader::Generator
 {

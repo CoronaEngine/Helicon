@@ -4,7 +4,6 @@
 #include <stack>
 #include <string>
 #include "Struct.hpp"
-#include "../Generator/ShaderGenerator.hpp"
 
 namespace EmbeddedShader::Ast
 {
@@ -29,12 +28,9 @@ namespace EmbeddedShader::Ast
 
 		std::shared_ptr<Variate> positionOutput;
 
-		static inline thread_local std::unique_ptr<Generator::BaseShaderGenerator> shaderGenerator;
 		static thread_local std::unique_ptr<Parser> currentParser;
 	public:
 		static std::string getUniqueVariateName();
 		static std::string getUniqueGlobalVariateName();
-		static void setShaderGenerator(std::unique_ptr<Generator::BaseShaderGenerator> generator);
-		static const std::unique_ptr<Generator::BaseShaderGenerator>& getShaderGenerator();
 	};
 }

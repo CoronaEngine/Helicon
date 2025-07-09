@@ -7,9 +7,9 @@
 #include"Compiler/ShaderCodeCompiler.h"
 
 #include <Codegen/AST/Parser.hpp>
+#include <Codegen/AST/AST.hpp>
 #include <Codegen/Generator/SlangGenerator.hpp>
 #include <ktm/type/vec.h>
-#include <Codegen/Generator/OpenGL/ShaderGenerator.hpp>
 
 using namespace EmbeddedShader;
 
@@ -67,8 +67,6 @@ int main(int argc, char* argv[])
 
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
-
-	Parser::setShaderGenerator(std::make_unique<Generator::OpenGL::ShaderGenerator>());
 
 	//auto color = AST::defineUniversalVariate<fvec4>();
 	auto vertShaderCode = [&]()
