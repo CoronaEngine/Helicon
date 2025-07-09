@@ -60,6 +60,9 @@ namespace EmbeddedShader::Generator
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:
+
+		static thread_local inline Ast::ShaderStage currentStage;
+
 		static thread_local inline size_t nestHierarchy = 1;
 		static std::string getCodeIndentation();
 

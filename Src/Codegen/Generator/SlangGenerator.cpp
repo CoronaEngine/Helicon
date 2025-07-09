@@ -3,6 +3,7 @@
 #include <Codegen/Generator/SlangGenerator.hpp>
 std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast::EmbeddedShaderStructure& structure)
 {
+	currentStage = structure.stage;
 	std::string output;
 
 	for (auto& statement: structure.globalStatements)
@@ -100,7 +101,9 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineOutputVariate* node)
 {
-	return node->variate->type->parse() + " " + node->variate->name + " : LOCATION" + std::to_string(node->variate->location) + ";";
+	if (currentStage != Ast::ShaderStage::Fragment)
+		return node->variate->type->parse() + " " + node->variate->name + " : LOCATION" + std::to_string(node->variate->location) + ";";
+	return node->variate->type->parse() + " " + node->variate->name + " : SV_TARGET" + std::to_string(node->variate->location) + ";";
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::IfStatement* node)
