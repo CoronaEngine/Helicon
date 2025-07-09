@@ -1,3 +1,4 @@
+#include <Codegen/AST/AST.hpp>
 #include <Codegen/AST/Parser.hpp>
 #include <Codegen/Generator/SlangGenerator.hpp>
 std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast::EmbeddedShaderStructure& structure)
@@ -9,37 +10,63 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 		output += statement->parse() + '\n';
 	}
 
-	for (auto& statement: structure.shaderOnlyStatements)
-	{
-		output += statement->parse() + '\n';
-	}
-
 	std::string mainContent;
 	for (auto& statement: structure.localStatements)
 	{
-		mainContent += statement->parse() + '\n';
+		mainContent += "\t" + statement->parse() + '\n';
 	}
 
-	// std::string entrypoint;
-	// std::string outputStruct;
-	// std::string outputStructName;
-	// {
-	// 	std::string stageType = "unknown";
-	// 	switch (structure.stage)
-	// 	{
-	// 		case Ast::ShaderStage::Vertex:
-	// 			stageType = "vertex";
-	// 			break;
-	// 		case Ast::ShaderStage::Fragment:
-	// 			stageType = "fragment";
-	// 			break;
-	// 	}
-	//
-	// 	outputStructName = stageType + "_output";
-	//
-	// 	entrypoint = "[shader(\"" + stageType + "\")]\n";
-	// 	entrypoint += outputStructName + " main(";
-	// }
+	std::string stageType = "unknown";
+	switch (structure.stage)
+	{
+		case Ast::ShaderStage::Vertex:
+			stageType = "vertex";
+			break;
+		case Ast::ShaderStage::Fragment:
+			stageType = "fragment";
+			break;
+	}
+
+	std::string outputStructName = "void";
+	std::string inputStructName;
+
+	if (!structure.inputStatements.empty())
+	{
+		inputStructName = stageType + "_input";
+		std::string inputStruct = "struct " + inputStructName +" {\n";
+		for (auto& statement: structure.inputStatements)
+		{
+			inputStruct += "\t" + statement->parse() + '\n';
+		}
+		inputStruct += "}\n";
+		output += inputStruct;
+	}
+
+	if (!structure.outputStatements.empty())
+	{
+		outputStructName = stageType + "_output";
+		std::string outputStruct = "struct " + outputStructName +" {\n";
+		for (auto& statement: structure.outputStatements)
+		{
+			outputStruct += "\t" + statement->parse() + '\n';
+		}
+		outputStruct += "}\n";
+		output += outputStruct;
+	}
+
+	std::string entrypoint = "[shader(\"" + stageType + "\")]\n";
+	entrypoint += outputStructName + " main(";
+	if (!structure.inputStatements.empty())
+		entrypoint += inputStructName + " input";
+	entrypoint += ") {\n";
+	if (!structure.outputStatements.empty())
+		entrypoint += "\t" + outputStructName + " output;\n";
+	entrypoint += mainContent;
+	if (!structure.outputStatements.empty())
+		entrypoint += "\treturn output;\n";
+	entrypoint += "}\n";
+
+	output += entrypoint;
 
 	return output;
 }
@@ -89,14 +116,26 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	return result;
 }
 
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::InputVariate* node)
+{
+	return "input." + node->name;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::OutputVariate* node)
+{
+	return "output." + node->name;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()
 {
-	//思考Slang的语义问题，先这样写，后续修改
-
 	auto positionOutput = std::make_shared<Ast::OutputVariate>();
-	positionOutput->type = Ast::VecType::createVecType(Ast::VariateType::Vec4); //后续接入Slang Generator的type mapping之后这里需要修改
+	positionOutput->type = Ast::AST::createVecType<ktm::fvec4>();
 	positionOutput->name = "position_output";
 	positionOutput->location = 0;
+	auto defineNode = std::make_shared<DefineSystemSemanticVariate>();
+	defineNode->variate = positionOutput;
+	defineNode->semanticName = "SV_POSITION";
+	Ast::AST::addOutputStatement(defineNode);
 	return positionOutput;
 }
 
@@ -104,4 +143,9 @@ std::string EmbeddedShader::Generator::SlangGenerator::getCodeIndentation()
 {
 	//ide可能会误报warning
 	return std::string(nestHierarchy, '\t');
+}
+
+std::string EmbeddedShader::Generator::DefineSystemSemanticVariate::parse()
+{
+	return variate->type->parse() + " " + variate->name + " : " + semanticName + ";";
 }

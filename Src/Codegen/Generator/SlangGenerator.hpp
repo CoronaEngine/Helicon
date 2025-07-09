@@ -12,7 +12,7 @@ namespace EmbeddedShader::Generator
 		static constexpr std::string variateBasicTypeNameMap = "unknown";
 
 	public:
-		std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure);
+		static std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure);
 
 		template<typename T>
 		static std::string getVariateTypeName() {return "unknown";}
@@ -23,6 +23,29 @@ namespace EmbeddedShader::Generator
 		template<typename T> requires ktm::is_matrix_v<T>
 		static std::string getVariateTypeName();
 
+		template<typename T> requires std::is_arithmetic_v<T>
+		static std::string getValueOutput(T&& value) {return std::to_string(std::forward<T>(value));}
+
+		template<typename T> requires ktm::is_vector_v<T>
+		static std::string getValueOutput(T&& value)
+		{
+			auto array = value.to_array();
+			std::string output = getVariateTypeName<T>() + "(";
+			output += getValueOutput(array[0]);
+			for (size_t i = 1; i < array.size(); ++i)
+			{
+				output += ", " + getValueOutput(array[i]);
+			}
+			output += ")";
+			return output;
+		}
+
+		// template<typename T> requires ktm::is_matrix_v<T>
+		// std::string getValueOutput(T&& value)
+		// {
+		//
+		// }
+
 		//		std::string getVariateTypeName
 
 		static std::string getParseOutput(const Ast::DefineLocalVariate* node);
@@ -32,6 +55,8 @@ namespace EmbeddedShader::Generator
 		static std::string getParseOutput(const Ast::MemberAccess* node);
 		static std::string getParseOutput(const Ast::DefineOutputVariate* node);
 		static std::string getParseOutput(const Ast::IfStatement* node);
+		static std::string getParseOutput(const Ast::InputVariate* node);
+		static std::string getParseOutput(const Ast::OutputVariate* node);
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:
@@ -93,4 +118,11 @@ template<> constexpr std::string SlangGenerator::variateBasicTypeNameMap<type> =
 		return getVariateTypeName<typename mat_traits<T>::scalar_type>() +
 			std::to_string(mat_traits<T>::row) + "x" + std::to_string(mat_traits<T>::column);
 	}
+
+	struct DefineSystemSemanticVariate : Ast::Statement
+	{
+		std::shared_ptr<Ast::Variate> variate;
+		std::string semanticName;
+		std::string parse() override;
+	};
 }

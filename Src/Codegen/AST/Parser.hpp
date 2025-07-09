@@ -22,7 +22,7 @@ namespace EmbeddedShader::Ast
 		void reset();
 
 		EmbeddedShaderStructure structure;
-		std::stack<std::vector<std::shared_ptr<Statement>>*> statementStack;
+		std::stack<std::vector<std::shared_ptr<Statement>>*> localStatementStack;
 
 		size_t currentVariateIndex = 0;
 		size_t currentGlobalVariateIndex = 0;

@@ -12,8 +12,13 @@ std::string EmbeddedShader::Generator::OpenGL::ShaderGenerator::getShaderOutput(
 		output += node->parse() + '\n';
 	}
 
-	//shader only statements
-	for (auto& node: structure.shaderOnlyStatements)
+	//input/output statements
+	for (auto& node: structure.inputStatements)
+	{
+		output += node->parse() + '\n';
+	}
+
+	for (auto& node: structure.outputStatements)
 	{
 		output += node->parse() + '\n';
 	}
@@ -295,6 +300,6 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::OpenGL:
 {
 	auto posOutput = std::make_shared<Ast::Variate>();
 	posOutput->name = "gl_Position";
-	posOutput->type = Ast::VecType::createVecType(Ast::VariateType::Vec4);
+	posOutput->type = Ast::AST::createVecType<ktm::fvec4>();
 	return posOutput;
 }

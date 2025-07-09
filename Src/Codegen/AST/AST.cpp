@@ -1,5 +1,7 @@
 #include "AST.hpp"
 #include <utility>
+#include <Codegen/Generator/SlangGenerator.hpp>
+
 #include "Parser.hpp"
 
 std::shared_ptr<EmbeddedShader::Ast::LocalVariate> EmbeddedShader::Ast::AST::defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue)
@@ -43,7 +45,7 @@ std::shared_ptr<EmbeddedShader::Ast::InputVariate> EmbeddedShader::Ast::AST::def
 	inputVariate->location = location;
 	auto defineNode = std::make_shared<DefineInputVariate>();
 	defineNode->variate = inputVariate;
-	addShaderOnlyStatement(defineNode);
+	addInputStatement(defineNode);
 	return inputVariate;
 }
 
@@ -63,7 +65,7 @@ std::shared_ptr<EmbeddedShader::Ast::OutputVariate> EmbeddedShader::Ast::AST::de
 	outputVariate->location = location;
 	auto defineNode = std::make_shared<DefineOutputVariate>();
 	defineNode->variate = outputVariate;
-	addShaderOnlyStatement(defineNode);
+	addOutputStatement(defineNode);
 	return outputVariate;
 }
 
@@ -72,12 +74,12 @@ void EmbeddedShader::Ast::AST::beginIf(std::shared_ptr<Value> condition)
 	auto ifStatement = std::make_shared<IfStatement>();
 	ifStatement->condition = std::move(condition);
 	addLocalStatement(ifStatement);
-	getStatementStack().push(&ifStatement->statements);
+	getLocalStatementStack().push(&ifStatement->statements);
 }
 
 void EmbeddedShader::Ast::AST::endIf()
 {
-	getStatementStack().pop();
+	getLocalStatementStack().pop();
 }
 
 std::shared_ptr<EmbeddedShader::Ast::UniversalVariate> EmbeddedShader::Ast::AST::defineUniversalVariate(std::shared_ptr<Type> type)
@@ -96,18 +98,23 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 	auto& posOutput = Parser::currentParser->positionOutput;
 	if (posOutput)
 		return posOutput;
-	posOutput = Parser::getShaderGenerator()->getPositionOutput();
+	posOutput = Generator::SlangGenerator::getPositionOutput();
 	return posOutput;
 }
 
 void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)
 {
-	getStatementStack().top()->push_back(std::move(statement));
+	getLocalStatementStack().top()->push_back(std::move(statement));
 }
 
-void EmbeddedShader::Ast::AST::addShaderOnlyStatement(std::shared_ptr<Statement> shaderOnlyStatement)
+void EmbeddedShader::Ast::AST::addInputStatement(std::shared_ptr<Statement> inputStatement)
 {
-	Parser::currentParser->structure.shaderOnlyStatements.push_back(std::move(shaderOnlyStatement));
+	Parser::currentParser->structure.inputStatements.push_back(std::move(inputStatement));
+}
+
+void EmbeddedShader::Ast::AST::addOutputStatement(std::shared_ptr<Statement> outputStatement)
+{
+	Parser::currentParser->structure.outputStatements.push_back(std::move(outputStatement));
 }
 
 void EmbeddedShader::Ast::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
@@ -115,9 +122,9 @@ void EmbeddedShader::Ast::AST::addGlobalStatement(std::shared_ptr<Statement> glo
 	Parser::currentParser->structure.globalStatements.push_back(std::move(globalStatement));
 }
 
-std::stack<std::vector<std::shared_ptr<EmbeddedShader::Ast::Statement>>*>& EmbeddedShader::Ast::AST::getStatementStack()
+std::stack<std::vector<std::shared_ptr<EmbeddedShader::Ast::Statement>>*>& EmbeddedShader::Ast::AST::getLocalStatementStack()
 {
-	return Parser::currentParser->statementStack;
+	return Parser::currentParser->localStatementStack;
 }
 
 EmbeddedShader::Ast::EmbeddedShaderStructure& EmbeddedShader::Ast::AST::getEmbeddedShaderStructure()

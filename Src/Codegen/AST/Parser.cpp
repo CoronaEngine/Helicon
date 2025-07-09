@@ -1,5 +1,7 @@
 #include "Parser.hpp"
 #include <utility>
+#include <Codegen/Generator/SlangGenerator.hpp>
+
 #include "../Generator/ShaderGenerator.hpp"
 
 thread_local std::unique_ptr<EmbeddedShader::Ast::Parser> EmbeddedShader::Ast::Parser::currentParser = std::unique_ptr<Parser>(new Parser);
@@ -7,9 +9,10 @@ thread_local std::unique_ptr<EmbeddedShader::Ast::Parser> EmbeddedShader::Ast::P
 std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode, ShaderStage stage)
 {
 	currentParser->structure.stage = stage;
-	currentParser->statementStack.push(&currentParser->structure.localStatements);
+	currentParser->localStatementStack.push(&currentParser->structure.localStatements);
 	shaderCode();
-	std::string output = shaderGenerator->getShaderOutput(currentParser->structure);
+	//std::string output = shaderGenerator->getShaderOutput(currentParser->structure);
+	std::string output = Generator::SlangGenerator::getShaderOutput(currentParser->structure);
 	currentParser->reset();
 	return output;
 }
@@ -17,7 +20,8 @@ std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shad
 void EmbeddedShader::Ast::Parser::reset()
 {
 	structure.localStatements.clear();
-	structure.shaderOnlyStatements.clear();
+	structure.inputStatements.clear();
+	structure.outputStatements.clear();
 	currentVariateIndex = 0;
 	positionOutput.reset();
 }

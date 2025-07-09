@@ -11,7 +11,8 @@ namespace EmbeddedShader::Ast
 	{
 		ShaderStage stage;
 		std::vector<std::shared_ptr<Statement>> globalStatements;
-		std::vector<std::shared_ptr<Statement>> shaderOnlyStatements;
+		std::vector<std::shared_ptr<Statement>> inputStatements;
+		std::vector<std::shared_ptr<Statement>> outputStatements;
 		std::vector<std::shared_ptr<Statement>> localStatements;
 	};
 }

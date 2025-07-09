@@ -46,7 +46,6 @@ namespace EmbeddedShader::Ast
 
 	struct VecType : NameType
 	{
-		[[nodiscard]] static std::shared_ptr<VecType> createVecType(VariateType type);
 	};
 
 	struct BasicValue : Value
@@ -113,6 +112,7 @@ namespace EmbeddedShader::Ast
 	struct InputVariate : Variate
 	{
 		size_t location = 0;
+		std::string parse() override;
 	};
 
 	struct DefineInputVariate : Statement
@@ -132,6 +132,7 @@ namespace EmbeddedShader::Ast
 	struct OutputVariate : Variate
 	{
 		size_t location = 0;
+		std::string parse() override;
 	};
 
 	struct DefineOutputVariate : Statement

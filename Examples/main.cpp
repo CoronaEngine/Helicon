@@ -70,31 +70,30 @@ int main(int argc, char* argv[])
 
 	Parser::setShaderGenerator(std::make_unique<Generator::OpenGL::ShaderGenerator>());
 
-	auto color = AST::defineUniversalVariate<fvec4>();
+	//auto color = AST::defineUniversalVariate<fvec4>();
 	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>(0);
+		auto aColor = AST::defineInputVariate<fvec4>(1);
+		auto outColor = AST::defineOutputVariate<fvec4>(0);
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
-		AST::assign(AST::access(AST::getPositionOutput(), "x"),114.f);
-		AST::assign(AST::access(color, "r"), 1.f);
+		AST::assign(outColor,aColor);
+
+		//AST::assign(AST::access(color, "r"), 1.f);
 	};
 
 	auto fragShaderCode = [&]()
 	{
+		auto outColor = AST::defineInputVariate<fvec4>(0);
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
-		AST::assign(fragColor,color);
+		//AST::assign(fragColor,color);
+		AST::assign(fragColor,outColor);
 	};
 
 	puts(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex).c_str());
 	puts(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment).c_str());
 
-	std::cout << "color permissions:" << color->permissions << "\n";
-
-	puts("generator 'getVariateTypeName' test:");
-	std::cout << Generator::SlangGenerator::getVariateTypeName<fvec2>() << "\n";
-	std::cout << Generator::SlangGenerator::getVariateTypeName<float>() << "\n";
-	std::cout << Generator::SlangGenerator::getVariateTypeName<int>() << "\n";
-	std::cout << Generator::SlangGenerator::getVariateTypeName<fmat2x2>() << "\n";
+	//std::cout << "color permissions:" << color->permissions << "\n";
 
 	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex), ::ShaderStage::VertexShader);
 	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment), ::ShaderStage::FragmentShader);
