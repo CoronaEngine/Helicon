@@ -7,9 +7,8 @@
 #include"Compiler/ShaderCodeCompiler.h"
 
 #include <Codegen/AST/Parser.hpp>
-#include <Codegen/AST/AST.hpp>
-#include <Codegen/Generator/SlangGenerator.hpp>
 #include <ktm/type/vec.h>
+#include <Codegen/Generator/OpenGL/ShaderGenerator.hpp>
 
 using namespace EmbeddedShader;
 
@@ -68,33 +67,32 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	//auto color = AST::defineUniversalVariate<fvec4>();
+	Parser::setShaderGenerator(std::make_unique<Generator::OpenGL::ShaderGenerator>());
+
 	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>(0);
-		auto aColor = AST::defineInputVariate<fvec4>(1);
-		auto outColor = AST::defineOutputVariate<fvec4>(0);
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
-		AST::assign(outColor,aColor);
-
-		//AST::assign(AST::access(color, "r"), 1.f);
+		AST::assign(AST::access(AST::getPositionOutput(), "x"),114.f);
 	};
 
 	auto fragShaderCode = [&]()
 	{
-		auto outColor = AST::defineInputVariate<fvec4>(0);
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
-		//AST::assign(fragColor,color);
+		auto outColor = AST::defineUniformVariate<fvec4>(0);
+		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
 		AST::assign(fragColor,outColor);
+		AST::beginIf(AST::binaryOperator(AST::access(outColor,"r"),0.f,"!="));
+		AST::assign(fragColor,outColor);
+		AST::endIf();
+		AST::endIf();
 	};
 
-	puts(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex).c_str());
-	puts(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment).c_str());
+	puts(Parser::parse(vertShaderCode).c_str());
+	puts(Parser::parse(fragShaderCode).c_str());
 
-	//std::cout << "color permissions:" << color->permissions << "\n";
-
-	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex), ::ShaderStage::VertexShader);
-	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment), ::ShaderStage::FragmentShader);
+	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode), ShaderStage::VertexShader);
+	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode), ShaderStage::FragmentShader);
 
 
 
