@@ -143,8 +143,7 @@ std::string ShaderLanguageConverter::spirvCrossConverter(std::vector<uint32_t> s
 	return resultCode;
 }
 
-
-static std::string slangCompiler(std::string _filePath, ShaderLanguage targetLanguage)
+std::string ShaderLanguageConverter::slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage)
 {
     std::string result;
     Slang::ComPtr<slang::IGlobalSession> slangGlobalSession;
@@ -165,12 +164,12 @@ static std::string slangCompiler(std::string _filePath, ShaderLanguage targetLan
         slangGlobalSession->findProfile("sm_6_7");
         break;
     }
-    case ShaderLanguage::SpirV: {
-        targetDesc.format = SLANG_SPIRV;
-        slangGlobalSession->findProfile("spirv_1_6");
-        targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
-        break;
-    }
+    // case ShaderLanguage::SpirV: {
+    //     targetDesc.format = SLANG_SPIRV;
+    //     slangGlobalSession->findProfile("spirv_1_6");
+    //     targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+    //     break;
+    // }
     // case ShaderLanguage::MSL:
     //	targetDesc.format = SLANG_METAL; break;
     // case ShaderLanguage::DXIL:
@@ -187,7 +186,8 @@ static std::string slangCompiler(std::string _filePath, ShaderLanguage targetLan
     slang::IModule *slangModule = nullptr;
     {
         Slang::ComPtr<slang::IBlob> diagnosticBlob;
-        slangModule = session->loadModule(_filePath.c_str(), diagnosticBlob.writeRef());
+        //slangModule = session->loadModule(shaderCode.c_str(), diagnosticBlob.writeRef());
+    	slangModule = session->loadModuleFromSourceString(std::to_string(std::hash<std::string>()(shaderCode)).c_str(),"",shaderCode.c_str(),diagnosticBlob.writeRef());
     }
     Slang::ComPtr<slang::IEntryPoint> entryPoint;
     slangModule->findEntryPointByName("main", entryPoint.writeRef());
@@ -210,6 +210,49 @@ static std::string slangCompiler(std::string _filePath, ShaderLanguage targetLan
     return result;
 }
 
+std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string& shaderCode)
+{
+	std::vector<uint32_t> result;
+    Slang::ComPtr<slang::IGlobalSession> slangGlobalSession;
+    slang::createGlobalSession(slangGlobalSession.writeRef());
+    slang::SessionDesc sessionDesc = {};
+    slang::TargetDesc targetDesc = {};
+
+    targetDesc.format = SLANG_SPIRV;
+    slangGlobalSession->findProfile("spirv_1_6");
+    targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+
+    sessionDesc.targets = &targetDesc;
+    sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
+    sessionDesc.targetCount = 1;
+    Slang::ComPtr<slang::ISession> session;
+    (slangGlobalSession->createSession(sessionDesc, session.writeRef()));
+    slang::IModule *slangModule = nullptr;
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticBlob;
+        //slangModule = session->loadModule(shaderCode.c_str(), diagnosticBlob.writeRef());
+    	slangModule = session->loadModuleFromSourceString(std::to_string(std::hash<std::string>()(shaderCode)).c_str(),"",shaderCode.c_str(),diagnosticBlob.writeRef());
+    }
+    Slang::ComPtr<slang::IEntryPoint> entryPoint;
+    slangModule->findEntryPointByName("main", entryPoint.writeRef());
+    std::vector<slang::IComponentType *> componentTypes;
+    componentTypes.push_back(slangModule);
+    componentTypes.push_back(entryPoint);
+    Slang::ComPtr<slang::IComponentType> composedProgram;
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        SlangResult result = session->createCompositeComponentType(
+            componentTypes.data(), componentTypes.size(), composedProgram.writeRef(), diagnosticsBlob.writeRef());
+    }
+    Slang::ComPtr<slang::IBlob> spirvCode;
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        SlangResult result = composedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
+    }
+    result.resize(spirvCode->getBufferSize() / sizeof(uint32_t));
+    memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
+    return result;
+}
 
 //get Reflected Bind Info
 ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBindInfo(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion)
