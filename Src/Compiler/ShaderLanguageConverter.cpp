@@ -11,9 +11,9 @@
 #include <spirv_hlsl.hpp>
 #include <spirv_msl.hpp>
 
-//#include <slang/slang.h>
-//#include <slang/slang-com-ptr.h>
-//#include <slang/slang-com-helper.h>
+#include <slang.h>
+#include <slang-com-ptr.h>
+#include <slang-com-helper.h>
 
 #include"ShaderLanguageConverter.h"
 
@@ -143,72 +143,72 @@ std::string ShaderLanguageConverter::spirvCrossConverter(std::vector<uint32_t> s
 	return resultCode;
 }
 
-//
-//static std::string slangCompiler(std::string _filePath, ShaderLanguage targetLanguage)
-//{
-//    std::string result;
-//    Slang::ComPtr<slang::IGlobalSession> slangGlobalSession;
-//    slang::createGlobalSession(slangGlobalSession.writeRef());
-//    slang::SessionDesc sessionDesc = {};
-//    slang::TargetDesc targetDesc = {};
-//    switch (targetLanguage)
-//    {
-//    case ShaderLanguage::GLSL:
-//        // case ShaderLanguage::ESSL:
-//        {
-//            targetDesc.format = SLANG_GLSL;
-//            slangGlobalSession->findProfile("glsl_460");
-//            break;
-//        }
-//    case ShaderLanguage::HLSL: {
-//        targetDesc.format = SLANG_HLSL;
-//        slangGlobalSession->findProfile("sm_6_7");
-//        break;
-//    }
-//    case ShaderLanguage::SpirV: {
-//        targetDesc.format = SLANG_SPIRV;
-//        slangGlobalSession->findProfile("spirv_1_6");
-//        targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
-//        break;
-//    }
-//    // case ShaderLanguage::MSL:
-//    //	targetDesc.format = SLANG_METAL; break;
-//    // case ShaderLanguage::DXIL:
-//    //	targetDesc.format = SLANG_DXIL; break;
-//    default:
-//        return result;
-//        break;
-//    }
-//    sessionDesc.targets = &targetDesc;
-//    sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
-//    sessionDesc.targetCount = 1;
-//    Slang::ComPtr<slang::ISession> session;
-//    (slangGlobalSession->createSession(sessionDesc, session.writeRef()));
-//    slang::IModule *slangModule = nullptr;
-//    {
-//        Slang::ComPtr<slang::IBlob> diagnosticBlob;
-//        slangModule = session->loadModule(_filePath.c_str(), diagnosticBlob.writeRef());
-//    }
-//    Slang::ComPtr<slang::IEntryPoint> entryPoint;
-//    slangModule->findEntryPointByName("main", entryPoint.writeRef());
-//    std::vector<slang::IComponentType *> componentTypes;
-//    componentTypes.push_back(slangModule);
-//    componentTypes.push_back(entryPoint);
-//    Slang::ComPtr<slang::IComponentType> composedProgram;
-//    {
-//        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-//        SlangResult result = session->createCompositeComponentType(
-//            componentTypes.data(), componentTypes.size(), composedProgram.writeRef(), diagnosticsBlob.writeRef());
-//    }
-//    Slang::ComPtr<slang::IBlob> spirvCode;
-//    {
-//        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-//        SlangResult result = composedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
-//    }
-//    result.resize(spirvCode->getBufferSize() / sizeof(char));
-//    memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
-//    return result;
-//}
+
+static std::string slangCompiler(std::string _filePath, ShaderLanguage targetLanguage)
+{
+    std::string result;
+    Slang::ComPtr<slang::IGlobalSession> slangGlobalSession;
+    slang::createGlobalSession(slangGlobalSession.writeRef());
+    slang::SessionDesc sessionDesc = {};
+    slang::TargetDesc targetDesc = {};
+    switch (targetLanguage)
+    {
+    case ShaderLanguage::GLSL:
+        // case ShaderLanguage::ESSL:
+        {
+            targetDesc.format = SLANG_GLSL;
+            slangGlobalSession->findProfile("glsl_460");
+            break;
+        }
+    case ShaderLanguage::HLSL: {
+        targetDesc.format = SLANG_HLSL;
+        slangGlobalSession->findProfile("sm_6_7");
+        break;
+    }
+    case ShaderLanguage::SpirV: {
+        targetDesc.format = SLANG_SPIRV;
+        slangGlobalSession->findProfile("spirv_1_6");
+        targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+        break;
+    }
+    // case ShaderLanguage::MSL:
+    //	targetDesc.format = SLANG_METAL; break;
+    // case ShaderLanguage::DXIL:
+    //	targetDesc.format = SLANG_DXIL; break;
+    default:
+        return result;
+        break;
+    }
+    sessionDesc.targets = &targetDesc;
+    sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
+    sessionDesc.targetCount = 1;
+    Slang::ComPtr<slang::ISession> session;
+    (slangGlobalSession->createSession(sessionDesc, session.writeRef()));
+    slang::IModule *slangModule = nullptr;
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticBlob;
+        slangModule = session->loadModule(_filePath.c_str(), diagnosticBlob.writeRef());
+    }
+    Slang::ComPtr<slang::IEntryPoint> entryPoint;
+    slangModule->findEntryPointByName("main", entryPoint.writeRef());
+    std::vector<slang::IComponentType *> componentTypes;
+    componentTypes.push_back(slangModule);
+    componentTypes.push_back(entryPoint);
+    Slang::ComPtr<slang::IComponentType> composedProgram;
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        SlangResult result = session->createCompositeComponentType(
+            componentTypes.data(), componentTypes.size(), composedProgram.writeRef(), diagnosticsBlob.writeRef());
+    }
+    Slang::ComPtr<slang::IBlob> spirvCode;
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        SlangResult result = composedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
+    }
+    result.resize(spirvCode->getBufferSize() / sizeof(char));
+    memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
+    return result;
+}
 
 
 //get Reflected Bind Info
