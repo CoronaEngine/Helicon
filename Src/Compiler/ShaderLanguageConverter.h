@@ -12,7 +12,9 @@ struct ShaderLanguageConverter
 	static std::string spirvCrossConverter(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion = -1);
 
 	// Compile Slang to others
-    //static std::string slangCompiler(std::string _filePath, ShaderLanguage targetLanguage);
+    static std::string slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage);
+
+    static std::vector<uint32_t> slangSpirvCompiler(const std::string& shaderCode);
 
 	//get Reflected Bind Info
 	static ShaderCodeModule::ShaderResources spirvCrossReflectedBindInfo(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage = ShaderLanguage::GLSL, int32_t targetVersion = 330);

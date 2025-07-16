@@ -11,11 +11,18 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
 
 #if CABBAGE_ENGINE_DEBUG
     std::vector<uint32_t> codeSpirV = {};
-    std::string codeGLSL = "";
-    std::string codeHLSL = "";
+    std::string codeGLSL;
+    std::string codeHLSL;
+    std::string codeSlang;
 
     switch (language)
     {
+    case ShaderLanguage::Slang:
+        codeSlang = shaderCode;
+        codeSpirV = ShaderLanguageConverter::slangSpirvCompiler(codeSlang);
+        codeGLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::GLSL);
+        codeHLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::HLSL);
+        break;
     case ShaderLanguage::GLSL:
         codeGLSL = shaderCode;
         codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeGLSL, language, inputStage);
@@ -40,6 +47,7 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     ShaderHardcodeManager::hardcodeShaderCode(codeSpirV, ShaderLanguage::SpirV, inputStage, sourceLocation);
     ShaderHardcodeManager::hardcodeShaderCode(codeGLSL, ShaderLanguage::GLSL, inputStage, sourceLocation);
     ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
+    ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
 #endif
 }
 

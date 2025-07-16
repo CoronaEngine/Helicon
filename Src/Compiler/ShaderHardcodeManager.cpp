@@ -65,6 +65,10 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::string& shaderCode, Sh
 	case ShaderLanguage::HLSL:
 	    HardcodeShaders::hardcodeShadersHLSL.insert(std::pair(hardcodeVariableName, shaderCode));
 		break;
+	case ShaderLanguage::Slang:
+		HardcodeShaders::hardcodeShadersSlang.insert(std::pair(hardcodeVariableName, shaderCode));
+		break;
+
 	//case ShaderLanguage::ESSL:
 	//	if (HardcodeShaders::hardcodeShadersESSL.find(hardcodeVariableName) == HardcodeShaders::hardcodeShadersESSL.end())
 	//	{
@@ -187,6 +191,7 @@ bool ShaderHardcodeManager::generateHardcodeFiles()
 		//fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersDXIL;" << std::endl;
 		fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersHLSL;" << std::endl;
 		fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersGLSL;" << std::endl;
+		fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersSlang;" << std::endl;
 		//fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersESSL;" << std::endl;
 		//fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersMSL;" << std::endl;
 		fileStream << "};" << std::endl;
@@ -209,6 +214,7 @@ bool ShaderHardcodeManager::generateHardcodeFiles()
 	//createCodeFile("DXIL");
 	createCodeFile("HLSL");
 	createCodeFile("GLSL");
+	createCodeFile("Slang");
 	//createCodeFile("ESSL");
 	//createCodeFile("MSL");
 
@@ -280,6 +286,8 @@ std::string ShaderHardcodeManager::ShaderLanguageFlagToString(ShaderLanguage lan
 		return "HLSL";
 	case ShaderLanguage::SpirV:
 		return "SpirV";
+	case ShaderLanguage::Slang:
+		return "Slang";
 	//case ShaderLanguage::ESSL:
 	//	return "ESSL";
 	//case ShaderLanguage::MSL:

@@ -1,27 +1,16 @@
 #include "Parser.hpp"
 #include <utility>
-#include <Codegen/Generator/SlangGenerator.hpp>
+#include "../Generator/ShaderGenerator.hpp"
 
 thread_local std::unique_ptr<EmbeddedShader::Ast::Parser> EmbeddedShader::Ast::Parser::currentParser = std::unique_ptr<Parser>(new Parser);
 
-std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode, ShaderStage stage)
+std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode)
 {
-	currentParser->structure.stage = stage;
-	currentParser->localStatementStack.push(&currentParser->structure.localStatements);
+	currentParser->statementStack.push(&currentParser->structure.statements);
 	shaderCode();
-	//std::string output = shaderGenerator->getShaderOutput(currentParser->structure);
-	std::string output = Generator::SlangGenerator::getShaderOutput(currentParser->structure);
-	currentParser->reset();
+	std::string output = shaderGenerator->getShaderOutput(currentParser->structure);
+	currentParser.reset(new Parser);
 	return output;
-}
-
-void EmbeddedShader::Ast::Parser::reset()
-{
-	structure.localStatements.clear();
-	structure.inputStatements.clear();
-	structure.outputStatements.clear();
-	currentVariateIndex = 0;
-	positionOutput.reset();
 }
 
 std::string EmbeddedShader::Ast::Parser::getUniqueVariateName()
@@ -29,7 +18,12 @@ std::string EmbeddedShader::Ast::Parser::getUniqueVariateName()
 	return "var_" + std::to_string(currentParser->currentVariateIndex++);
 }
 
-std::string EmbeddedShader::Ast::Parser::getUniqueGlobalVariateName()
+void EmbeddedShader::Ast::Parser::setShaderGenerator(std::unique_ptr<Generator::BaseShaderGenerator> generator)
 {
-	return "global_var_" + std::to_string(currentParser->currentGlobalVariateIndex++);
+	shaderGenerator = std::move(generator);
+}
+
+const std::unique_ptr<EmbeddedShader::Generator::BaseShaderGenerator>& EmbeddedShader::Ast::Parser::getShaderGenerator()
+{
+	return shaderGenerator;
 }
