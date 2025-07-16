@@ -40,7 +40,11 @@ target_include_directories(Helicon PUBLIC
     "${PROJECT_SOURCE_DIR}/Env/preprocessor/include"
     "${PROJECT_SOURCE_DIR}/Env/glslang"
     "${PROJECT_SOURCE_DIR}/Env/SPIRV-Cross"
+    "${PROJECT_SOURCE_DIR}/Env/slang/include"
 )
+
+target_link_directories(Helicon PUBLIC
+    ${PROJECT_SOURCE_DIR}/Env/slang/lib)
 
 target_link_libraries(Helicon PUBLIC
     glslang
@@ -49,4 +53,7 @@ target_link_libraries(Helicon PUBLIC
     spirv-cross-c
     spirv-cross-cpp
     spirv-cross-util
+    slang
+    slang-rt
+    gfx
 )
