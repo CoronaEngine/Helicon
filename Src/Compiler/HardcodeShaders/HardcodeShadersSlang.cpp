@@ -1,28 +1,26 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_97_32",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_95_32",
 ShaderCodeModule(R"(
-struct vertex_ssbo_struct {
+struct vertex_ubo_struct {
 	float4 global_var_0;
 }
-RWStructuredBuffer<vertex_ssbo_struct> shader_ssbo;
+ConstantBuffer<vertex_ubo_struct> shader_ubo;
 struct vertex_input {
 	float3 var_0 : LOCATION0;
-	float4 var_1 : LOCATION1;
 }
 struct vertex_output {
-	float4 var_2 : LOCATION0;
+	float4 var_1 : LOCATION0;
 	float4 position_output : SV_POSITION;
 }
 [shader("vertex")]
 vertex_output main(vertex_input input) {
 	vertex_output output;
 	output.position_output = float4(input.var_0,1.000000);
-	output.var_2 = input.var_1;
-	shader_ssbo[0].global_var_0 = input.var_1;
+	output.var_1 = shader_ubo.global_var_0;
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_98_31",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_96_31",
 ShaderCodeModule(R"(
 struct fragment_input {
 	float4 var_0 : LOCATION0;
