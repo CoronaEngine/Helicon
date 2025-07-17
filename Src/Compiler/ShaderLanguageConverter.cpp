@@ -232,6 +232,11 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
         Slang::ComPtr<slang::IBlob> diagnosticBlob;
         //slangModule = session->loadModule(shaderCode.c_str(), diagnosticBlob.writeRef());
     	slangModule = session->loadModuleFromSourceString(std::to_string(std::hash<std::string>()(shaderCode)).c_str(),"",shaderCode.c_str(),diagnosticBlob.writeRef());
+		if (diagnosticBlob != nullptr)
+		{
+			std::cout << static_cast<const char*>(diagnosticBlob->getBufferPointer()) << "\n";
+			return {};
+		}
     }
     Slang::ComPtr<slang::IEntryPoint> entryPoint;
     slangModule->findEntryPointByName("main", entryPoint.writeRef());

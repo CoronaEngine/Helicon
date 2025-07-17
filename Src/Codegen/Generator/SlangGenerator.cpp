@@ -111,7 +111,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::MemberAccess* node)
 {
-	return node->value->parse() + "." + node->memberName + ";";
+	return node->value->parse() + "." + node->memberName;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineOutputVariate* node)
@@ -150,10 +150,10 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 		return "";
 
 	std::string bufferType = "StructuredBuffer";
-	if (std::dynamic_pointer_cast<Ast::BasicType>(node->array->type))
-	{
-		bufferType = "Buffer";
-	}
+	// if (std::dynamic_pointer_cast<Ast::BasicType>(node->array->type))
+	// {
+	// 	bufferType = "Buffer";
+	// }
 
 	if (node->array->permissions == Ast::AccessPermissions::ReadOnly)
 	{
