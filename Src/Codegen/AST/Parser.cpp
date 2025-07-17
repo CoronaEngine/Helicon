@@ -9,7 +9,6 @@ std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shad
 	currentParser->structure.stage = stage;
 	currentParser->localStatementStack.push(&currentParser->structure.localStatements);
 	shaderCode();
-	//std::string output = shaderGenerator->getShaderOutput(currentParser->structure);
 	std::string output = Generator::SlangGenerator::getShaderOutput(currentParser->structure);
 	currentParser->reset();
 	return output;
@@ -17,6 +16,8 @@ std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shad
 
 void EmbeddedShader::Ast::Parser::reset()
 {
+	for (const auto& global: structure.globalStatements)
+		global->resetAccessPermissions();
 	structure.localStatements.clear();
 	structure.inputStatements.clear();
 	structure.outputStatements.clear();

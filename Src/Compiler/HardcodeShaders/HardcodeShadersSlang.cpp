@@ -16,5 +16,19 @@ vertex_output main(vertex_input input) {
 	return output;
 }
  )")
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_97_31",
+ShaderCodeModule(R"(struct fragment_input {
+	float4 var_0 : LOCATION0;
+}
+struct fragment_output {
+	float4 var_1 : SV_TARGET0;
+}
+[shader("fragment")]
+fragment_output main(fragment_input input) {
+	fragment_output output;
+	output.var_1 = input.var_0;
+	return output;
+}
+ )")
 },
 };

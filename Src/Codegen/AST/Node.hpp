@@ -63,6 +63,7 @@ namespace EmbeddedShader::Ast
 
 	struct Statement : Node
 	{
+		virtual void resetAccessPermissions() {}
 	};
 
 	struct DefineLocalVariate : Statement
@@ -74,28 +75,6 @@ namespace EmbeddedShader::Ast
 
 	struct BinaryOperator : Value
 	{
-		// enum class Type
-		// {
-		// 	Add, // +
-		// 	Subtract, // -
-		// 	Multiply, // *
-		// 	Divide,  // /
-		// 	Modulo,  // %
-		// 	BitwiseAnd, // &
-		// 	BitwiseOr, // |
-		// 	BitwiseXor, // ^
-		// 	BitwiseLeftShift, // <<
-		// 	BitwiseRightShift, // >>
-		// 	Equal, // =
-		// 	NotEqual, // !=
-		// 	LessThan, // <
-		// 	LessThanOrEqual, // <=
-		// 	GreaterThan, // >=
-		// 	GreaterThanOrEqual, // >
-		// 	And, // &&,
-		// 	Or, // ||
-		// };
-
 		std::shared_ptr<Value> value1;
 		std::shared_ptr<Value> value2;
 		std::string type;
@@ -160,5 +139,6 @@ namespace EmbeddedShader::Ast
 	{
 		std::shared_ptr<UniversalVariate> variate;
 		std::string parse() override;
+		void resetAccessPermissions() override;
 	};
 }

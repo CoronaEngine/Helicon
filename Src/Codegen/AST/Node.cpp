@@ -1,5 +1,6 @@
 #include "Node.hpp"
 
+#include <filesystem>
 #include <Codegen/Generator/SlangGenerator.hpp>
 
 #include "Parser.hpp"
@@ -94,4 +95,9 @@ void EmbeddedShader::Ast::UniversalVariate::access(AccessPermissions permissions
 std::string EmbeddedShader::Ast::DefineUniversalVariate::parse()
 {
 	return Statement::parse();
+}
+
+void EmbeddedShader::Ast::DefineUniversalVariate::resetAccessPermissions()
+{
+	variate->permissions = AccessPermissions::None;
 }

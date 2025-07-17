@@ -40,5 +40,42 @@ vertex_output_0 main(vertex_input_0 input_0)
 }
 
  )")
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_97_31",
+ShaderCodeModule(R"(#pragma pack_matrix(column_major)
+#ifdef SLANG_HLSL_ENABLE_NVAPI
+#include "nvHLSLExtns.h"
+#endif
+
+#ifndef __DXC_VERSION_MAJOR
+// warning X3557: loop doesn't seem to do anything, forcing loop to unroll
+#pragma warning(disable : 3557)
+#endif
+
+
+#line 4 "93c5c0eac5af52beab10d75607e55ff1a9f9aeac"
+struct fragment_output_0
+{
+    float4 var_1_0 : SV_TARGET0;
+};
+
+
+#line 1
+struct fragment_input_0
+{
+    float4 var_0_0 : LOCATION0;
+};
+
+
+
+fragment_output_0 main(fragment_input_0 input_0)
+{
+
+#line 9
+    fragment_output_0 output_0;
+    output_0.var_1_0 = input_0.var_0_0;
+    return output_0;
+}
+
+ )")
 },
 };

@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	//auto color = AST::defineUniversalVariate<fvec4>();
+	auto color = AST::defineUniversalVariate<fvec4>();
 	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>(0);
