@@ -40,9 +40,15 @@ namespace EmbeddedShader::Ast
 		std::string parse() override;
 	};
 
-	using LocalVariate = Variate;
+	struct LocalVariate : Variate
+	{
 
-	using BasicType = NameType;
+	};
+
+	struct BasicType : NameType
+	{
+
+	};
 
 	struct VecType : NameType
 	{

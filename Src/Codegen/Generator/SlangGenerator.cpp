@@ -148,12 +148,19 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 {
 	if (node->array->permissions == Ast::AccessPermissions::None)
 		return "";
-	if (node->array->permissions == Ast::AccessPermissions::ReadOnly)
+
+	std::string bufferType = "StructuredBuffer";
+	if (std::dynamic_pointer_cast<Ast::BasicType>(node->array->type))
 	{
-		return "StructuredBuffer<" + node->array->type->parse() + "> " + node->array->name + ";";
+		bufferType = "Buffer";
 	}
 
-	return "RWStructuredBuffer<" + node->array->type->parse() + "> " + node->array->name + ";";
+	if (node->array->permissions == Ast::AccessPermissions::ReadOnly)
+	{
+		return bufferType + "<" + node->array->type->parse() + "> " + node->array->name + ";";
+	}
+
+	return "RW" + bufferType + "<" + node->array->type->parse() + "> " + node->array->name + ";";
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
