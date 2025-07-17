@@ -76,8 +76,8 @@ namespace EmbeddedShader::Ast
 
 		static std::shared_ptr<Variate> getPositionOutput();
 
-		static std::shared_ptr<ElementVariate> at(std::shared_ptr<UniversalArray> array,
-		                                          uint32_t index);
+		static std::shared_ptr<ElementVariate> at(std::shared_ptr<UniversalArray> array, uint32_t index);
+		static std::shared_ptr<ElementVariate> at(std::shared_ptr<UniversalArray> array, const std::shared_ptr<Value>& index);
 	private:
 		static void addLocalStatement(std::shared_ptr<Statement> statement);
 		static void addInputStatement(std::shared_ptr<Statement> inputStatement);

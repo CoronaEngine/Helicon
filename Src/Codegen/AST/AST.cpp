@@ -124,6 +124,16 @@ std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::a
 	return variate;
 }
 
+std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(std::shared_ptr<UniversalArray> array,
+	const std::shared_ptr<Value>& index)
+{
+	auto variate = std::make_shared<ElementVariate>();
+	variate->type = array->type;
+	variate->name = array->name + "[" + index->parse() + "]";
+	variate->array = std::move(array);
+	return variate;
+}
+
 void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)
 {
 	getLocalStatementStack().top()->push_back(std::move(statement));
