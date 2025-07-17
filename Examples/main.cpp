@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
 		auto outColor = AST::defineOutputVariate<fvec4>(0);
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
 		AST::assign(outColor,aColor);
+		AST::assign(color,aColor);
 
 		//AST::assign(AST::access(color, "r"), 1.f);
 	};

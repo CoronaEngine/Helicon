@@ -84,7 +84,7 @@ std::string EmbeddedShader::Ast::IfStatement::parse()
 
 std::string EmbeddedShader::Ast::UniversalVariate::parse()
 {
-	return Variate::parse();
+	return Generator::SlangGenerator::getParseOutput(this);
 }
 
 void EmbeddedShader::Ast::UniversalVariate::access(AccessPermissions permissions)
@@ -94,7 +94,7 @@ void EmbeddedShader::Ast::UniversalVariate::access(AccessPermissions permissions
 
 std::string EmbeddedShader::Ast::DefineUniversalVariate::parse()
 {
-	return Statement::parse();
+	return Generator::SlangGenerator::getParseOutput(this);
 }
 
 void EmbeddedShader::Ast::DefineUniversalVariate::resetAccessPermissions()
