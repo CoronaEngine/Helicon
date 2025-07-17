@@ -13,6 +13,7 @@ namespace EmbeddedShader::Generator
 
 	public:
 		static std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure);
+		static std::string getGlobalOutput(const Ast::EmbeddedShaderStructure& structure);
 
 		template<typename T>
 		static std::string getVariateTypeName() {return "unknown";}
@@ -59,6 +60,8 @@ namespace EmbeddedShader::Generator
 		static std::string getParseOutput(const Ast::OutputVariate* node);
 		static std::string getParseOutput(const Ast::DefineUniversalVariate* node);
 		static std::string getParseOutput(const Ast::UniversalVariate* node);
+		static std::string getParseOutput(const Ast::DefineUniformVariate* node);
+		static std::string getParseOutput(const Ast::UniformVariate* node);
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:

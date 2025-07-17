@@ -4,6 +4,24 @@
 
 thread_local std::unique_ptr<EmbeddedShader::Ast::Parser> EmbeddedShader::Ast::Parser::currentParser = std::unique_ptr<Parser>(new Parser);
 
+std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::parse(const std::vector<ParseParameter>& parameters)
+{
+	std::vector<ParseOutput> outputs;
+	for (const auto& parameter: parameters)
+	{
+		outputs.emplace_back(parse(parameter.shaderCode,parameter.stage),parameter.stage);
+	}
+
+	auto globalOutput = Generator::SlangGenerator::getGlobalOutput(currentParser->structure);
+	for (auto& output: outputs)
+		output.output = globalOutput + output.output;
+
+	for (const auto& global: currentParser->structure.globalStatements)
+		global->resetAccessPermissions();
+
+	return outputs;
+}
+
 std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode, ShaderStage stage)
 {
 	currentParser->structure.stage = stage;
@@ -16,8 +34,6 @@ std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shad
 
 void EmbeddedShader::Ast::Parser::reset()
 {
-	for (const auto& global: structure.globalStatements)
-		global->resetAccessPermissions();
 	structure.localStatements.clear();
 	structure.inputStatements.clear();
 	structure.outputStatements.clear();

@@ -101,3 +101,23 @@ void EmbeddedShader::Ast::DefineUniversalVariate::resetAccessPermissions()
 {
 	variate->permissions = AccessPermissions::None;
 }
+
+std::string EmbeddedShader::Ast::UniformVariate::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
+void EmbeddedShader::Ast::UniformVariate::access(AccessPermissions permissions)
+{
+	this->permissions = this->permissions | permissions;
+}
+
+std::string EmbeddedShader::Ast::DefineUniformVariate::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
+void EmbeddedShader::Ast::DefineUniformVariate::resetAccessPermissions()
+{
+	variate->permissions = AccessPermissions::None;
+}

@@ -10,12 +10,25 @@ namespace EmbeddedShader::Ast
 	struct Variate;
 	struct Statement;
 
+	struct ParseParameter
+	{
+		const std::function<void()>& shaderCode;
+		ShaderStage stage;
+	};
+
+	struct ParseOutput
+	{
+		std::string output;
+		ShaderStage stage;
+	};
+
 	class Parser
 	{
 		friend class AST;
 	public:
-		static std::string parse(const std::function<void()>& shaderCode, ShaderStage stage);
+		static std::vector<ParseOutput> parse(const std::vector<ParseParameter>& parameters);
 	private:
+		static std::string parse(const std::function<void()>& shaderCode, ShaderStage stage);
 		Parser() = default;
 
 		void reset();

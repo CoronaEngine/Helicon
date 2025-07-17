@@ -6,11 +6,6 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 	currentStage = structure.stage;
 	std::string output;
 
-	for (auto& statement: structure.globalStatements)
-	{
-		output += statement->parse() + '\n';
-	}
-
 	std::string mainContent;
 	for (auto& statement: structure.localStatements)
 	{
@@ -26,15 +21,6 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 		case Ast::ShaderStage::Fragment:
 			stageType = "fragment";
 			break;
-	}
-
-	if (!uboMembers.empty())
-	{
-		auto uboStructName = stageType + "_ubo_struct";
-		auto uboStruct = "struct " + uboStructName + " {\n" + uboMembers + "}\n";
-		auto ubo = "ConstantBuffer<" + uboStructName + "> shader_ubo;\n";
-		output += uboStruct + ubo;
-		uboMembers.clear();
 	}
 
 	if (!ssboMembers.empty())
@@ -86,6 +72,26 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 	entrypoint += "}\n";
 
 	output += entrypoint;
+
+	return output;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast::EmbeddedShaderStructure& structure)
+{
+	std::string output;
+	for (auto& statement: structure.globalStatements)
+	{
+		output += statement->parse() + '\n';
+	}
+
+	if (!uboMembers.empty())
+	{
+		std::string uboStructName = "global_ubo_struct";
+		auto uboStruct = "struct " + uboStructName + " {\n" + uboMembers + "}\n";
+		auto ubo = "ConstantBuffer<" + uboStructName + "> shader_ubo;\n";
+		output += uboStruct + ubo;
+		uboMembers.clear();
+	}
 
 	return output;
 }
@@ -170,6 +176,18 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->permissions == Ast::AccessPermissions::ReadOnly)
 		return "shader_ubo." + node->name;
 	return "shader_ssbo[0]." + node->name; //后续对于数组要特别处理
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
+{
+	if (node->variate->permissions == Ast::AccessPermissions::ReadOnly)
+		uboMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
+	return "";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniformVariate* node)
+{
+	return "shader_ubo." + node->name;
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()

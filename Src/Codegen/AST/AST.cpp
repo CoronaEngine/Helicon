@@ -93,6 +93,18 @@ std::shared_ptr<EmbeddedShader::Ast::UniversalVariate> EmbeddedShader::Ast::AST:
 	return variate;
 }
 
+std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::defineUniformVariate(
+	std::shared_ptr<Type> type)
+{
+	auto variate = std::make_shared<UniformVariate>();
+	variate->type = std::move(type);
+	variate->name = Parser::getUniqueGlobalVariateName();
+	auto defineNode = std::make_shared<DefineUniformVariate>();
+	defineNode->variate = variate;
+	addGlobalStatement(defineNode);
+	return variate;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPositionOutput()
 {
 	auto& posOutput = Parser::currentParser->positionOutput;

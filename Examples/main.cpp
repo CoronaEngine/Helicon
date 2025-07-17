@@ -68,32 +68,37 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	auto color = AST::defineUniversalVariate<fvec4>();
+	auto color = AST::defineUniformVariate<fvec4>();
+	auto color2 = AST::defineUniformVariate<fvec4>();
 	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>(0);
 		auto outColor = AST::defineOutputVariate<fvec4>(0);
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
 		AST::assign(outColor,color);
+		AST::assign(outColor,color2);
 
 		//AST::assign(AST::access(color, "r"), 1.f);
 	};
 
+	auto color3 = AST::defineUniformVariate<fvec4>();
 	auto fragShaderCode = [&]()
 	{
 		auto outColor = AST::defineInputVariate<fvec4>(0);
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
 		//AST::assign(fragColor,color);
-		AST::assign(fragColor,outColor);
+		AST::assign(fragColor,color);
+		AST::assign(fragColor,color3);
 	};
 
-	puts(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex).c_str());
-	puts(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment).c_str());
+	auto parseOutput = Parser::parse({{vertShaderCode,Ast::ShaderStage::Vertex},{fragShaderCode, Ast::ShaderStage::Fragment}});
+	puts(parseOutput[0].output.c_str());
+	puts(parseOutput[1].output.c_str());
 
 	//std::cout << "color permissions:" << color->permissions << "\n";
 
-	ShaderCodeCompiler vertxShader(Parser::parse(vertShaderCode, Ast::ShaderStage::Vertex), ::ShaderStage::VertexShader,ShaderLanguage::Slang);
-	ShaderCodeCompiler fragShader(Parser::parse(fragShaderCode, Ast::ShaderStage::Fragment), ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+	ShaderCodeCompiler vertxShader(parseOutput[0].output, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+	ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 
 
