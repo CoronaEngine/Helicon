@@ -58,15 +58,13 @@ namespace EmbeddedShader::Generator
 		static std::string getParseOutput(const Ast::IfStatement* node);
 		static std::string getParseOutput(const Ast::InputVariate* node);
 		static std::string getParseOutput(const Ast::OutputVariate* node);
-		static std::string getParseOutput(const Ast::DefineUniversalVariate* node);
-		static std::string getParseOutput(const Ast::UniversalVariate* node);
+		static std::string getParseOutput(const Ast::DefineUniversalArray* node);
 		static std::string getParseOutput(const Ast::DefineUniformVariate* node);
 		static std::string getParseOutput(const Ast::UniformVariate* node);
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:
 		static thread_local inline std::string uboMembers;
-		static thread_local inline std::string ssboMembers;
 		static thread_local inline Ast::ShaderStage currentStage;
 
 		static thread_local inline size_t nestHierarchy = 1;

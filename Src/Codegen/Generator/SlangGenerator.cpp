@@ -23,15 +23,6 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 			break;
 	}
 
-	if (!ssboMembers.empty())
-	{
-		auto ssboStructName = stageType + "_ssbo_struct";
-		auto ssboStruct = "struct " + ssboStructName + " {\n" + ssboMembers + "}\n";
-		auto ssbo = "RWStructuredBuffer<" + ssboStructName + "> shader_ssbo;\n";
-		output += ssboStruct + ssbo;
-		ssboMembers.clear();
-	}
-
 	std::string outputStructName = "void";
 	std::string inputStructName;
 
@@ -88,7 +79,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 	{
 		std::string uboStructName = "global_ubo_struct";
 		auto uboStruct = "struct " + uboStructName + " {\n" + uboMembers + "}\n";
-		auto ubo = "ConstantBuffer<" + uboStructName + "> shader_ubo;\n";
+		auto ubo = "ConstantBuffer<" + uboStructName + "> global_ubo;\n";
 		output += uboStruct + ubo;
 		uboMembers.clear();
 	}
@@ -153,41 +144,27 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	return "output." + node->name;
 }
 
-std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniversalVariate* node)
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniversalArray* node)
 {
-	if (node->variate->permissions == Ast::AccessPermissions::None)
+	if (node->array->permissions == Ast::AccessPermissions::None)
 		return "";
-	if (node->variate->permissions == Ast::AccessPermissions::ReadOnly)
+	if (node->array->permissions == Ast::AccessPermissions::ReadOnly)
 	{
-		//UBO
-		uboMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
-		return "";
+		return "StructuredBuffer<" + node->array->type->parse() + "> " + node->array->name + ";";
 	}
 
-	//SSBO
-
-	ssboMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
-
-	return "";
-}
-
-std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniversalVariate* node)
-{
-	if (node->permissions == Ast::AccessPermissions::ReadOnly)
-		return "shader_ubo." + node->name;
-	return "shader_ssbo[0]." + node->name; //后续对于数组要特别处理
+	return "RWStructuredBuffer<" + node->array->type->parse() + "> " + node->array->name + ";";
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
 {
-	if (node->variate->permissions == Ast::AccessPermissions::ReadOnly)
-		uboMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
+	uboMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
 	return "";
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniformVariate* node)
 {
-	return "shader_ubo." + node->name;
+	return "global_ubo." + node->name;
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()

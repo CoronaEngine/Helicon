@@ -62,11 +62,11 @@ namespace EmbeddedShader::Ast
 		static void beginIf(std::shared_ptr<Value> condition);
 		static void endIf();
 
-		static std::shared_ptr<UniversalVariate> defineUniversalVariate(std::shared_ptr<Type> type);
-		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<UniversalVariate> defineUniversalVariate();
-		template<typename VariateType> requires ktm::is_vector_v<VariateType>
-		static std::shared_ptr<UniversalVariate> defineUniversalVariate();
+		static std::shared_ptr<UniversalArray> defineUniversalArray(std::shared_ptr<Type> elementType);
+		template<typename ElementType> requires std::is_arithmetic_v<ElementType>
+		static std::shared_ptr<UniversalArray> defineUniversalArray();
+		template<typename ElementType> requires ktm::is_vector_v<ElementType>
+		static std::shared_ptr<UniversalArray> defineUniversalArray();
 
 		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type);
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -75,6 +75,9 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<UniformVariate> defineUniformVariate();
 
 		static std::shared_ptr<Variate> getPositionOutput();
+
+		static std::shared_ptr<ElementVariate> at(std::shared_ptr<UniversalArray> array,
+		                                          uint32_t index);
 	private:
 		static void addLocalStatement(std::shared_ptr<Statement> statement);
 		static void addInputStatement(std::shared_ptr<Statement> inputStatement);
@@ -211,18 +214,18 @@ namespace EmbeddedShader::Ast
 		return defineOutputVariate(createVecType<VariateType>(), location);
 	}
 
-	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<UniversalVariate> AST::defineUniversalVariate()
+	template<typename ElementType> requires std::is_arithmetic_v<ElementType>
+	std::shared_ptr<UniversalArray> AST::defineUniversalArray()
 	{
 		auto type = std::make_shared<BasicType>();
-		type->name = Generator::SlangGenerator::getVariateTypeName<VariateType>();
-		return defineUniversalVariate(type);
+		type->name = Generator::SlangGenerator::getVariateTypeName<ElementType>();
+		return defineUniversalArray(type);
 	}
 
 	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<UniversalVariate> AST::defineUniversalVariate()
+	std::shared_ptr<UniversalArray> AST::defineUniversalArray()
 	{
-		return defineUniversalVariate(createVecType<VariateType>());
+		return defineUniversalArray(createVecType<VariateType>());
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>

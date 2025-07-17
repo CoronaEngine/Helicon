@@ -127,32 +127,36 @@ namespace EmbeddedShader::Ast
         std::string parse() override;
     };
 
-	//UBO or SSBO
-	struct UniversalVariate : Variate
+	//StructuredBuffer or RWStructuredBuffer
+	struct UniversalArray : Variate
 	{
+		//Variate::type 将被解释为元素类型
+
 		AccessPermissions permissions = AccessPermissions::None;
-		std::string parse() override;
 		void access(AccessPermissions permissions) override;
 	};
 
-	struct DefineUniversalVariate : Statement
+	struct ElementVariate : Variate
 	{
-		std::shared_ptr<UniversalVariate> variate;
+		std::shared_ptr<UniversalArray> array;
+		void access(AccessPermissions permissions) override;
+	};
+
+	struct DefineUniversalArray : Statement
+	{
+		std::shared_ptr<UniversalArray> array;
 		std::string parse() override;
 		void resetAccessPermissions() override;
 	};
 
 	struct UniformVariate : Variate
 	{
-		AccessPermissions permissions = AccessPermissions::None;
 		std::string parse() override;
-		void access(AccessPermissions permissions) override;
 	};
 
 	struct DefineUniformVariate : Statement
 	{
 		std::shared_ptr<UniformVariate> variate;
 		std::string parse() override;
-		void resetAccessPermissions() override;
 	};
 }

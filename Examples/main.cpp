@@ -68,27 +68,23 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	auto color = AST::defineUniformVariate<fvec4>();
-	auto color2 = AST::defineUniformVariate<fvec4>();
+
 	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>(0);
-		auto outColor = AST::defineOutputVariate<fvec4>(0);
 		AST::assign(AST::getPositionOutput(),AST::createVecValue<fvec4>(aPos,1.f));
-		AST::assign(outColor,color);
-		AST::assign(outColor,color2);
 
 		//AST::assign(AST::access(color, "r"), 1.f);
 	};
 
-	auto color3 = AST::defineUniformVariate<fvec4>();
+	auto color = AST::defineUniformVariate<fvec4>();
+	auto array = AST::defineUniversalArray<fvec4>();
 	auto fragShaderCode = [&]()
 	{
-		auto outColor = AST::defineInputVariate<fvec4>(0);
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
 		//AST::assign(fragColor,color);
 		AST::assign(fragColor,color);
-		AST::assign(fragColor,color3);
+		AST::assign(fragColor,AST::at(array,0));
 	};
 
 	auto parseOutput = Parser::parse({{vertShaderCode,Ast::ShaderStage::Vertex},{fragShaderCode, Ast::ShaderStage::Fragment}});

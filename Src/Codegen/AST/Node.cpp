@@ -82,24 +82,24 @@ std::string EmbeddedShader::Ast::IfStatement::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
-std::string EmbeddedShader::Ast::UniversalVariate::parse()
-{
-	return Generator::SlangGenerator::getParseOutput(this);
-}
-
-void EmbeddedShader::Ast::UniversalVariate::access(AccessPermissions permissions)
+void EmbeddedShader::Ast::UniversalArray::access(AccessPermissions permissions)
 {
 	this->permissions = this->permissions | permissions;
 }
 
-std::string EmbeddedShader::Ast::DefineUniversalVariate::parse()
+void EmbeddedShader::Ast::ElementVariate::access(AccessPermissions permissions)
+{
+	array->access(permissions);
+}
+
+std::string EmbeddedShader::Ast::DefineUniversalArray::parse()
 {
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
-void EmbeddedShader::Ast::DefineUniversalVariate::resetAccessPermissions()
+void EmbeddedShader::Ast::DefineUniversalArray::resetAccessPermissions()
 {
-	variate->permissions = AccessPermissions::None;
+	array->permissions = AccessPermissions::None;
 }
 
 std::string EmbeddedShader::Ast::UniformVariate::parse()
@@ -107,17 +107,7 @@ std::string EmbeddedShader::Ast::UniformVariate::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
-void EmbeddedShader::Ast::UniformVariate::access(AccessPermissions permissions)
-{
-	this->permissions = this->permissions | permissions;
-}
-
 std::string EmbeddedShader::Ast::DefineUniformVariate::parse()
 {
 	return Generator::SlangGenerator::getParseOutput(this);
-}
-
-void EmbeddedShader::Ast::DefineUniformVariate::resetAccessPermissions()
-{
-	variate->permissions = AccessPermissions::None;
 }

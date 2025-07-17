@@ -82,13 +82,13 @@ void EmbeddedShader::Ast::AST::endIf()
 	getLocalStatementStack().pop();
 }
 
-std::shared_ptr<EmbeddedShader::Ast::UniversalVariate> EmbeddedShader::Ast::AST::defineUniversalVariate(std::shared_ptr<Type> type)
+std::shared_ptr<EmbeddedShader::Ast::UniversalArray> EmbeddedShader::Ast::AST::defineUniversalArray(std::shared_ptr<Type> elementType)
 {
-	auto variate = std::make_shared<UniversalVariate>();
-	variate->type = std::move(type);
+	auto variate = std::make_shared<UniversalArray>();
+	variate->type = std::move(elementType);
 	variate->name = Parser::getUniqueGlobalVariateName();
-	auto defineNode = std::make_shared<DefineUniversalVariate>();
-	defineNode->variate = variate;
+	auto defineNode = std::make_shared<DefineUniversalArray>();
+	defineNode->array = variate;
 	addGlobalStatement(defineNode);
 	return variate;
 }
@@ -112,6 +112,16 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 		return posOutput;
 	posOutput = Generator::SlangGenerator::getPositionOutput();
 	return posOutput;
+}
+
+std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(
+	std::shared_ptr<UniversalArray> array, uint32_t index)
+{
+	auto variate = std::make_shared<ElementVariate>();
+	variate->type = array->type;
+	variate->name = array->name + "[" + std::to_string(index) + "]";
+	variate->array = std::move(array);
+	return variate;
 }
 
 void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)
