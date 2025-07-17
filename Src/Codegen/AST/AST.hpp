@@ -26,7 +26,7 @@ namespace EmbeddedShader::Ast
 	public:
 
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<BasicValue> createValue(VariateType&& value);
+		static std::shared_ptr<BasicValue> createValue(VariateType value);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<VecValue> createValue(const VariateType& value);
 
@@ -128,7 +128,7 @@ namespace EmbeddedShader::Ast
 	};
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<BasicValue> AST::createValue(VariateType&& value)
+	std::shared_ptr<BasicValue> AST::createValue(VariateType value)
 	{
 		auto baseValue = std::make_shared<BasicValue>();
 		baseValue->value = Generator::SlangGenerator::getValueOutput(std::forward<VariateType>(value));

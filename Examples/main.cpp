@@ -84,7 +84,9 @@ int main(int argc, char* argv[])
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
 		//AST::assign(fragColor,color);
 		AST::assign(fragColor,color);
-		AST::assign(AST::access(fragColor,"a"),AST::at(array,0));
+
+		auto index = AST::defineLocalVariate<int>(0);
+		AST::assign(AST::access(fragColor,"a"),AST::at(array,index));
 	};
 
 	auto parseOutput = Parser::parse({{vertShaderCode,Ast::ShaderStage::Vertex},{fragShaderCode, Ast::ShaderStage::Fragment}});

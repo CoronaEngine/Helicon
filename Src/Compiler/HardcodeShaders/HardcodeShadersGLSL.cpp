@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_96_32",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_98_32",
 ShaderCodeModule(R"(#version 450
 layout(row_major) uniform;
 layout(row_major) buffer;
@@ -30,7 +30,7 @@ void main()
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_97_31",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_99_31",
 ShaderCodeModule(R"(#version 450
 layout(row_major) uniform;
 layout(row_major) buffer;
@@ -74,12 +74,13 @@ void main()
 #line 12
     fragment_output_0 output_0;
     output_0.var_0_0 = global_ubo_0.global_var_0_0;
+
     output_0.var_0_0[3] = global_var_1_0._data[uint(0)];
 
-#line 14
+#line 15
     entryPointParam_main_var_0_0 = output_0.var_0_0;
 
-#line 14
+#line 15
     return;
 }
 
