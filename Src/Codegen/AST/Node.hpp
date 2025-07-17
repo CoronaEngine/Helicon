@@ -29,6 +29,8 @@ namespace EmbeddedShader::Ast
 
 	class Value : public Node
 	{
+	public:
+		virtual void access(AccessPermissions permissions);
 	};
 
 	struct Variate : Value
@@ -44,7 +46,6 @@ namespace EmbeddedShader::Ast
 
 	struct VecType : NameType
 	{
-		[[nodiscard]] static std::shared_ptr<VecType> createVecType(VariateType type);
 	};
 
 	struct BasicValue : Value
@@ -111,6 +112,7 @@ namespace EmbeddedShader::Ast
 	struct InputVariate : Variate
 	{
 		size_t location = 0;
+		std::string parse() override;
 	};
 
 	struct DefineInputVariate : Statement
@@ -124,11 +126,13 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<Value> value;
 		std::string memberName;
 		std::string parse() override;
+		void access(AccessPermissions permissions) override;
 	};
 
 	struct OutputVariate : Variate
 	{
 		size_t location = 0;
+		std::string parse() override;
 	};
 
 	struct DefineOutputVariate : Statement
@@ -136,18 +140,6 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<OutputVariate> variate;
 		std::string parse() override;
 	};
-
-	struct UniformVariate : Variate
-	{
-		size_t location = 0;
-		std::string parse() override;
-	};
-
-	struct DefineUniformVariate : Statement
-    {
-        std::shared_ptr<UniformVariate> variate;
-        std::string parse() override;
-    };
 
 	struct IfStatement : Statement
     {
@@ -159,8 +151,9 @@ namespace EmbeddedShader::Ast
 	//UBO or SSBO
 	struct UniversalVariate : Variate
 	{
-		VariateAccessPermissions permissions = VariateAccessPermissions::None;
+		AccessPermissions permissions = AccessPermissions::None;
 		std::string parse() override;
+		void access(AccessPermissions permissions) override;
 	};
 
 	struct DefineUniversalVariate : Statement

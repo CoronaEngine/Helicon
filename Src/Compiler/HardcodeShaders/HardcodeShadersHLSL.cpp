@@ -1,34 +1,44 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_94_32",
-ShaderCodeModule(R"(static float4 gl_Position;
-static float3 var_0;
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_96_32",
+ShaderCodeModule(R"(#pragma pack_matrix(column_major)
+#ifdef SLANG_HLSL_ENABLE_NVAPI
+#include "nvHLSLExtns.h"
+#endif
 
-struct SPIRV_Cross_Input
+#ifndef __DXC_VERSION_MAJOR
+// warning X3557: loop doesn't seem to do anything, forcing loop to unroll
+#pragma warning(disable : 3557)
+#endif
+
+
+#line 5 "0cf2e330aab87774dd000a8a0f076ba0d242c635"
+struct vertex_output_0
 {
-    float3 var_0 : TEXCOORD0;
+    float4 var_2_0 : LOCATION0;
+    float4 position_output_0 : SV_POSITION;
 };
 
-struct SPIRV_Cross_Output
+
+#line 1
+struct vertex_input_0
 {
-    float4 gl_Position : SV_Position;
+    float3 var_0_0 : LOCATION0;
+    float4 var_1_0 : LOCATION1;
 };
 
-void vert_main()
+
+
+
+vertex_output_0 main(vertex_input_0 input_0)
 {
-    gl_Position = float4(var_0, 1.0f);
-    gl_Position.x = 114.0f;
+
+#line 11
+    vertex_output_0 output_0;
+    output_0.position_output_0 = float4(input_0.var_0_0, 1.0f);
+    output_0.var_2_0 = input_0.var_1_0;
+    return output_0;
 }
 
-SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
-{
-    var_0 = stage_input.var_0;
-    vert_main();
-    SPIRV_Cross_Output stage_output;
-    stage_output.gl_Position = gl_Position;
-    return stage_output;
-}
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_95_31",
-ShaderCodeModule(R"( )")
 },
 };
