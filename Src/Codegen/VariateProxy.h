@@ -11,6 +11,7 @@
 #include <ktm/ktm.h>
 #include <ktm/type/vec.h>
 #include <Codegen/AST/AST.hpp>
+#include <Codegen/ParseHelper.h>
 
 
 namespace EmbeddedShader
@@ -29,8 +30,19 @@ namespace EmbeddedShader
 		VariateProxy()// requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)
 		{
 			//Uniform,Input,Local Variate
+			if (ParseHelper::isInInputParameter())
+			{
+				node = Ast::AST::defineInputVariate<Type>(ParseHelper::getCurrentInputIndex());
+				return;
+			}
 
-			node = Ast::AST::defineLocalVariate<Type>({});
+			if (ParseHelper::isInShaderCodeLambda())
+			{
+				node = Ast::AST::defineLocalVariate<Type>({});
+				return;
+			}
+
+			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
 		VariateProxy() requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)

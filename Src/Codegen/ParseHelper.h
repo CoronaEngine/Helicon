@@ -10,60 +10,61 @@ namespace EmbeddedShader
 		template<typename ReturnType> requires std::is_same_v<ReturnType, void>
 		static void callLambda(std::function<ReturnType()> f)
 		{
-			instance.isInShaderCodeLambda = true;
+			instance.bIsInShaderCodeLambda = true;
 			f();
-			instance.isInShaderCodeLambda = false;
+			instance.bIsInShaderCodeLambda = false;
 		}
 
 		template<typename ReturnType> requires !std::is_same_v<ReturnType, void>
 		static auto callLambda(std::function<ReturnType()> f)
 		{
-			instance.isInShaderCodeLambda = true;
+			instance.bIsInShaderCodeLambda = true;
 			auto result = f();
-			instance.isInShaderCodeLambda = false;
+			instance.bIsInShaderCodeLambda = false;
 			return result;
 		}
 
 		template<typename ReturnType,typename ParamType> requires std::is_same_v<ReturnType, void>
 		static auto callLambda(std::function<ReturnType(ParamType)> f, const ParamType& param)
 		{
-			instance.isInShaderCodeLambda = true;
+			instance.bIsInShaderCodeLambda = true;
 			f(param);
-			instance.isInShaderCodeLambda = false;
+			instance.bIsInShaderCodeLambda = false;
 		}
 
 		template<typename ReturnType,typename ParamType> requires !std::is_same_v<ReturnType, void>
 		static auto callLambda(std::function<ReturnType(ParamType)> f, const ParamType& param)
 		{
-			instance.isInShaderCodeLambda = true;
+			instance.bIsInShaderCodeLambda = true;
 			auto result = f(param);
-			instance.isInShaderCodeLambda = false;
+			instance.bIsInShaderCodeLambda = false;
 			return result;
 		}
 
 		template<typename ReturnType, typename... ParamTypes> requires std::is_same_v<ReturnType, void>
 		static auto callLambda(std::function<ReturnType(ParamTypes...)> f,std::tuple<ParamTypes...> params)
 		{
-			instance.isInShaderCodeLambda = true;
+			instance.bIsInShaderCodeLambda = true;
 			std::apply(f, params);
-			instance.isInShaderCodeLambda = false;
+			instance.bIsInShaderCodeLambda = false;
 		}
 
 		template<typename ReturnType, typename... ParamTypes> requires !std::is_same_v<ReturnType, void>
 		static auto callLambda(std::function<ReturnType(ParamTypes...)> f,std::tuple<ParamTypes...> params)
 		{
-			instance.isInShaderCodeLambda = true;
+			instance.bIsInShaderCodeLambda = true;
 			auto result = std::apply(f, params);
-			instance.isInShaderCodeLambda = false;
+			instance.bIsInShaderCodeLambda = false;
 			return result;
 		}
 
 		template<typename ReturnType,typename... ParamTypes>
 		static std::tuple<ParamTypes...> createParamTuple(const std::function<ReturnType(ParamTypes...)>& f)
 		{
-			instance.isInInputParameter = true;
+			instance.bIsInInputParameter = true;
 			auto tuple = std::tuple<ParamTypes...>();
-			instance.isInInputParameter = false;
+			instance.currentInputIndex = 0;
+			instance.bIsInInputParameter = false;
 			return tuple;
 		}
 
@@ -88,26 +89,27 @@ namespace EmbeddedShader
 		}
 
 		template<typename T,typename... ParamTypes>
-		static constexpr bool isReturnProxy(const std::function<T(ParamTypes...)>& f)
+		static constexpr bool isReturnProxy(const std::function<T(ParamTypes...)>& f);
+
+		static bool isInInputParameter()
 		{
-			return sIsReturnProxy<std::remove_cvref_t<decltype(f)>>::value;
+			return instance.bIsInInputParameter;
+		}
+
+		static bool isInShaderCodeLambda()
+		{
+			return instance.bIsInInputParameter;
+		}
+
+		static size_t getCurrentInputIndex()
+		{
+			return instance.currentInputIndex++;
 		}
 	private:
-		bool isInInputParameter = false;
-		bool isInShaderCodeLambda = false;
+		bool bIsInInputParameter = false;
+		bool bIsInShaderCodeLambda = false;
+		size_t currentInputIndex = 0;
 		static thread_local ParseHelper instance;
-
-		template<typename T>
-		struct sIsReturnProxy
-		{
-			static constexpr bool value = false;
-		};
-
-		template<typename T,typename... ParamTypes>
-		struct sIsReturnProxy<std::function<VariateProxy<T>(ParamTypes...)>>
-		{
-			static constexpr bool value = true;
-		};
 	};
 
 	thread_local ParseHelper ParseHelper::instance;

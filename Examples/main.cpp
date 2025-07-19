@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 	// ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	puts("------------------- Front-End Test -------------------");
-	auto vertex = [&]()
+	auto vertex = [&](VariateProxy<float> input)
 	{
 		VariateProxy<int> a;
 	};
