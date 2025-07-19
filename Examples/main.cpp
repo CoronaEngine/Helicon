@@ -92,8 +92,8 @@ int main(int argc, char* argv[])
 
 	//std::cout << "color permissions:" << color->permissions << "\n";
 
-	ShaderCodeCompiler vertxShader(parseOutput[0].output, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
-	ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+	// ShaderCodeCompiler vertxShader(parseOutput[0].output, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+	// ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&]()
