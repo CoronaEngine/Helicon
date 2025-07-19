@@ -127,13 +127,13 @@ auto RasterizedPipelineObject::callFuncWithParamTuple(const std::function<Return
 
 int main(int argc, char* argv[])
 {
-	auto lammdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
-		std::cout << "Member index: " << i
-			<< ", Member Value Type: " << typeid(structMember).name()
-			<< ", Member Name: " << name
-			<< std::endl;
-	};
-	boost::pfr::for_each_field_with_name(MyStruct2{}, lammdaReflect);
+	// auto lammdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
+	// 	std::cout << "Member index: " << i
+	// 		<< ", Member Value Type: " << typeid(structMember).name()
+	// 		<< ", Member Name: " << name
+	// 		<< std::endl;
+	// };
+	// boost::pfr::for_each_field_with_name(MyStruct2{}, lammdaReflect);
 
 
 	using namespace EmbeddedShader::Ast;
@@ -164,146 +164,124 @@ int main(int argc, char* argv[])
 	ShaderCodeCompiler vertxShader(parseOutput[0].output, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
 	ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
+	puts("------------------- Front-End Test -------------------");
+	auto vertex = [&]()
+	{
+		VariateProxy<int> a;
+	};
+
+	auto fragment = [&]
+	{
+		VariateProxy<int> b;
+	};
+
 
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 
-	VariateProxy<ktm::fvec3> vertexInput1 = ktm::fvec3(1, 2, 3);
-
-	VariateProxy<ktm::fvec3> vertexOutput1 = ktm::fvec3(1, 2, 3);
-
-	VariateProxy<ktm::fmat4x4> vertexOutput2 = ktm::fmat4x4::from_eye();
-	VariateProxy<VariateProxy<int>> vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
-	VariateProxy<VariateProxy<VariateProxy<int>>> vertexOutput4 = { { 1, 2 ,8, 1}, {72, 11, 48416 } };
-
-
-	Image2D<ktm::fvec3> image0 = { { ktm::fvec3(1, 2, 3)}, { ktm::fvec3(1, 2, 3) } };
-	Buffer<ktm::fvec3> buffer0 = { ktm::fvec3(1, 2, 3),  ktm::fvec3(1, 2, 3) };
-
-	VariateProxy<MyStruct1> buffer1;//ubo or ssbo
-	VariateProxy<MyStruct2> buffer2;//ubo or ssbo
-	VariateProxy<MyStruct3> buffer3;//ubo or ssbo
-
-	auto vertexShaderDemo =
-		[&]{
-			//uint32_t vertexIndex = 0; //globle vertex index
-			//auto vertex = buffer0[vertexIndex];
-
-			vertexInput1;
-			//vertexOutput1 = ktm::fvec3(1, 2, 3);
-			vertexOutput2 = ktm::fmat4x4::from_eye();
-			vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
-
-			buffer1->int_A = 1;
-
-			VariateProxy<ktm::fvec3> fvec3_A = ktm::fvec3(1, 2, 3);
-			VariateProxy<ktm::fvec3> fvec3_B = ktm::fvec3(1, 2, 3);
-
-			fvec3_B = max(fvec3_A, fvec3_B);
-			fvec3_B = min(fvec3_A, fvec3_B);
-
-
-			$IF(fvec3_A)
-			{
-			}
-			$ELIF(fvec3_B)
-			{
-			}
-			$ELSE
-			{
-			}
-
-			$WHILE(fvec3_A)
-			{
-
-			}
-
-			$IF(fvec3_A)
-			{
-				$IF(fvec3_A)
-				{
-				}
-			}
-
-			// $FOR(VariateProxy i = 0; true; ++i)
-			// {
-			// }
-
-			$DO
-			{
-
-				$WHILE(fvec3_A)
-				{
-				}
-
-				$WHILE(fvec3_A)
-				{
-				}
-			}
-			$WHILE(fvec3_A);
-	};
-
-	auto fragShaderDemo =
-		[&] {
-			VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
-			//outputColor = fvec4(1, 0, 0, 1); //globle output color
-		};
-
-	auto fragShaderDemo2 =
-		[&] {
-		VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
-		//outputColor = fvec4(1, 0, 0, 1); //globle output color
-		};
-
-	auto computeShaderDemo =
-		[&] {
-			buffer2->int_A;
-		};
-	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
-
+	// VariateProxy<ktm::fvec3> vertexInput1 = ktm::fvec3(1, 2, 3);
+	//
+	// VariateProxy<ktm::fvec3> vertexOutput1 = ktm::fvec3(1, 2, 3);
+	//
+	// VariateProxy<ktm::fmat4x4> vertexOutput2 = ktm::fmat4x4::from_eye();
+	// VariateProxy<VariateProxy<int>> vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
+	// VariateProxy<VariateProxy<VariateProxy<int>>> vertexOutput4 = { { 1, 2 ,8, 1}, {72, 11, 48416 } };
+	//
+	//
+	// Image2D<ktm::fvec3> image0 = { { ktm::fvec3(1, 2, 3)}, { ktm::fvec3(1, 2, 3) } };
+	// Buffer<ktm::fvec3> buffer0 = { ktm::fvec3(1, 2, 3),  ktm::fvec3(1, 2, 3) };
+	//
+	// VariateProxy<MyStruct1> buffer1;//ubo or ssbo
+	// VariateProxy<MyStruct2> buffer2;//ubo or ssbo
+	// VariateProxy<MyStruct3> buffer3;//ubo or ssbo
+	//
+	// auto vertexShaderDemo =
+	// 	[&]{
+	// 		//uint32_t vertexIndex = 0; //globle vertex index
+	// 		//auto vertex = buffer0[vertexIndex];
+	//
+	// 		vertexInput1;
+	// 		//vertexOutput1 = ktm::fvec3(1, 2, 3);
+	// 		vertexOutput2 = ktm::fmat4x4::from_eye();
+	// 		vertexOutput3 = { 1, 2 ,8, 1, 72, 11, 48416 };
+	//
+	// 		buffer1->int_A = 1;
+	//
+	// 		VariateProxy<ktm::fvec3> fvec3_A = ktm::fvec3(1, 2, 3);
+	// 		VariateProxy<ktm::fvec3> fvec3_B = ktm::fvec3(1, 2, 3);
+	//
+	// 		fvec3_B = max(fvec3_A, fvec3_B);
+	// 		fvec3_B = min(fvec3_A, fvec3_B);
+	//
+	//
+	// 		$IF(fvec3_A)
+	// 		{
+	// 		}
+	// 		$ELIF(fvec3_B)
+	// 		{
+	// 		}
+	// 		$ELSE
+	// 		{
+	// 		}
+	//
+	// 		$WHILE(fvec3_A)
+	// 		{
+	//
+	// 		}
+	//
+	// 		$IF(fvec3_A)
+	// 		{
+	// 			$IF(fvec3_A)
+	// 			{
+	// 			}
+	// 		}
+	//
+	// 		// $FOR(VariateProxy i = 0; true; ++i)
+	// 		// {
+	// 		// }
+	//
+	// 		$DO
+	// 		{
+	//
+	// 			$WHILE(fvec3_A)
+	// 			{
+	// 			}
+	//
+	// 			$WHILE(fvec3_A)
+	// 			{
+	// 			}
+	// 		}
+	// 		$WHILE(fvec3_A);
+	// };
+	//
+	// auto fragShaderDemo =
+	// 	[&] {
+	// 		VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
+	// 		//outputColor = fvec4(1, 0, 0, 1); //globle output color
+	// 	};
+	//
+	// auto fragShaderDemo2 =
+	// 	[&] {
+	// 	VariateProxy<ktm::fmat4x4> fragInput = vertexOutput2;
+	// 	//outputColor = fvec4(1, 0, 0, 1); //globle output color
+	// 	};
+	//
+	// auto computeShaderDemo =
+	// 	[&] {
+	// 		buffer2->int_A;
+	// 	};
+	// //////////////////////////////////// A demo using the EDSL ////////////////////////////////////
+	//
+	//
+	// //////////////////////////////////// A NEW demo using the EDSL ////////////////////////////////////
+	//
+	// VariateProxy<MyStruct1> uniform; //UBO
+	// Buffer<MyStruct1> arrayProxy = {{}}; //RWStructuredBuffer/StructuredBuffer
+	// auto newVert = [&](VariateProxy<fvec2> pos) //Vertex Input
+	// {
+	// 	//xxx
+	// 	//return //Output
+	// };
 
 	//////////////////////////////////// A NEW demo using the EDSL ////////////////////////////////////
-
-	VariateProxy<MyStruct1> uniform; //UBO
-	Buffer<MyStruct1> arrayProxy = {{}}; //RWStructuredBuffer/StructuredBuffer
-	auto newVert = [&](VariateProxy<fvec2> pos) //Vertex Input
-	{
-		//xxx
-		//return //Output
-	};
-
-	//////////////////////////////////// A NEW demo using the EDSL ////////////////////////////////////
-
-
-	//////////////////////////////////// EDSL Non-Proxy Parse Test ////////////////////////////////////
-
-	struct TestParamStruct
-	{
-		int a = 114;
-		float b = 114.514f;
-	};
-
-	struct FsInput
-	{
-		int x{};
-		int y{};
-	};
-
-	auto vs = [&](TestParamStruct param)
-	{
-		std::cout << "vs input a,b: " << param.a << "," << param.b << "\n";
-		FsInput output;
-		output.x = 1;
-		output.y = 2;
-		return output;
-	};
-
-	auto fs = [&](FsInput input)
-	{
-		std::cout << "fs input x,y: " << input.x << "," << input.y << "\n";
-	};
-
-	auto pipeline = RasterizedPipelineObject::parse(vs,fs);
-
-	//////////////////////////////////// EDSL Non-Proxy Parse Test ////////////////////////////////////
 }

@@ -34,7 +34,7 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<VecValue> createVecValue(Args&&... args);
 
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType&& value);
+		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType value);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<LocalVariate> defineLocalVariate(const VariateType& value);
 		static std::shared_ptr<LocalVariate> defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue);
@@ -161,7 +161,7 @@ namespace EmbeddedShader::Ast
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<LocalVariate> AST::defineLocalVariate(VariateType&& value)
+	std::shared_ptr<LocalVariate> AST::defineLocalVariate(VariateType value)
 	{
 		auto type = std::make_shared<BasicType>();
 		type->name = Generator::SlangGenerator::getVariateTypeName<VariateType>();
