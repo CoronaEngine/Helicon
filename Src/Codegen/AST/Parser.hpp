@@ -27,6 +27,8 @@ namespace EmbeddedShader::Ast
 		friend class AST;
 	public:
 		static std::vector<ParseOutput> parse(const std::vector<ParseParameter>& parameters);
+		static void beginShaderParse(ShaderStage stage);
+		static std::vector<ParseOutput> endPipelineParse();
 	private:
 		static std::string parse(const std::function<void()>& shaderCode, ShaderStage stage);
 		Parser() = default;
@@ -40,6 +42,10 @@ namespace EmbeddedShader::Ast
 		size_t currentGlobalVariateIndex = 0;
 
 		std::shared_ptr<Variate> positionOutput;
+
+		std::vector<ParseOutput> parseOutputs;
+
+		bool isInShaderParse = false;
 
 		static thread_local std::unique_ptr<Parser> currentParser;
 	public:

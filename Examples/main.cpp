@@ -149,15 +149,10 @@ int main(int argc, char* argv[])
 	};
 
 	auto color = AST::defineUniformVariate<fvec4>();
-	auto array = AST::defineUniversalArray<float>();
 	auto fragShaderCode = [&]()
 	{
 		auto fragColor = AST::defineOutputVariate<fvec4>(0);
-		//AST::assign(fragColor,color);
 		AST::assign(fragColor,color);
-
-		auto index = AST::defineLocalVariate<int>(0);
-		AST::assign(AST::access(fragColor,"a"),AST::at(array,index));
 	};
 
 	auto parseOutput = Parser::parse({{vertShaderCode,Ast::ShaderStage::Vertex},{fragShaderCode, Ast::ShaderStage::Fragment}});

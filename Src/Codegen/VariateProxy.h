@@ -10,6 +10,7 @@
 #include <tuple>
 #include <ktm/ktm.h>
 #include <ktm/type/vec.h>
+#include <Codegen/AST/AST.hpp>
 
 
 namespace EmbeddedShader
@@ -25,17 +26,23 @@ namespace EmbeddedShader
 	struct VariateProxy
 	{
 	public:
-		VariateProxy() requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)
+		VariateProxy()// requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)
 		{
+			//Uniform,Input,Local Variate
+
+			node = Ast::AST::defineLocalVariate<Type>({});
 		}
 
 		VariateProxy(const Type& value) requires is_mathematical<Type>&& std::is_fundamental<Type>::value
 		{
+			//Local Variate
+			node = Ast::AST::defineLocalVariate<Type>(value);
 		}
 
 
 		VariateProxy(const Type& value) requires (is_mathematical<Type> && !std::is_fundamental<Type>::value)
 		{
+			node = Ast::AST::defineLocalVariate<Type>(value);
 		}
 
 
@@ -50,10 +57,12 @@ namespace EmbeddedShader
 
 		VariateProxy(const std::initializer_list<Type>& value)
 		{
+			//Array 后续特化
 		}
 
 		VariateProxy(const VariateProxy<Type>& value)
 		{
+			//Input(from Output),Local Variate
 		}
 
 		~VariateProxy()
@@ -62,6 +71,7 @@ namespace EmbeddedShader
 
 		VariateProxy& operator[](uint32_t input)
 		{
+			//Array 后续特化
 			return *(new VariateProxy());
 		}
 
@@ -72,6 +82,7 @@ namespace EmbeddedShader
 
 		VariateProxy& operator=(const VariateProxy& rhs)
 		{
+			Ast::AST::assign(node,rhs.node);
 			return *this;
 		}
 
@@ -97,26 +108,31 @@ namespace EmbeddedShader
 
 		VariateProxy& operator+(const Type& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"+");
 			return *this;
 		}
 
 		VariateProxy& operator-(const Type& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"-");
 			return *this;
 		}
 
 		VariateProxy& operator*(const Type& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"*");
 			return *this;
 		}
 
 		VariateProxy& operator/(const Type& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"/");
 			return *this;
 		}
 
 		VariateProxy& operator%(const Type& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"%");
 			return *this;
 		}
 
@@ -127,11 +143,13 @@ namespace EmbeddedShader
 
 		VariateProxy& operator||(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"||");
 			return *this;
 		}
 
 		VariateProxy& operator&&(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"&&");
 			return *this;
 		}
 
@@ -142,106 +160,127 @@ namespace EmbeddedShader
 
 		VariateProxy& operator&(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"&");
 			return *this;
 		}
 
 		VariateProxy& operator|(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"|");
 			return *this;
 		}
 
 		VariateProxy& operator^(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"^");
 			return *this;
 		}
 
 		VariateProxy& operator<<(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"<<");
 			return *this;
 		}
 
 		VariateProxy& operator>>(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,">>");
 			return *this;
 		}
 
 		VariateProxy& operator+=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"+=");
 			return *this;
 		}
 
 		VariateProxy& operator-=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"-=");
 			return *this;
 		}
 
 		VariateProxy& operator*=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"*=");
 			return *this;
 		}
 
 		VariateProxy& operator/=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"/=");
 			return *this;
 		}
 
 		VariateProxy& operator%=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"%=");
 			return *this;
 		}
 
 		VariateProxy& operator&=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"&=");
 			return *this;
 		}
 
 		VariateProxy& operator|=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"|=");
 			return *this;
 		}
 
 		VariateProxy& operator^=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"^=");
 			return *this;
 		}
 
 		VariateProxy& operator>>=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,">>=");
 			return *this;
 		}
 
 		VariateProxy& operator<<=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"<<=");
 			return *this;
 		}
 		
 		VariateProxy<bool>& operator>(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,">");
 			return *(new VariateProxy<bool>(true));
 		}
 
 		VariateProxy<bool>& operator>=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,">=");
 			return *(new VariateProxy<bool>(true));
 		}
 
 		VariateProxy<bool>& operator<(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"<");
 			return *(new VariateProxy<bool>(true));
 		}
 
 		VariateProxy<bool>& operator<=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"<=");
 			return *(new VariateProxy<bool>(true));
 		}
 
 		VariateProxy<bool>& operator!=(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"!=");
 			return *(new VariateProxy<bool>(true));
 		}
 
 		VariateProxy<bool>& operator==(const VariateProxy& rhs)
 		{
+			Ast::AST::binaryOperator(node,rhs.node,"==");
 			return *(new VariateProxy<bool>(true));
 		}
 
@@ -284,5 +323,6 @@ namespace EmbeddedShader
 
 	private:
 		Type* value;
+		std::shared_ptr<Ast::Value> node;
 	};
 }

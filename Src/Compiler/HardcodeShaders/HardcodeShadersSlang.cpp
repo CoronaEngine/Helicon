@@ -1,7 +1,6 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_169_32",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_164_32",
 ShaderCodeModule(R"(
-StructuredBuffer<float> global_var_1;
 struct global_ubo_struct {
 	float4 global_var_0;
 }
@@ -19,9 +18,8 @@ vertex_output main(vertex_input input) {
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_170_31",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_165_31",
 ShaderCodeModule(R"(
-StructuredBuffer<float> global_var_1;
 struct global_ubo_struct {
 	float4 global_var_0;
 }
@@ -33,8 +31,6 @@ struct fragment_output {
 fragment_output main() {
 	fragment_output output;
 	output.var_0 = global_ubo.global_var_0;
-	int var_1 = 0;
-	output.var_0.a = global_var_1[var_1];
 	return output;
 }
  )")

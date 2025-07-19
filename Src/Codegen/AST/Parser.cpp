@@ -22,6 +22,38 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::parse
 	return outputs;
 }
 
+void EmbeddedShader::Ast::Parser::beginShaderParse(ShaderStage stage)
+{
+	if (currentParser->isInShaderParse)
+	{
+		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.stage);
+		currentParser->reset();
+		currentParser->isInShaderParse = false;
+	}
+	currentParser->structure.stage = stage;
+	currentParser->localStatementStack.push(&currentParser->structure.localStatements);
+}
+
+std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPipelineParse()
+{
+	if (currentParser->isInShaderParse)
+	{
+		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.stage);
+		currentParser->reset();
+		currentParser->isInShaderParse = false;
+	}
+
+	auto globalOutput = Generator::SlangGenerator::getGlobalOutput(currentParser->structure);
+	for (auto& output: currentParser->parseOutputs)
+		output.output = globalOutput + output.output;
+
+	for (const auto& global: currentParser->structure.globalStatements)
+		global->resetAccessPermissions();
+	std::vector<ParseOutput> result;
+	currentParser->parseOutputs.swap(result);
+	return result;
+}
+
 std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode, ShaderStage stage)
 {
 	currentParser->structure.stage = stage;
