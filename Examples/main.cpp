@@ -195,4 +195,16 @@ int main(int argc, char* argv[])
 		};
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 
+
+	//////////////////////////////////// A NEW demo using the EDSL ////////////////////////////////////
+
+	VariateProxy<MyStruct1> uniform; //UBO
+	Buffer<MyStruct1> arrayProxy = {{}}; //RWStructuredBuffer/StructuredBuffer
+	auto newVert = [&](VariateProxy<fvec2> pos) //Vertex Input
+	{
+		//xxx
+		//return //Output
+	};
+
+	//////////////////////////////////// A NEW demo using the EDSL ////////////////////////////////////
 }
