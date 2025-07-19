@@ -25,6 +25,7 @@ namespace EmbeddedShader
 		auto vsParams = ParseHelper::createParamTuple(vsFunc);
 		if constexpr (ParseHelper::hasReturnValue(vsFunc))
 		{
+			//记得设置in-lambda标记
 			auto vsOutput = std::apply(vsFunc,vsParams);
 			Ast::Parser::beginShaderParse(Ast::ShaderStage::Fragment); //记得处理Fragment的返回值
 			// if constexpr (ParseHelper::hasReturnValue(fsFunc))
