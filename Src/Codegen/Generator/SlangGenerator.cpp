@@ -72,7 +72,9 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 	std::string output;
 	for (auto& statement: structure.globalStatements)
 	{
-		output += statement->parse() + '\n';
+		auto statementContent = statement->parse();
+		if (!statementContent.empty())
+			output += std::move(statementContent) + '\n';
 	}
 
 	if (!uboMembers.empty())

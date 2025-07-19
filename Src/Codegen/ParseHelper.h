@@ -25,18 +25,18 @@ namespace EmbeddedShader
 		}
 
 		template<typename ReturnType,typename ParamType> requires std::is_same_v<ReturnType, void>
-		static auto callLambda(std::function<ReturnType(ParamType)> f, const ParamType& param)
+		static auto callLambda(std::function<ReturnType(ParamType)> f, ParamType param)
 		{
 			instance.bIsInShaderCodeLambda = true;
-			f(param);
+			f(std::move(param));
 			instance.bIsInShaderCodeLambda = false;
 		}
 
 		template<typename ReturnType,typename ParamType> requires !std::is_same_v<ReturnType, void>
-		static auto callLambda(std::function<ReturnType(ParamType)> f, const ParamType& param)
+		static auto callLambda(std::function<ReturnType(ParamType)> f, ParamType param)
 		{
 			instance.bIsInShaderCodeLambda = true;
-			auto result = f(param);
+			auto result = f(std::move(param));
 			instance.bIsInShaderCodeLambda = false;
 			return result;
 		}
@@ -45,7 +45,7 @@ namespace EmbeddedShader
 		static auto callLambda(std::function<ReturnType(ParamTypes...)> f,std::tuple<ParamTypes...> params)
 		{
 			instance.bIsInShaderCodeLambda = true;
-			std::apply(f, params);
+			std::apply(f, std::move(params));
 			instance.bIsInShaderCodeLambda = false;
 		}
 
@@ -53,7 +53,7 @@ namespace EmbeddedShader
 		static auto callLambda(std::function<ReturnType(ParamTypes...)> f,std::tuple<ParamTypes...> params)
 		{
 			instance.bIsInShaderCodeLambda = true;
-			auto result = std::apply(f, params);
+			auto result = std::apply(f, std::move(params));
 			instance.bIsInShaderCodeLambda = false;
 			return result;
 		}
@@ -62,8 +62,8 @@ namespace EmbeddedShader
 		static std::tuple<ParamTypes...> createParamTuple(const std::function<ReturnType(ParamTypes...)>& f)
 		{
 			instance.bIsInInputParameter = true;
+			instance.currentInputIndex = sizeof...(ParamTypes);
 			auto tuple = std::tuple<ParamTypes...>();
-			instance.currentInputIndex = 0;
 			instance.bIsInInputParameter = false;
 			return tuple;
 		}
@@ -98,12 +98,12 @@ namespace EmbeddedShader
 
 		static bool isInShaderCodeLambda()
 		{
-			return instance.bIsInInputParameter;
+			return instance.bIsInShaderCodeLambda;
 		}
 
 		static size_t getCurrentInputIndex()
 		{
-			return instance.currentInputIndex++;
+			return --instance.currentInputIndex;
 		}
 	private:
 		bool bIsInInputParameter = false;
