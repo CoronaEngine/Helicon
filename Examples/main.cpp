@@ -9,6 +9,7 @@
 #include <Codegen/AST/Parser.hpp>
 #include <Codegen/AST/AST.hpp>
 #include <Codegen/Generator/SlangGenerator.hpp>
+#include <utility>
 #include <ktm/type/vec.h>
 
 using namespace EmbeddedShader;
@@ -53,6 +54,32 @@ using Image2D = VariateProxy<VariateProxy<VariateProxy<Type>>>;
 template<typename Type>
 using Buffer = VariateProxy<VariateProxy<Type>>;
 
+struct RasterizedPipelineObject
+{
+	std::string vsOutput;
+	std::string fsOutput;
+	std::string gsOutput;
+
+	template<typename VsFuncType,typename FsFuncType>
+	static RasterizedPipelineObject parse(VsFuncType vs, FsFuncType fs);
+private:
+	template<typename ReturnType,typename... ParamTypes>
+	static void callFuncWithParamTuple(const std::function<ReturnType(ParamTypes...)>& f);
+};
+
+template<typename VsFuncType,typename FsFuncType>
+RasterizedPipelineObject RasterizedPipelineObject::parse(VsFuncType vs, FsFuncType fs)
+{
+	callFuncWithParamTuple(std::function(std::move(vs)));
+	callFuncWithParamTuple(std::function(std::move(fs)));
+	return {};
+}
+
+template<typename ReturnType, typename ... ParamTypes>
+void RasterizedPipelineObject::callFuncWithParamTuple(const std::function<ReturnType(ParamTypes...)>& f)
+{
+	std::apply(f, std::tuple<ParamTypes...>());
+}
 
 int main(int argc, char* argv[])
 {
@@ -207,4 +234,27 @@ int main(int argc, char* argv[])
 	};
 
 	//////////////////////////////////// A NEW demo using the EDSL ////////////////////////////////////
+
+
+	//////////////////////////////////// EDSL Non-Proxy Parse Test ////////////////////////////////////
+
+	struct TestParamStruct
+	{
+		int a = 114;
+		float b = 114.514f;
+	};
+
+	auto vs = [&](TestParamStruct param)
+	{
+		std::cout << "vs input a,b: " << param.a << "," << param.b << "\n";
+	};
+
+	auto fs = [&]
+	{
+
+	};
+
+	auto pipeline = RasterizedPipelineObject::parse(vs,fs);
+
+	//////////////////////////////////// EDSL Non-Proxy Parse Test ////////////////////////////////////
 }
