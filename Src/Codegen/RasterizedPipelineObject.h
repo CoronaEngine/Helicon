@@ -21,12 +21,10 @@ namespace EmbeddedShader
 		static_assert(ParseHelper::isMatchInputAndOutput(vsFunc,fsFunc), "The output of the vertex shader and the input of the fragment shader must match!");
 
 		Ast::Parser::beginShaderParse(Ast::ShaderStage::Vertex);
-		//note:创建tuple时要注意设置Input Flag
 		auto vsParams = ParseHelper::createParamTuple(vsFunc);
 		if constexpr (ParseHelper::hasReturnValue(vsFunc))
 		{
-			//记得设置in-lambda标记
-			auto vsOutput = std::apply(vsFunc,vsParams);
+			auto vsOutput = ParseHelper::callLambda(vsFunc,vsParams);
 			Ast::Parser::beginShaderParse(Ast::ShaderStage::Fragment); //记得处理Fragment的返回值
 			// if constexpr (ParseHelper::hasReturnValue(fsFunc))
 			// {
@@ -44,13 +42,13 @@ namespace EmbeddedShader
 			// 	}
 			// }
 			// else
-				fsFunc(vsOutput);
+			ParseHelper::callLambda(fsFunc, vsOutput);
 		}
 		else
 		{
-			std::apply(vsFunc,vsParams);
+			ParseHelper::callLambda(vsFunc,vsParams);
 			Ast::Parser::beginShaderParse(Ast::ShaderStage::Fragment);
-			fsFunc();
+			ParseHelper::callLambda(fsFunc);
 		}
 		RasterizedPipelineObject result;
 		auto outputs = Ast::Parser::endPipelineParse();
