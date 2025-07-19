@@ -12,6 +12,8 @@
 #include <utility>
 #include <ktm/type/vec.h>
 
+#include <Codegen/RasterizedPipelineObject.h>
+
 using namespace EmbeddedShader;
 
 struct MyStruct1
@@ -104,7 +106,9 @@ int main(int argc, char* argv[])
 		VariateProxy<int> b;
 	};
 
-
+	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
+	puts(pipeline.vertexGeneration.c_str());
+	puts(pipeline.fragmentGeneration.c_str());
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 

@@ -165,6 +165,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
 {
+	if (node->variate->permissions == Ast::AccessPermissions::None)
+		return "";
 	uboMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
 	return "";
 }

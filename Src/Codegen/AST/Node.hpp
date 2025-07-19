@@ -157,12 +157,15 @@ namespace EmbeddedShader::Ast
 
 	struct UniformVariate : Variate
 	{
+		AccessPermissions permissions = AccessPermissions::None;
 		std::string parse() override;
+		void access(AccessPermissions permissions) override;
 	};
 
 	struct DefineUniformVariate : Statement
 	{
 		std::shared_ptr<UniformVariate> variate;
 		std::string parse() override;
+		void resetAccessPermissions() override;
 	};
 }

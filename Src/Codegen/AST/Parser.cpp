@@ -32,6 +32,7 @@ void EmbeddedShader::Ast::Parser::beginShaderParse(ShaderStage stage)
 	}
 	currentParser->structure.stage = stage;
 	currentParser->localStatementStack.push(&currentParser->structure.localStatements);
+	currentParser->isInShaderParse = true;
 }
 
 std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPipelineParse()
