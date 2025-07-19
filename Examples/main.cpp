@@ -69,6 +69,9 @@ private:
 	static auto callFuncWithParamTuple(const std::function<ReturnType(ParamTypes...)>& f,ParamTypes... params);
 	template<typename ReturnType,typename... ParamTypes>
 	static constexpr bool hasReturnValue(const std::function<ReturnType(ParamTypes...)>& f);
+
+	template<typename ReturnType1,typename ReturnType2,typename... ParamTypes1,typename... ParamTypes2>
+	static constexpr bool isMatchInputAndOutput(const std::function<ReturnType1(ParamTypes1...)>& fOutput,const std::function<ReturnType2(ParamTypes2...)>& fInput);
 };
 
 template<typename ReturnType, typename ... ParamTypes>
@@ -77,11 +80,28 @@ constexpr bool RasterizedPipelineObject::hasReturnValue(const std::function<Retu
 	return !std::is_same_v<ReturnType, void>;
 }
 
+template<typename ReturnType1, typename ReturnType2, typename ... ParamTypes1, typename ... ParamTypes2>
+constexpr bool RasterizedPipelineObject::isMatchInputAndOutput(
+	const std::function<ReturnType1(ParamTypes1...)>& fOutput,
+	const std::function<ReturnType2(ParamTypes2...)>& fInput)
+{
+	//1.没有输入输出
+	//2. 输入和输出类型相同
+	//note:这里的if constexpr不能省略，因为std::is_same_v<ReturnType1,ParamTypes2...>这条代码必须要求sizeof...(ParamTypes2) == 1
+	if constexpr (std::is_same_v<ReturnType1, void> && sizeof...(ParamTypes2) == 0)
+		return true;
+	else if constexpr (!std::is_same_v<ReturnType1, void> && sizeof...(ParamTypes2) == 1 && std::is_same_v<ReturnType1,ParamTypes2...>)
+		return true;
+	else
+		return false;
+}
+
 template<typename VsFuncType,typename FsFuncType>
 RasterizedPipelineObject RasterizedPipelineObject::parse(VsFuncType vs, FsFuncType fs)
 {
 	auto vsFunc = std::function(std::move(vs));
 	auto fsFunc = std::function(std::move(fs));
+	static_assert(isMatchInputAndOutput(vsFunc,fsFunc), "The output of the vertex shader and the input of the fragment shader must match!");
 	if constexpr (hasReturnValue(vsFunc))
 		callFuncWithParamTuple(std::move(fsFunc),callFuncWithDefaultParamTuple(std::move(vsFunc)));
 	else
