@@ -25,10 +25,10 @@ namespace EmbeddedShader::Generator
 		static std::string getVariateTypeName();
 
 		template<typename T> requires std::is_arithmetic_v<T>
-		static std::string getValueOutput(T&& value) {return std::to_string(std::forward<T>(value));}
+		static std::string getValueOutput(T value) {return std::to_string(value);}
 
 		template<typename T> requires ktm::is_vector_v<T>
-		static std::string getValueOutput(T&& value)
+		static std::string getValueOutput(const T& value)
 		{
 			auto array = value.to_array();
 			std::string output = getVariateTypeName<T>() + "(";

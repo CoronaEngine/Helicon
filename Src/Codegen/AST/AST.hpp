@@ -142,7 +142,7 @@ namespace EmbeddedShader::Ast
 		auto vecValue = std::make_shared<VecValue>();
 		vecValue->type = type;
 
-		vecValue->value = Generator::SlangGenerator::getValueOutput(value);
+		vecValue->value = Generator::SlangGenerator::getValueOutput<VariateType>(value);
 		return vecValue;
 	}
 
