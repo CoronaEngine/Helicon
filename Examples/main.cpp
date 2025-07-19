@@ -64,21 +64,45 @@ struct RasterizedPipelineObject
 	static RasterizedPipelineObject parse(VsFuncType vs, FsFuncType fs);
 private:
 	template<typename ReturnType,typename... ParamTypes>
-	static void callFuncWithParamTuple(const std::function<ReturnType(ParamTypes...)>& f);
+	static auto callFuncWithDefaultParamTuple(const std::function<ReturnType(ParamTypes...)>& f);
+	template<typename ReturnType,typename... ParamTypes>
+	static auto callFuncWithParamTuple(const std::function<ReturnType(ParamTypes...)>& f,ParamTypes... params);
+	template<typename ReturnType,typename... ParamTypes>
+	static constexpr bool hasReturnValue(const std::function<ReturnType(ParamTypes...)>& f);
 };
+
+template<typename ReturnType, typename ... ParamTypes>
+constexpr bool RasterizedPipelineObject::hasReturnValue(const std::function<ReturnType(ParamTypes...)>& f)
+{
+	return !std::is_same_v<ReturnType, void>;
+}
 
 template<typename VsFuncType,typename FsFuncType>
 RasterizedPipelineObject RasterizedPipelineObject::parse(VsFuncType vs, FsFuncType fs)
 {
-	callFuncWithParamTuple(std::function(std::move(vs)));
-	callFuncWithParamTuple(std::function(std::move(fs)));
+	auto vsFunc = std::function(std::move(vs));
+	auto fsFunc = std::function(std::move(fs));
+	if constexpr (hasReturnValue(vsFunc))
+		callFuncWithParamTuple(std::move(fsFunc),callFuncWithDefaultParamTuple(std::move(vsFunc)));
+	else
+	{
+		callFuncWithDefaultParamTuple(std::move(vsFunc));
+		callFuncWithDefaultParamTuple(std::move(fsFunc));
+	}
 	return {};
 }
 
 template<typename ReturnType, typename ... ParamTypes>
-void RasterizedPipelineObject::callFuncWithParamTuple(const std::function<ReturnType(ParamTypes...)>& f)
+auto RasterizedPipelineObject::callFuncWithDefaultParamTuple(const std::function<ReturnType(ParamTypes...)>& f)
 {
-	std::apply(f, std::tuple<ParamTypes...>());
+	return std::apply(f, std::tuple<ParamTypes...>());
+}
+
+template<typename ReturnType, typename ... ParamTypes>
+auto RasterizedPipelineObject::callFuncWithParamTuple(const std::function<ReturnType(ParamTypes...)>& f,
+	ParamTypes... params)
+{
+	return std::apply(f, std::make_tuple(params...));
 }
 
 int main(int argc, char* argv[])
@@ -244,14 +268,24 @@ int main(int argc, char* argv[])
 		float b = 114.514f;
 	};
 
+	struct FsInput
+	{
+		int x{};
+		int y{};
+	};
+
 	auto vs = [&](TestParamStruct param)
 	{
 		std::cout << "vs input a,b: " << param.a << "," << param.b << "\n";
+		FsInput output;
+		output.x = 1;
+		output.y = 2;
+		return output;
 	};
 
-	auto fs = [&]
+	auto fs = [&](FsInput input)
 	{
-
+		std::cout << "fs input x,y: " << input.x << "," << input.y << "\n";
 	};
 
 	auto pipeline = RasterizedPipelineObject::parse(vs,fs);
