@@ -28,8 +28,9 @@ namespace EmbeddedShader
 	{
 		friend class RasterizedPipelineObject;
 	public:
-		VariateProxy()// requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)
+		VariateProxy()
 		{
+			fflush(stdout);
 			//Uniform,Input,Local Variate
 			if (ParseHelper::isInInputParameter())
 			{
@@ -45,12 +46,7 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
-		VariateProxy() requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)
-		{
-			//Uniform,Input,Local Variate
-		}
-
-		VariateProxy(const Type& value) requires is_mathematical<Type>&& std::is_fundamental<Type>::value
+		VariateProxy(const Type& value)
 		{
 			//Local Variate
 			if (ParseHelper::isInShaderCodeLambda())
@@ -62,30 +58,15 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
-		VariateProxy(const Type& value) requires (is_mathematical<Type> && !std::is_fundamental<Type>::value)
-		{
-			node = Ast::AST::defineLocalVariate(value);
-		}
-
-
-		VariateProxy(const Type& value) requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)
-		{
-			auto lammdaReflect = [&](auto& structMember)
-				{
-				};
-
-			boost::pfr::for_each_field(value, lammdaReflect);
-		}
-
 		VariateProxy(const std::initializer_list<Type>& value)
 		{
 			//Array 后续特化
 		}
 
-		VariateProxy(const VariateProxy<Type>& value)
+		VariateProxy(const VariateProxy& value)
 		{
 			//Local Variate
-			node = Ast::AST::defineLocalVariate(reinterpret_cast<Ast::Variate*>(value.node.get())->type,value.node);
+			node = Ast::AST::defineLocalVariate(value.node->type, value.node);
 		}
 
 		VariateProxy(VariateProxy&& value)
@@ -134,34 +115,29 @@ namespace EmbeddedShader
 			return *this;
 		}
 
-		VariateProxy& operator+(const Type& rhs)
+		VariateProxy operator+(const VariateProxy& rhs) const
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"+");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"+"));
 		}
 
-		VariateProxy& operator-(const Type& rhs)
+		VariateProxy operator-(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"-");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"-"));
 		}
 
-		VariateProxy& operator*(const Type& rhs)
+		VariateProxy operator*(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"*");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"*"));
 		}
 
-		VariateProxy& operator/(const Type& rhs)
+		VariateProxy operator/(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"/");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"/"));
 		}
 
-		VariateProxy& operator%(const Type& rhs)
+		VariateProxy operator%(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"%");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"%"));
 		}
 
 		VariateProxy& operator!()
@@ -350,7 +326,12 @@ namespace EmbeddedShader
 
 
 	private:
-		Type* value;
+		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))
+		{
+			puts("c");
+			fflush(stdout);
+		}
+		Type* value{};
 		std::shared_ptr<Ast::Value> node;
 	};
 }

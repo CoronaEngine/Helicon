@@ -110,7 +110,10 @@ int main(int argc, char* argv[])
 	auto vertex = [&]()
 	{
 		VariateProxy a = 114;
-		return VariateProxy<fvec4>(fvec4{114.f,514.f,1919.f,810.f});
+		VariateProxy b = 514;
+		VariateProxy c = a + b;
+
+		return VariateProxy(fvec4{114.f,514.f,1919.f,810.f});
 	};
 
 	auto fragment = [&](VariateProxy<fvec4> a)

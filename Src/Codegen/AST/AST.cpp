@@ -24,7 +24,8 @@ std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOper
 	auto binaryOp = std::make_shared<BinaryOperator>();
 	binaryOp->value1 = std::move(value1);
 	binaryOp->value2 = std::move(value2);
-	binaryOp->type = std::move(operatorType);
+	binaryOp->operatorType = std::move(operatorType);
+	binaryOp->type = binaryOp->value1->type;
 	return binaryOp; // 这里需要实现具体的操作符逻辑
 }
 

@@ -29,13 +29,13 @@ namespace EmbeddedShader::Ast
 	class Value : public Node
 	{
 	public:
+		std::shared_ptr<Type> type;
 		virtual void access(AccessPermissions permissions);
 	};
 
 	struct Variate : Value
 	{
 		std::string name;
-		std::shared_ptr<Type> type;
 		std::string parse() override;
 	};
 
@@ -62,7 +62,6 @@ namespace EmbeddedShader::Ast
 	struct VecValue : Value
 	{
 		std::string value;
-		std::shared_ptr<VecType> type;
 		std::string parse() override;
 	};
 
@@ -83,7 +82,7 @@ namespace EmbeddedShader::Ast
 	{
 		std::shared_ptr<Value> value1;
 		std::shared_ptr<Value> value2;
-		std::string type;
+		std::string operatorType;
 		std::string parse() override;
 	};
 
