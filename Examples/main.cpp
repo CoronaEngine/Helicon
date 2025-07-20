@@ -98,12 +98,12 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&]()
 	{
-		return fvec4();
+		return VariateProxy<fvec4>();
 	};
 
-	auto fragment = [&](fvec4 a)
+	auto fragment = [&](VariateProxy<fvec4> a)
 	{
-		VariateProxy<int> b;
+		VariateProxy<fvec4> b = a;
 	};
 
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
