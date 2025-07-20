@@ -17,7 +17,7 @@ namespace EmbeddedShader
 			instance.bIsInShaderCodeLambda = false;
 		}
 
-		template<typename ReturnType> requires !std::is_same_v<ReturnType, void>
+		template<typename ReturnType> requires (!std::is_same_v<ReturnType, void>)
 		static auto callLambda(std::function<ReturnType()> f)
 		{
 			instance.bIsInShaderCodeLambda = true;
@@ -34,7 +34,7 @@ namespace EmbeddedShader
 			instance.bIsInShaderCodeLambda = false;
 		}
 
-		template<typename ReturnType,typename ParamType> requires !std::is_same_v<ReturnType, void>
+		template<typename ReturnType,typename ParamType> requires (!std::is_same_v<ReturnType, void>)
 		static auto callLambda(std::function<ReturnType(ParamType)> f, ParamType param)
 		{
 			instance.bIsInShaderCodeLambda = true;
@@ -51,7 +51,7 @@ namespace EmbeddedShader
 			instance.bIsInShaderCodeLambda = false;
 		}
 
-		template<typename ReturnType, typename... ParamTypes> requires !std::is_same_v<ReturnType, void>
+		template<typename ReturnType, typename... ParamTypes> requires (!std::is_same_v<ReturnType, void>)
 		static auto callLambda(std::function<ReturnType(ParamTypes...)> f,std::tuple<ParamTypes...> params)
 		{
 			instance.bIsInShaderCodeLambda = true;

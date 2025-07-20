@@ -19,6 +19,11 @@ endif()
 # Slang DLL路径配置
 set(SLANG_DLL_DIR "" CACHE PATH "Slang DLL文件的目录路径")
 
+add_compile_definitions(
+    $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
+    NOMINMAX
+)
+
 set(BUILD_SHARED_LIBS OFF)
 
 # 依赖库
