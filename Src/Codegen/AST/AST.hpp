@@ -66,9 +66,7 @@ namespace EmbeddedShader::Ast
 		static void endIf();
 
 		static std::shared_ptr<UniversalArray> defineUniversalArray(std::shared_ptr<Type> elementType);
-		template<typename ElementType> requires std::is_arithmetic_v<ElementType>
-		static std::shared_ptr<UniversalArray> defineUniversalArray();
-		template<typename ElementType> requires ktm::is_vector_v<ElementType>
+		template<typename ElementType>
 		static std::shared_ptr<UniversalArray> defineUniversalArray();
 
 		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type);
@@ -215,18 +213,10 @@ namespace EmbeddedShader::Ast
 		return defineOutputVariate(createType<std::remove_cvref_t<VariateType>>(), location);
 	}
 
-	template<typename ElementType> requires std::is_arithmetic_v<ElementType>
+	template<typename ElementType>
 	std::shared_ptr<UniversalArray> AST::defineUniversalArray()
 	{
-		auto type = std::make_shared<BasicType>();
-		type->name = Generator::SlangGenerator::getVariateTypeName<ElementType>();
-		return defineUniversalArray(type);
-	}
-
-	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<UniversalArray> AST::defineUniversalArray()
-	{
-		return defineUniversalArray(createVecType<VariateType>());
+		return defineUniversalArray(createType<ElementType>());
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -246,6 +236,11 @@ namespace EmbeddedShader::Ast
 	template<typename T> requires std::is_aggregate_v<T>
 	std::shared_ptr<AggregateType> AST::createAggregateType(const T& value)
 	{
+		auto& map = AggregateType::aggregateTypeMap;
+		auto it = map.find(typeid(T).name());
+		if (it != map.end())
+			return it->second;
+
 		auto aggregateType = std::make_shared<AggregateType>();
 		aggregateType->name = typeid(T).raw_name();
 		auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
@@ -257,6 +252,7 @@ namespace EmbeddedShader::Ast
 		// auto defineNode = std::make_shared<DefineAggregateType>();
 		// defineNode->aggregate = aggregateType;
 		// addGlobalStatement(defineNode);
+		map.insert({typeid(T).name(), aggregateType});
 		return aggregateType;
 	}
 }

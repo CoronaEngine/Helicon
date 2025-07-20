@@ -172,12 +172,13 @@ namespace EmbeddedShader::Ast
 	{
 		bool isUsed = false;
 		std::vector<std::shared_ptr<Variate>> members;
+		static thread_local inline std::unordered_map<std::string,std::shared_ptr<AggregateType>> aggregateTypeMap;
 	};
 
 	struct DefineAggregateType : Statement
 	{
 		std::shared_ptr<AggregateType> aggregate;
-		std::string parse() override;
 		void resetUsedFlag() override;
+		std::string parse() override;
 	};
 }
