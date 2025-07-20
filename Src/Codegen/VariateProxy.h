@@ -47,28 +47,6 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
-	    VariateProxy() requires std::is_aggregate_v<Type>
-		{
-		    //Uniform,Input,Local Variate
-		    if (ParseHelper::isInInputParameter())
-		    {
-		        node = Ast::AST::defineInputVariate<Type>(ParseHelper::getCurrentInputIndex());
-		        return;
-		    }
-
-		    if (ParseHelper::isInShaderCodeLambda())
-		    {
-		        node = Ast::AST::defineLocalVariate<Type>({});
-		        return;
-		    }
-		    node = Ast::AST::defineUniformVariate<Type>();
-
-		    ParseHelper::beginInAggregate(node);
-		    value = std::make_unique<Type>();
-		    ParseHelper::endInAggregate();
-
-		}
-
 		VariateProxy(const Type& value)
 		{
 			//Local Variate
