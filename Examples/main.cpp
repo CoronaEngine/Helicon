@@ -56,14 +56,26 @@ using Image2D = VariateProxy<VariateProxy<VariateProxy<Type>>>;
 template<typename Type>
 using Buffer = VariateProxy<VariateProxy<Type>>;
 
+struct B
+{
+	float b;
+};
+
+struct A
+{
+	int a;
+	B b;
+};
+
 int main(int argc, char* argv[])
 {
-	// auto lammdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
-	// 	std::cout << "Member index: " << i
-	// 		<< ", Member Value Type: " << typeid(structMember).name()
-	// 		<< ", Member Name: " << name
-	// 		<< std::endl;
-	// };
+	auto lambdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
+		std::cout << "Member index: " << i
+			<< ", Member Value Type: " << typeid(structMember).name()
+			<< ", Member Name: " << name
+			<< std::endl;
+	};
+	boost::pfr::for_each_field_with_name(A{},lambdaReflect);
 	// boost::pfr::for_each_field_with_name(MyStruct2{}, lammdaReflect);
 
 
