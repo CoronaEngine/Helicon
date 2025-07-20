@@ -121,3 +121,8 @@ void EmbeddedShader::Ast::DefineUniformVariate::resetAccessPermissions()
 {
 	variate->permissions = AccessPermissions::None;
 }
+
+std::string EmbeddedShader::Ast::DefineAggregateType::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}

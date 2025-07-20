@@ -1,9 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <Codegen/AST/Node.hpp>
 
-#include "Enum.hpp"
+#include <Codegen/AST/Enum.hpp>
 
 namespace EmbeddedShader::Ast
 {
@@ -167,5 +166,16 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<UniformVariate> variate;
 		std::string parse() override;
 		void resetAccessPermissions() override;
+	};
+
+	struct AggregateType : NameType
+	{
+		std::vector<std::shared_ptr<Variate>> members;
+	};
+
+	struct DefineAggregateType : Statement
+	{
+		std::shared_ptr<AggregateType> aggregate;
+		std::string parse() override;
 	};
 }

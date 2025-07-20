@@ -61,6 +61,7 @@ namespace EmbeddedShader::Generator
 		static std::string getParseOutput(const Ast::DefineUniversalArray* node);
 		static std::string getParseOutput(const Ast::DefineUniformVariate* node);
 		static std::string getParseOutput(const Ast::UniformVariate* node);
+		static std::string getParseOutput(const Ast::DefineAggregateType* node);
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:

@@ -178,6 +178,17 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	return "global_ubo." + node->name;
 }
 
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineAggregateType* node)
+{
+	auto result = "struct " + node->aggregate->name + " {\n";
+	for (const auto& member: node->aggregate->members)
+	{
+		result += member->type->parse() + " " + member->name + ";\n";
+	}
+	result += "}";
+	return result;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()
 {
 	auto positionOutput = std::make_shared<Ast::OutputVariate>();
