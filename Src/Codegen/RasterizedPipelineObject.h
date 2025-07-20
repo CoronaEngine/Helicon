@@ -56,13 +56,37 @@ namespace EmbeddedShader
 
 			Ast::Parser::beginShaderParse(Ast::ShaderStage::Fragment); //记得处理Fragment的返回值
 			auto fsParam = ParseHelper::createParam(fsFunc);
-			ParseHelper::callLambda(fsFunc, std::move(fsParam));
+			if constexpr (!ParseHelper::hasReturnValue(fsFunc))
+				ParseHelper::callLambda(fsFunc, std::move(fsParam));
+			else
+			{
+				auto fsOutput = ParseHelper::callLambda(fsFunc, std::move(fsParam));
+				static_assert(ParseHelper::isReturnProxy(fsFunc) /*or struct*/, "The output of the shader must be a proxy!");
+				//1.proxy
+				if constexpr (ParseHelper::isReturnProxy(fsFunc))
+				{
+					auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(fsOutput.node.get())->type,0);
+					Ast::AST::assign(outputVar,fsOutput.node);
+				}
+			}
 		}
 		else
 		{
 			ParseHelper::callLambda(vsFunc,std::move(vsParams));
 			Ast::Parser::beginShaderParse(Ast::ShaderStage::Fragment);
-			ParseHelper::callLambda(fsFunc);
+			if constexpr (!ParseHelper::hasReturnValue(fsFunc))
+				ParseHelper::callLambda(fsFunc);
+			else
+			{
+				auto fsOutput = ParseHelper::callLambda(fsFunc);
+				static_assert(ParseHelper::isReturnProxy(fsFunc) /*or struct*/, "The output of the shader must be a proxy!");
+				//1.proxy
+				if constexpr (ParseHelper::isReturnProxy(fsFunc))
+				{
+					auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(fsOutput.node.get())->type,0);
+					Ast::AST::assign(outputVar,fsOutput.node);
+				}
+			}
 		}
 		RasterizedPipelineObject result;
 		auto outputs = Ast::Parser::endPipelineParse();
