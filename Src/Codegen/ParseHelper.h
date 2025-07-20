@@ -28,8 +28,6 @@ namespace EmbeddedShader
 		static auto callLambda(std::function<ReturnType(ParamType)> f, ParamType param)
 		{
 			instance.bIsInShaderCodeLambda = true;
-			puts("setting!");
-			fflush(stdout);
 			f(std::move(param));
 			instance.bIsInShaderCodeLambda = false;
 		}
