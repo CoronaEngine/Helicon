@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&]()
 	{
-		return VariateProxy<fvec4>();
+		return VariateProxy<fvec4>(fvec4{114.f,514.f,1919.f,810.f});
 	};
 
 	auto fragment = [&](VariateProxy<fvec4> a)
