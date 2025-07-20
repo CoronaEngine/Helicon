@@ -327,8 +327,6 @@ namespace EmbeddedShader
 	private:
 		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))
 		{
-			puts("c");
-			fflush(stdout);
 		}
 		Type* value{};
 		std::shared_ptr<Ast::Value> node;

@@ -7,13 +7,13 @@ namespace EmbeddedShader
 	namespace Impl
 	{
 		template<typename T>
-	   struct sIsReturnProxy
+		struct IsReturnProxy
 		{
 			static constexpr bool value = false;
 		};
 
 		template<typename T, typename... ParamTypes>
-		struct sIsReturnProxy<std::function<VariateProxy<T>(ParamTypes...)>>
+		struct IsReturnProxy<std::function<VariateProxy<T>(ParamTypes...)>>
 		{
 			static constexpr bool value = true;
 		};
@@ -22,6 +22,6 @@ namespace EmbeddedShader
 	template<typename T, typename ... ParamTypes>
 	constexpr bool ParseHelper::isReturnProxy(const std::function<T(ParamTypes...)>& f)
 	{
-		return Impl::sIsReturnProxy<std::remove_cvref_t<decltype(f)>>::value;
+		return Impl::IsReturnProxy<std::remove_cvref_t<decltype(f)>>::value;
 	}
 }

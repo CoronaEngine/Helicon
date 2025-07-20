@@ -6,6 +6,7 @@
 #include <boost/pfr/core_name.hpp>
 #include <Codegen/AST/Parser.hpp>
 #include <Codegen/Generator/SlangGenerator.hpp>
+#include <Codegen/ParseHelper.h>
 
 namespace EmbeddedShader::Generator
 {
@@ -227,27 +228,35 @@ namespace EmbeddedShader::Ast
 	std::shared_ptr<AggregateType> AST::createAggregateType(const T& value)
 	{
 		auto& map = AggregateType::aggregateTypeMap;
-		auto it = map.find(typeid(T).raw_name());
+		auto it = map.find(typeid(T).name());
 		if (it != map.end())
 		{
 			auto aggregateType = it->second;
-			if (aggregateType->isUsed)
+			if (!aggregateType->isUsed)
 			{
 				auto defineNode = std::make_shared<DefineAggregateType>();
 				defineNode->aggregate = aggregateType;
 				addGlobalStatement(defineNode);
+				aggregateType->isUsed = true;
 			}
 
 			return aggregateType;
 		}
 
 		auto aggregateType = std::make_shared<AggregateType>();
-		aggregateType->name = typeid(T).name();
+		aggregateType->isUsed = true;
+		aggregateType->name = Parser::getUniqueAggregateTypeName();
 		auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
 		{
+			using MemberType = std::remove_cvref_t<decltype(structMember)>;
 			auto member = std::make_shared<Variate>();
 			member->name = name;
-			member->type = createType<std::remove_cvref_t<typename std::remove_cvref_t<decltype(structMember)>::value_type>>();
+
+			if constexpr (ParseHelper::isProxy<MemberType>())
+				member->type = createType<std::remove_cvref_t<typename MemberType::value_type>>();
+			else
+				member->type = createType<MemberType>();
+
 			aggregateType->members.push_back(std::move(member));
 		};
 		boost::pfr::for_each_field_with_name(value,reflect);
@@ -256,7 +265,7 @@ namespace EmbeddedShader::Ast
 		defineNode->aggregate = aggregateType;
 		addGlobalStatement(defineNode);
 
-		map.insert({typeid(T).raw_name(), aggregateType});
+		map.insert({typeid(T).name(), aggregateType});
 		return aggregateType;
 	}
 }

@@ -40,6 +40,7 @@ namespace EmbeddedShader::Ast
 
 		size_t currentVariateIndex = 0;
 		size_t currentGlobalVariateIndex = 0;
+		size_t currentAggregateTypeIndex = 0;
 
 		std::shared_ptr<Variate> positionOutput;
 
@@ -50,6 +51,7 @@ namespace EmbeddedShader::Ast
 		static thread_local std::unique_ptr<Parser> currentParser;
 	public:
 		static std::string getUniqueVariateName();
+		static std::string getUniqueAggregateTypeName();
 		static std::string getUniqueGlobalVariateName();
 	};
 }

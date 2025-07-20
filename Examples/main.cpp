@@ -67,8 +67,15 @@ struct A
 	B b;
 };
 
+struct TestStruct0
+{
+	VariateProxy<int> member1;
+	VariateProxy<ktm::fvec4> member2;
+};
+
 struct TestStruct
 {
+	TestStruct0 member0;
 	VariateProxy<int> member1;
 	VariateProxy<ktm::fvec4> member2;
 };
@@ -126,8 +133,6 @@ int main(int argc, char* argv[])
 		VariateProxy<fvec4> b = a;
 		return b;
 	};
-
-	auto type = AST::createType<TestStruct>();
 
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());

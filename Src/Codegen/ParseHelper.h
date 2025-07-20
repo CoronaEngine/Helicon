@@ -1,9 +1,11 @@
 #pragma once
 #include <functional>
-#include <Codegen/VariateProxy.h>
 
 namespace EmbeddedShader
 {
+	template<typename Type>
+	struct VariateProxy;
+
 	class ParseHelper final
 	{
 	public:
@@ -104,6 +106,12 @@ namespace EmbeddedShader
 		template<typename T,typename... ParamTypes>
 		static constexpr bool isReturnProxy(const std::function<T(ParamTypes...)>& f);
 
+		template<typename T>
+		static constexpr bool isProxy()
+		{
+			return sIsProxy<std::remove_cvref_t<T>>::value;
+		}
+
 		static bool isInInputParameter()
 		{
 			return instance.bIsInInputParameter;
@@ -123,7 +131,19 @@ namespace EmbeddedShader
 		bool bIsInShaderCodeLambda = false;
 		size_t currentInputIndex = 0;
 		static thread_local ParseHelper instance;
+
+		template<typename T>
+		struct sIsProxy
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename T>
+		struct sIsProxy<VariateProxy<T>>
+		{
+			static constexpr bool value = true;
+		};
 	};
 
-	thread_local ParseHelper ParseHelper::instance;
+	inline thread_local ParseHelper ParseHelper::instance;
 }
