@@ -53,17 +53,13 @@ namespace EmbeddedShader::Ast
 		static void assign(auto&& variate, auto&& value);
 
 		static std::shared_ptr<InputVariate> defineInputVariate(std::shared_ptr<Type> type, size_t location);
-		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<InputVariate> defineInputVariate(size_t location);
-		template<typename VariateType> requires ktm::is_vector_v<VariateType>
+		template<typename VariateType>
 		static std::shared_ptr<InputVariate> defineInputVariate(size_t location);
 
 		static std::shared_ptr<MemberAccess> access(std::shared_ptr<Value> value, std::string memberName);
 
 		static std::shared_ptr<OutputVariate> defineOutputVariate(std::shared_ptr<Type> type, size_t location);
-		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<OutputVariate> defineOutputVariate(size_t location);
-		template<typename VariateType> requires ktm::is_vector_v<VariateType>
+		template<typename VariateType>
 		static std::shared_ptr<OutputVariate> defineOutputVariate(size_t location);
 
 		static void beginIf(std::shared_ptr<Value> condition);
@@ -206,32 +202,16 @@ namespace EmbeddedShader::Ast
 		assign(valueConverter(std::forward<decltype(variate)>(variate)),valueConverter(std::forward<decltype(value)>(value)));
 	}
 
-	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
+	template<typename VariateType>
 	std::shared_ptr<InputVariate> AST::defineInputVariate(size_t location)
 	{
-		auto type = std::make_shared<BasicType>();
-		type->name = Generator::SlangGenerator::getVariateTypeName<VariateType>();
-		return defineInputVariate(type, location);
+		return defineInputVariate(createType<std::remove_cvref_t<VariateType>>(),location);
 	}
 
-	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<InputVariate> AST::defineInputVariate(size_t location)
-	{
-		return defineInputVariate(createVecType<VariateType>(), location);
-	}
-
-	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
+	template<typename VariateType>
 	std::shared_ptr<OutputVariate> AST::defineOutputVariate(size_t location)
 	{
-		auto type = std::make_shared<BasicType>();
-		type->name = Generator::SlangGenerator::getVariateTypeName<VariateType>();
-		return defineOutputVariate(type, location);
-	}
-
-	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<OutputVariate> AST::defineOutputVariate(size_t location)
-	{
-		return defineOutputVariate(createVecType<VariateType>(), location);
+		return defineOutputVariate(createType<std::remove_cvref_t<VariateType>>(), location);
 	}
 
 	template<typename ElementType> requires std::is_arithmetic_v<ElementType>

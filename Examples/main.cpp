@@ -102,12 +102,11 @@ int main(int argc, char* argv[])
 	puts(parseOutput[0].output.c_str());
 	puts(parseOutput[1].output.c_str());
 
-	//std::cout << "color permissions:" << color->permissions << "\n";
-
 	// ShaderCodeCompiler vertxShader(parseOutput[0].output, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
 	// ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	puts("------------------- Front-End Test -------------------");
+	VariateProxy<float> uniform = 85244;
 	auto vertex = [&]()
 	{
 		VariateProxy a = 114;
