@@ -53,13 +53,13 @@ namespace EmbeddedShader
 		VariateProxy(const Type& value) requires is_mathematical<Type>&& std::is_fundamental<Type>::value
 		{
 			//Local Variate
-			node = Ast::AST::defineLocalVariate<Type>(value);
+			node = Ast::AST::defineLocalVariate(value);
 		}
 
 
 		VariateProxy(const Type& value) requires (is_mathematical<Type> && !std::is_fundamental<Type>::value)
 		{
-			node = Ast::AST::defineLocalVariate<Type>(value);
+			node = Ast::AST::defineLocalVariate(value);
 		}
 
 

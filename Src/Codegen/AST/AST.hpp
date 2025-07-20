@@ -42,10 +42,8 @@ namespace EmbeddedShader::Ast
 		template<typename ValueType,typename... Args> requires ktm::is_vector_v<ValueType>
 		static std::shared_ptr<VecValue> createVecValue(Args&&... args);
 
-		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType value);
-		template<typename VariateType> requires ktm::is_vector_v<VariateType>
-		static std::shared_ptr<LocalVariate> defineLocalVariate(const VariateType& value);
+		template<typename VariateType>
+		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType&& value);
 		static std::shared_ptr<LocalVariate> defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue);
 
 		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType);
@@ -156,7 +154,7 @@ namespace EmbeddedShader::Ast
 	template<typename T> requires std::is_aggregate_v<T>
 	std::shared_ptr<AggregateType> AST::createType()
 	{
-		return getAggregateType<T>();
+		return createAggregateType<T>();
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -192,20 +190,10 @@ namespace EmbeddedShader::Ast
 		return vecValue;
 	}
 
-	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-	std::shared_ptr<LocalVariate> AST::defineLocalVariate(VariateType value)
+	template<typename VariateType>
+	std::shared_ptr<LocalVariate> AST::defineLocalVariate(VariateType&& value)
 	{
-		auto type = std::make_shared<BasicType>();
-		type->name = Generator::SlangGenerator::getVariateTypeName<VariateType>();
-
-		return defineLocalVariate(std::move(type), createValue(value));
-	}
-
-	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<LocalVariate> AST::defineLocalVariate(const VariateType& value)
-	{
-		auto vecValue = createValue(value);
-		return defineLocalVariate(vecValue->type,vecValue);
+		return defineLocalVariate(createType<std::remove_cvref_t<VariateType>>(),createValue(std::forward<VariateType>(value)));
 	}
 
 	std::shared_ptr<Value> AST::binaryOperator(auto&& value1, auto&& value2, std::string operatorType)
@@ -284,6 +272,10 @@ namespace EmbeddedShader::Ast
 
 		};
 		boost::pfr::for_each_field_with_name(value,reflect);
+		//T O D O
+		// auto defineNode = std::make_shared<DefineAggregateType>();
+		// defineNode->aggregate = aggregateType;
+		// addGlobalStatement(defineNode);
 		return aggregateType;
 	}
 }

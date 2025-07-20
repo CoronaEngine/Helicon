@@ -110,6 +110,7 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&]()
 	{
+		VariateProxy a = 114;
 		return VariateProxy<fvec4>(fvec4{114.f,514.f,1919.f,810.f});
 	};
 
