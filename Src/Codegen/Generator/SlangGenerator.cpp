@@ -180,6 +180,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineAggregateType* node)
 {
+	if (!node->aggregate->isUsed)
+		return "";
 	auto result = "struct " + node->aggregate->name + " {\n";
 	for (const auto& member: node->aggregate->members)
 	{

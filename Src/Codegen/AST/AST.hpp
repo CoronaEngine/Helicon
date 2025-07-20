@@ -2,6 +2,8 @@
 
 #include <Codegen/AST/Node.hpp>
 #include <utility>
+#include <boost/pfr/core.hpp>
+#include <boost/pfr/core_name.hpp>
 #include <Codegen/AST/Parser.hpp>
 #include <Codegen/Generator/SlangGenerator.hpp>
 
@@ -24,6 +26,13 @@ namespace EmbeddedShader::Ast
 		friend class Generator::SlangGenerator;
 		AST() = default;
 	public:
+
+		template<typename T> requires std::is_arithmetic_v<T>
+		static std::shared_ptr<BasicType> createType();
+		template<typename T> requires ktm::is_vector_v<T>
+		static std::shared_ptr<VecType> createType();
+		template<typename T> requires std::is_aggregate_v<T>
+		static std::shared_ptr<AggregateType> createType();
 
 		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 		static std::shared_ptr<BasicValue> createValue(VariateType value);
@@ -73,6 +82,9 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<UniformVariate> defineUniformVariate();
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<UniformVariate> defineUniformVariate();
+
+		template<typename T> requires std::is_aggregate_v<T>
+		static std::shared_ptr<AggregateType> createAggregateType(const T& value);
 
 		static std::shared_ptr<Variate> getPositionOutput();
 
@@ -126,6 +138,26 @@ namespace EmbeddedShader::Ast
 			return type;
 		}
 	};
+
+	template<typename T> requires std::is_arithmetic_v<T>
+	std::shared_ptr<BasicType> AST::createType()
+	{
+		auto type = std::make_shared<BasicType>();
+		type->name = Generator::SlangGenerator::getVariateTypeName<T>();
+		return type;
+	}
+
+	template<typename T> requires ktm::is_vector_v<T>
+	std::shared_ptr<VecType> AST::createType()
+	{
+		return createVecType<T>();
+	}
+
+	template<typename T> requires std::is_aggregate_v<T>
+	std::shared_ptr<AggregateType> AST::createType()
+	{
+		return getAggregateType<T>();
+	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
 	std::shared_ptr<BasicValue> AST::createValue(VariateType value)
@@ -240,5 +272,18 @@ namespace EmbeddedShader::Ast
 	std::shared_ptr<UniformVariate> AST::defineUniformVariate()
 	{
 		return defineUniformVariate(createVecType<VariateType>());
+	}
+
+	template<typename T> requires std::is_aggregate_v<T>
+	std::shared_ptr<AggregateType> AST::createAggregateType(const T& value)
+	{
+		auto aggregateType = std::make_shared<AggregateType>();
+		aggregateType->name = typeid(T).raw_name();
+		auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
+		{
+
+		};
+		boost::pfr::for_each_field_with_name(value,reflect);
+		return aggregateType;
 	}
 }

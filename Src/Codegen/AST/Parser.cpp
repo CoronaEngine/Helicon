@@ -49,7 +49,10 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPi
 		output.output = globalOutput + output.output;
 
 	for (const auto& global: currentParser->structure.globalStatements)
+	{
 		global->resetAccessPermissions();
+		global->resetUsedFlag();
+	}
 	std::vector<ParseOutput> result;
 	currentParser->parseOutputs.swap(result);
 	return result;

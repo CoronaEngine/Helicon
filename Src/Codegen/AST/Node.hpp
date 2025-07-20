@@ -69,6 +69,7 @@ namespace EmbeddedShader::Ast
 	struct Statement : Node
 	{
 		virtual void resetAccessPermissions() {}
+		virtual void resetUsedFlag() {}
 	};
 
 	struct DefineLocalVariate : Statement
@@ -170,6 +171,7 @@ namespace EmbeddedShader::Ast
 
 	struct AggregateType : NameType
 	{
+		bool isUsed = false;
 		std::vector<std::shared_ptr<Variate>> members;
 	};
 
@@ -177,5 +179,6 @@ namespace EmbeddedShader::Ast
 	{
 		std::shared_ptr<AggregateType> aggregate;
 		std::string parse() override;
+		void resetUsedFlag() override;
 	};
 }
