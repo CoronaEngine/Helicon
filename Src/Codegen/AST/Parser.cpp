@@ -49,9 +49,12 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPi
 		output.output = globalOutput + output.output;
 
 	for (const auto& global: currentParser->structure.globalStatements)
-		global->resetAccessPermissions();
+	{
+        global->resetAccessPermissions();
+	    global->resetUsedFlag();
+	}
 
-	std::vector<ParseOutput> result;
+    std::vector<ParseOutput> result;
 	currentParser->parseOutputs.swap(result);
 	return result;
 }
@@ -73,8 +76,6 @@ void EmbeddedShader::Ast::Parser::reset()
 	structure.outputStatements.clear();
 	currentVariateIndex = 0;
 	positionOutput.reset();
-	for (const auto& global: currentParser->structure.globalStatements)
-		global->resetUsedFlag();
 
 }
 

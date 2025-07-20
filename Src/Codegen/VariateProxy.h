@@ -30,6 +30,8 @@ namespace EmbeddedShader
 		using value_type = Type;
 		VariateProxy()
 		{
+		    value = std::make_unique<Type>();
+
 			//Uniform,Input,Local Variate
 			if (ParseHelper::isInInputParameter())
 			{
@@ -45,7 +47,29 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
-		VariateProxy(const Type& value) : value(value)
+	    VariateProxy() requires std::is_aggregate_v<Type>
+		{
+		    //Uniform,Input,Local Variate
+		    if (ParseHelper::isInInputParameter())
+		    {
+		        node = Ast::AST::defineInputVariate<Type>(ParseHelper::getCurrentInputIndex());
+		        return;
+		    }
+
+		    if (ParseHelper::isInShaderCodeLambda())
+		    {
+		        node = Ast::AST::defineLocalVariate<Type>({});
+		        return;
+		    }
+		    node = Ast::AST::defineUniformVariate<Type>();
+
+		    ParseHelper::beginInAggregate(node);
+		    value = std::make_unique<Type>();
+		    ParseHelper::endInAggregate();
+
+		}
+
+		VariateProxy(const Type& value)
 		{
 			//Local Variate
 			if (ParseHelper::isInShaderCodeLambda())
@@ -62,13 +86,13 @@ namespace EmbeddedShader
 			//Array 后续特化
 		}
 
-		VariateProxy(const VariateProxy& value) : value(value.value)
+		VariateProxy(const VariateProxy& value)
 		{
 			//Local Variate
 			node = Ast::AST::defineLocalVariate(value.node->type, value.node);
 		}
 
-		VariateProxy(VariateProxy&& value) : value(std::move(value.value)),node(std::move(value.node))
+		VariateProxy(VariateProxy&& value) : node(std::move(value.node))
 		{
 
 		}
@@ -328,7 +352,7 @@ namespace EmbeddedShader
 		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))
 		{
 		}
-		Type value{};
+		std::unique_ptr<Type> value{};
 		std::shared_ptr<Ast::Value> node;
 	};
 }

@@ -121,9 +121,7 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&]()
 	{
-		VariateProxy a = 114;
-		VariateProxy b = 514;
-		VariateProxy c = a + b;
+	    VariateProxy<TestStruct0> a;
 		return VariateProxy(fvec4{114.f,514.f,1919.f,810.f});
 	};
 

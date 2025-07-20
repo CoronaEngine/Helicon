@@ -56,6 +56,7 @@ std::shared_ptr<EmbeddedShader::Ast::MemberAccess> EmbeddedShader::Ast::AST::acc
 	auto memberAccess = std::make_shared<MemberAccess>();
 	memberAccess->value = std::move(value);
 	memberAccess->memberName = std::move(memberName);
+    memberAccess->type = memberAccess->value->type;
 	return memberAccess;
 }
 

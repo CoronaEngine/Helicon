@@ -122,6 +122,21 @@ namespace EmbeddedShader
 			return instance.bIsInShaderCodeLambda;
 		}
 
+	    static std::shared_ptr<Ast::Value> getAggregateParent()
+		{
+		    return instance.aggregateParent;
+		}
+
+	    static void beginInAggregate(std::shared_ptr<Ast::Value> parent)
+		{
+		    instance.aggregateParent = std::move(parent);
+		}
+
+	    static void endInAggregate()
+		{
+		    instance.aggregateParent = nullptr;
+		}
+
 		static size_t getCurrentInputIndex()
 		{
 			return --instance.currentInputIndex;
@@ -129,6 +144,7 @@ namespace EmbeddedShader
 	private:
 		bool bIsInInputParameter = false;
 		bool bIsInShaderCodeLambda = false;
+	    std::shared_ptr<Ast::Value> aggregateParent;
 		size_t currentInputIndex = 0;
 		static thread_local ParseHelper instance;
 

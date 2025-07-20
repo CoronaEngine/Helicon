@@ -185,7 +185,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	auto result = "struct " + node->aggregate->name + " {\n";
 	for (const auto& member: node->aggregate->members)
 	{
-		result += member->type->parse() + " " + member->name + ";\n";
+		result += "\t" + member->type->parse() + " " + member->name + ";\n";
 	}
 	result += "}";
 	return result;

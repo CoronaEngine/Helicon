@@ -157,7 +157,7 @@ std::string SlangGenerator::getValueOutput(const T &value)
     };
 
     boost::pfr::for_each_field_with_name(value, reflect);
-    return "";
+    return "{}";
 }
 
 struct DefineSystemSemanticVariate : Ast::Statement
