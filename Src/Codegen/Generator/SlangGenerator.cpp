@@ -108,7 +108,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::BinaryOperator* node)
 {
-	return node->value1->parse() + " " + node->operatorType + " " + node->value2->parse() + ";";
+	return node->value1->parse() + " " + node->operatorType + " " + node->value2->parse();
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::MemberAccess* node)
