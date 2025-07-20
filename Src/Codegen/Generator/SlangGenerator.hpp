@@ -1,4 +1,5 @@
 #pragma once
+#include <Codegen/ParseHelper.h>
 #include <Codegen/AST/Node.hpp>
 #include <Codegen/AST/Struct.hpp>
 #include <Codegen/ParseHelper.h>
@@ -6,164 +7,149 @@
 
 namespace EmbeddedShader::Generator
 {
-// 后续把BaseShaderGenerator移除
+	//后续把BaseShaderGenerator移除
 
-class SlangGenerator final
-{
-    template <typename T>
-    static constexpr std::string variateBasicTypeNameMap = "unknown";
+	class SlangGenerator final
+	{
+		template<typename T>
+		static constexpr std::string variateBasicTypeNameMap = "unknown";
+
+	public:
+		static std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure);
+		static std::string getGlobalOutput(const Ast::EmbeddedShaderStructure& structure);
+
+		template<typename T>
+		static std::string getVariateTypeName() {return "unknown";}
+		template<typename T> requires std::is_arithmetic_v<T>
+		static std::string getVariateTypeName() {return variateBasicTypeNameMap<T>;}
+		template<typename T> requires ktm::is_vector_v<T>
+		static std::string getVariateTypeName();
+		template<typename T> requires ktm::is_matrix_v<T>
+		static std::string getVariateTypeName();
+
+		template<typename T> requires std::is_arithmetic_v<T>
+		static std::string getValueOutput(T value) {return std::to_string(value);}
+
+		template<typename T> requires ktm::is_vector_v<T>
+		static std::string getValueOutput(const T& value)
+		{
+			auto array = value.to_array();
+			std::string output = getVariateTypeName<T>() + "(";
+			output += getValueOutput(array[0]);
+			for (size_t i = 1; i < array.size(); ++i)
+			{
+				output += ", " + getValueOutput(array[i]);
+			}
+			output += ")";
+			return output;
+		}
+
+		template<typename T> requires std::is_aggregate_v<T>
+		static std::string getValueOutput(const T& value);
+
+		static std::string getParseOutput(const Ast::DefineLocalVariate* node);
+		static std::string getParseOutput(const Ast::DefineInputVariate* node);
+		static std::string getParseOutput(const Ast::Assign* node);
+		static std::string getParseOutput(const Ast::BinaryOperator* node);
+		static std::string getParseOutput(const Ast::MemberAccess* node);
+		static std::string getParseOutput(const Ast::DefineOutputVariate* node);
+		static std::string getParseOutput(const Ast::IfStatement* node);
+		static std::string getParseOutput(const Ast::InputVariate* node);
+		static std::string getParseOutput(const Ast::OutputVariate* node);
+		static std::string getParseOutput(const Ast::DefineUniversalArray* node);
+		static std::string getParseOutput(const Ast::DefineUniformVariate* node);
+		static std::string getParseOutput(const Ast::UniformVariate* node);
+		static std::string getParseOutput(const Ast::DefineAggregateType* node);
+
+		static std::shared_ptr<Ast::Variate> getPositionOutput();
+	private:
+		static thread_local inline std::string uboMembers;
+		static thread_local inline Ast::ShaderStage currentStage;
+
+		static thread_local inline size_t nestHierarchy = 1;
+		static std::string getCodeIndentation();
+
+		template<typename T>
+		struct vec_traits
+		{
+
+		};
+
+		template<size_t N,typename T>
+		struct vec_traits<ktm::vec<N,T>>
+		{
+			static constexpr size_t element_count = N;
+			using scalar_type = T;
+		};
+
+		template<typename T>
+		struct mat_traits
+		{
+
+		};
+
+		template<size_t Row,size_t Col,typename T>
+		struct mat_traits<ktm::mat<Row,Col,T>>
+		{
+			static constexpr size_t row = Row;
+			static constexpr size_t column = Col;
+			using scalar_type = T;
+		};
+	};
 
 #define DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(type, name) \
-    template <>                                        \
-    constexpr std::string variateBasicTypeNameMap<type> = #name
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int8_t, int8_t);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int16_t, int16_t);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int, int);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int64_t, int64_t);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint8_t, uint8_t);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint16_t, uint16_t);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint32_t, uint);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint64_t, uint64_t);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(float, float);
-    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(double, double);
-    // DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(std::float16_t, half);
+template<> constexpr std::string SlangGenerator::variateBasicTypeNameMap<type> = #name
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int8_t, int8_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int16_t, int16_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int, int);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int64_t, int64_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint8_t, uint8_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint16_t, uint16_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint32_t, uint);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint64_t, uint64_t);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(float, float);
+	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(double, double);
+	//DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(std::float16_t, half);
 #undef DEFINE_VARIATE_BASIC_TYPE_NAME_MAP
 
-  public:
-    static std::string getShaderOutput(const Ast::EmbeddedShaderStructure &structure);
-    static std::string getGlobalOutput(const Ast::EmbeddedShaderStructure &structure);
+	template<typename T> requires ktm::is_vector_v<T>
+	std::string SlangGenerator::getVariateTypeName()
+	{
+		return getVariateTypeName<typename vec_traits<T>::scalar_type>() + std::to_string(vec_traits<T>::element_count);
+	}
 
-    template <typename T>
-    static std::string getVariateTypeName()
-    {
-        return "unknown";
-    }
-    template <typename T>
-        requires std::is_arithmetic_v<T>
-    static std::string getVariateTypeName()
-    {
-        return variateBasicTypeNameMap<T>;
-    }
-    template <typename T>
-        requires ktm::is_vector_v<T>
-    static std::string getVariateTypeName();
-    template <typename T>
-        requires ktm::is_matrix_v<T>
-    static std::string getVariateTypeName();
+	template<typename T> requires ktm::is_matrix_v<T>
+	std::string SlangGenerator::getVariateTypeName()
+	{
+		return getVariateTypeName<typename mat_traits<T>::scalar_type>() +
+			std::to_string(mat_traits<T>::row) + "x" + std::to_string(mat_traits<T>::column);
+	}
 
-    template <typename T>
-        requires std::is_arithmetic_v<T>
-    static std::string getValueOutput(T value)
-    {
-        return std::to_string(value);
-    }
+	template<typename T> requires std::is_aggregate_v<T>
+	std::string SlangGenerator::getValueOutput(const T& value)
+	{
+		auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
+		{
+			using MemberType = std::remove_cvref_t<decltype(structMember)>;
 
-    template <typename T>
-        requires ktm::is_vector_v<T>
-    static std::string getValueOutput(const T &value)
-    {
-        auto array = value.to_array();
-        std::string output = getVariateTypeName<T>() + "(";
-        output += getValueOutput(array[0]);
-        for (size_t i = 1; i < array.size(); ++i)
-        {
-            output += ", " + getValueOutput(array[i]);
-        }
-        output += ")";
-        return output;
-    }
+			if constexpr (ParseHelper::isProxy<MemberType>()) //proxy
+			{
 
-    template <typename T>
-        requires std::is_aggregate_v<T>
-    static std::string getValueOutput(const T &value);
+			}
+			else //struct
+			{
 
-    static std::string getParseOutput(const Ast::DefineLocalVariate *node);
-    static std::string getParseOutput(const Ast::DefineInputVariate *node);
-    static std::string getParseOutput(const Ast::Assign *node);
-    static std::string getParseOutput(const Ast::BinaryOperator *node);
-    static std::string getParseOutput(const Ast::MemberAccess *node);
-    static std::string getParseOutput(const Ast::DefineOutputVariate *node);
-    static std::string getParseOutput(const Ast::IfStatement *node);
-    static std::string getParseOutput(const Ast::InputVariate *node);
-    static std::string getParseOutput(const Ast::OutputVariate *node);
-    static std::string getParseOutput(const Ast::DefineUniversalArray *node);
-    static std::string getParseOutput(const Ast::DefineUniformVariate *node);
-    static std::string getParseOutput(const Ast::UniformVariate *node);
-    static std::string getParseOutput(const Ast::DefineAggregateType *node);
-
-    static std::shared_ptr<Ast::Variate> getPositionOutput();
-
-  private:
-    static thread_local inline std::string uboMembers;
-    static thread_local inline Ast::ShaderStage currentStage;
-
-    static thread_local inline size_t nestHierarchy = 1;
-    static std::string getCodeIndentation();
-
-    template <typename T>
-    struct vec_traits
-    {
-    };
-
-    template <size_t N, typename T>
-    struct vec_traits<ktm::vec<N, T>>
-    {
-        static constexpr size_t element_count = N;
-        using scalar_type = T;
-    };
-
-    template <typename T>
-    struct mat_traits
-    {
-    };
-
-    template <size_t Row, size_t Col, typename T>
-    struct mat_traits<ktm::mat<Row, Col, T>>
-    {
-        static constexpr size_t row = Row;
-        static constexpr size_t column = Col;
-        using scalar_type = T;
-    };
-};
-
-template <typename T>
-    requires ktm::is_vector_v<T>
-std::string SlangGenerator::getVariateTypeName()
-{
-    return getVariateTypeName<typename vec_traits<T>::scalar_type>() + std::to_string(vec_traits<T>::element_count);
-}
-
-template <typename T>
-    requires ktm::is_matrix_v<T>
-std::string SlangGenerator::getVariateTypeName()
-{
-    return getVariateTypeName<typename mat_traits<T>::scalar_type>() +
-           std::to_string(mat_traits<T>::row) + "x" + std::to_string(mat_traits<T>::column);
-}
-
-template <typename T>
-    requires std::is_aggregate_v<T>
-std::string SlangGenerator::getValueOutput(const T &value)
-{
-    auto reflect = [&](std::string_view name, auto &&structMember, std::size_t i) {
-        using MemberType = std::remove_cvref_t<decltype(structMember)>;
-
-        if constexpr (ParseHelper::isProxy<MemberType>()) // proxy
-        {
-        }
-        else // struct
-        {
-        }
-    };
+			}
+		};
 
     boost::pfr::for_each_field_with_name(value, reflect);
     return "{}";
 }
 
-struct DefineSystemSemanticVariate : Ast::Statement
-{
-    std::shared_ptr<Ast::Variate> variate;
-    std::string semanticName;
-    std::string parse() override;
-};
-} // namespace EmbeddedShader::Generator
+	struct DefineSystemSemanticVariate : Ast::Statement
+	{
+		std::shared_ptr<Ast::Variate> variate;
+		std::string semanticName;
+		std::string parse() override;
+	};
+}
