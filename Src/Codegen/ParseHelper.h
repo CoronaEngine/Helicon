@@ -82,8 +82,11 @@ namespace EmbeddedShader
 			//note:这里的if constexpr不能省略，因为std::is_same_v<ReturnType1,ParamTypes2...>这条代码必须要求sizeof...(ParamTypes2) == 1
 			if constexpr (std::is_same_v<ReturnType1, void> && sizeof...(ParamTypes2) == 0)
 				return true;
-			else if constexpr (!std::is_same_v<ReturnType1, void> && sizeof...(ParamTypes2) == 1 && std::is_same_v<ReturnType1,ParamTypes2...>)
-				return true;
+			else if constexpr (!std::is_same_v<ReturnType1, void> && sizeof...(ParamTypes2) == 1)
+			{
+				if constexpr (std::is_same_v<ReturnType1,ParamTypes2...>)
+					return true;
+			}
 			else
 				return false;
 		}
