@@ -80,11 +80,24 @@ namespace EmbeddedShader
 		VariateProxy(const VariateProxy<Type>& value)
 		{
 			//Input(from Output),Local Variate
+			// if (auto outputVar = std::dynamic_pointer_cast<Ast::OutputVariate>(value.node);ParseHelper::isInInputParameter() && outputVar)
+			// {
+			// 	node = Ast::AST::defineInputVariate(outputVar->type,outputVar->location);
+			// 	return;
+			// }
 			node = Ast::AST::defineLocalVariate(reinterpret_cast<Ast::Variate*>(value.node.get())->type,value.node);
 		}
 
 		VariateProxy(VariateProxy&& value)
 		{
+			auto outputVar = std::dynamic_pointer_cast<Ast::OutputVariate>(value.node);
+			puts("move!");
+			fflush(stdout);
+			if (ParseHelper::isInInputParameter() && outputVar)
+			{
+				node = Ast::AST::defineInputVariate(outputVar->type,outputVar->location);
+				return;
+			}
 			node = std::move(value.node);
 		}
 

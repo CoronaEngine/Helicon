@@ -33,7 +33,6 @@ namespace EmbeddedShader
 			{
 				auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(vsOutput.node.get())->type,0);
 				Ast::AST::assign(outputVar,vsOutput.node);
-				vsOutput.node = std::move(outputVar);
 			}
 			//2.proxy struct
 			//else ...
@@ -56,7 +55,8 @@ namespace EmbeddedShader
 			// else
 
 			Ast::Parser::beginShaderParse(Ast::ShaderStage::Fragment); //记得处理Fragment的返回值
-			ParseHelper::callLambda(fsFunc, std::move(vsOutput));
+			auto fsParam = ParseHelper::createParam(fsFunc);
+			ParseHelper::callLambda(fsFunc, std::move(fsParam));
 		}
 		else
 		{

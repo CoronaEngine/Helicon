@@ -28,6 +28,8 @@ namespace EmbeddedShader
 		static auto callLambda(std::function<ReturnType(ParamType)> f, ParamType param)
 		{
 			instance.bIsInShaderCodeLambda = true;
+			puts("setting!");
+			fflush(stdout);
 			f(std::move(param));
 			instance.bIsInShaderCodeLambda = false;
 		}
@@ -66,6 +68,16 @@ namespace EmbeddedShader
 			auto tuple = std::tuple<ParamTypes...>();
 			instance.bIsInInputParameter = false;
 			return tuple;
+		}
+
+		template<typename ReturnType,typename ParamType>
+		static ParamType createParam(const std::function<ReturnType(ParamType)>& f)
+		{
+			instance.bIsInInputParameter = true;
+			instance.currentInputIndex = 1;
+			ParamType param;
+			instance.bIsInInputParameter = false;
+			return param;
 		}
 
 		template<typename ReturnType,typename... ParamTypes>
