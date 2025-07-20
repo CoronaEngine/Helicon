@@ -127,6 +127,11 @@ std::string EmbeddedShader::Ast::DefineAggregateType::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+std::string EmbeddedShader::Ast::AggregateValue::parse()
+{
+	return value;
+}
+
 void EmbeddedShader::Ast::DefineAggregateType::resetUsedFlag()
 {
 	aggregate->isUsed = false;

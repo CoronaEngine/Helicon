@@ -181,4 +181,10 @@ namespace EmbeddedShader::Ast
 		void resetUsedFlag() override;
 		std::string parse() override;
 	};
+
+	struct AggregateValue : Value
+	{
+		std::string value;
+		std::string parse() override;
+	};
 }

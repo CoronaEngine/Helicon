@@ -39,6 +39,8 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<BasicValue> createValue(VariateType value);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<VecValue> createValue(const VariateType& value);
+		template<typename VariateType> requires std::is_aggregate_v<VariateType>
+		static std::shared_ptr<AggregateValue> createValue(const VariateType& value);
 
 		template<typename ValueType,typename... Args> requires ktm::is_vector_v<ValueType>
 		static std::shared_ptr<VecValue> createVecValue(Args&&... args);
@@ -168,6 +170,15 @@ namespace EmbeddedShader::Ast
 
 		vecValue->value = Generator::SlangGenerator::getValueOutput<VariateType>(value);
 		return vecValue;
+	}
+
+	template<typename VariateType> requires std::is_aggregate_v<VariateType>
+	std::shared_ptr<AggregateValue> AST::createValue(const VariateType& value)
+	{
+		auto aggregateValue = std::make_shared<AggregateValue>();
+		aggregateValue->type = createType<std::remove_cvref_t<VariateType>>();
+		aggregateValue->value = Generator::SlangGenerator::getValueOutput<std::remove_cvref_t<VariateType>>(value);
+		return aggregateValue;
 	}
 
 	template<typename ValueType, typename ... Args> requires ktm::is_vector_v<ValueType>

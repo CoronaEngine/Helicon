@@ -1,4 +1,5 @@
 #pragma once
+#include <Codegen/ParseHelper.h>
 #include <Codegen/AST/Node.hpp>
 #include <Codegen/AST/Struct.hpp>
 
@@ -41,13 +42,8 @@ namespace EmbeddedShader::Generator
 			return output;
 		}
 
-		// template<typename T> requires ktm::is_matrix_v<T>
-		// std::string getValueOutput(T&& value)
-		// {
-		//
-		// }
-
-		//		std::string getVariateTypeName
+		template<typename T> requires std::is_aggregate_v<T>
+		static std::string getValueOutput(const T& value);
 
 		static std::string getParseOutput(const Ast::DefineLocalVariate* node);
 		static std::string getParseOutput(const Ast::DefineInputVariate* node);
@@ -125,6 +121,26 @@ template<> constexpr std::string SlangGenerator::variateBasicTypeNameMap<type> =
 	{
 		return getVariateTypeName<typename mat_traits<T>::scalar_type>() +
 			std::to_string(mat_traits<T>::row) + "x" + std::to_string(mat_traits<T>::column);
+	}
+
+	template<typename T> requires std::is_aggregate_v<T>
+	std::string SlangGenerator::getValueOutput(const T& value)
+	{
+		auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
+		{
+			using MemberType = std::remove_cvref_t<decltype(structMember)>;
+
+			if constexpr (ParseHelper::isProxy<MemberType>()) //proxy
+			{
+
+			}
+			else //struct
+			{
+
+			}
+		};
+
+		boost::pfr::for_each_field(value,reflect);
 	}
 
 	struct DefineSystemSemanticVariate : Ast::Statement
