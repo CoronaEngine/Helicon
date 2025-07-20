@@ -45,7 +45,7 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
-		VariateProxy(const Type& value)
+		VariateProxy(const Type& value) : value(value)
 		{
 			//Local Variate
 			if (ParseHelper::isInShaderCodeLambda())
@@ -62,15 +62,15 @@ namespace EmbeddedShader
 			//Array 后续特化
 		}
 
-		VariateProxy(const VariateProxy& value)
+		VariateProxy(const VariateProxy& value) : value(value.value)
 		{
 			//Local Variate
 			node = Ast::AST::defineLocalVariate(value.node->type, value.node);
 		}
 
-		VariateProxy(VariateProxy&& value)
+		VariateProxy(VariateProxy&& value) : value(std::move(value.value)),node(std::move(value.node))
 		{
-			node = std::move(value.node);
+
 		}
 
 		~VariateProxy()
@@ -328,7 +328,7 @@ namespace EmbeddedShader
 		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))
 		{
 		}
-		Type* value{};
+		Type value{};
 		std::shared_ptr<Ast::Value> node;
 	};
 }

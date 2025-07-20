@@ -125,6 +125,7 @@ int main(int argc, char* argv[])
 		VariateProxy a = 114;
 		VariateProxy b = 514;
 		VariateProxy c = a + b;
+		TestStruct0 testStruct0 = {};
 		return VariateProxy(fvec4{114.f,514.f,1919.f,810.f});
 	};
 

@@ -2,6 +2,7 @@
 #include <Codegen/ParseHelper.h>
 #include <Codegen/AST/Node.hpp>
 #include <Codegen/AST/Struct.hpp>
+#include <boost/pfr/core_name.hpp>
 
 namespace EmbeddedShader::Generator
 {
@@ -140,7 +141,7 @@ template<> constexpr std::string SlangGenerator::variateBasicTypeNameMap<type> =
 			}
 		};
 
-		boost::pfr::for_each_field(value,reflect);
+		boost::pfr::for_each_field_with_name(value,reflect);
 	}
 
 	struct DefineSystemSemanticVariate : Ast::Statement
