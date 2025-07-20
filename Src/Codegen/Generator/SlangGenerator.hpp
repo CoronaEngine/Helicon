@@ -142,6 +142,7 @@ template<> constexpr std::string SlangGenerator::variateBasicTypeNameMap<type> =
 		};
 
 		boost::pfr::for_each_field_with_name(value,reflect);
+		return "";
 	}
 
 	struct DefineSystemSemanticVariate : Ast::Statement

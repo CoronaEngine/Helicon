@@ -85,7 +85,7 @@ namespace EmbeddedShader
 
 		Type* operator->()
 		{
-			return value;
+			return &value;
 		}
 
 		VariateProxy& operator=(const VariateProxy& rhs)
