@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <Codegen/ParseHelper.h>
+#include <Codegen/ParseHelperImpl.h>
 #include <Codegen/AST/AST.hpp>
 #include <Codegen/AST/Parser.hpp>
 
@@ -24,6 +25,7 @@ namespace EmbeddedShader
 		auto vsParams = ParseHelper::createParamTuple(vsFunc);
 		if constexpr (ParseHelper::hasReturnValue(vsFunc))
 		{
+			//后续需要添加检测vsOutput必须为proxy或只含有proxy成员的struct
 			auto vsOutput = ParseHelper::callLambda(vsFunc,std::move(vsParams));
 			Ast::Parser::beginShaderParse(Ast::ShaderStage::Fragment); //记得处理Fragment的返回值
 			// if constexpr (ParseHelper::hasReturnValue(fsFunc))

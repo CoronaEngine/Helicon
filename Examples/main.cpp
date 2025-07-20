@@ -98,10 +98,10 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&]()
 	{
-		return VariateProxy<fvec4>();
+		return fvec4();
 	};
 
-	auto fragment = [&]
+	auto fragment = [&](fvec4 a)
 	{
 		VariateProxy<int> b;
 	};
