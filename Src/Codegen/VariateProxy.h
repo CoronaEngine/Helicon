@@ -27,10 +27,9 @@ namespace EmbeddedShader
 	struct VariateProxy
 	{
 		friend class RasterizedPipelineObject;
-	public:
+		using value_type = Type;
 		VariateProxy()
 		{
-			fflush(stdout);
 			//Uniform,Input,Local Variate
 			if (ParseHelper::isInInputParameter())
 			{

@@ -67,6 +67,12 @@ struct A
 	B b;
 };
 
+struct TestStruct
+{
+	VariateProxy<int> member1;
+	VariateProxy<ktm::fvec4> member2;
+};
+
 int main(int argc, char* argv[])
 {
 	auto lambdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
@@ -120,6 +126,8 @@ int main(int argc, char* argv[])
 		VariateProxy<fvec4> b = a;
 		return b;
 	};
+
+	auto type = AST::createType<TestStruct>();
 
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());

@@ -70,9 +70,7 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<UniversalArray> defineUniversalArray();
 
 		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type);
-		template<typename VariateType> requires std::is_arithmetic_v<VariateType>
-		static std::shared_ptr<UniformVariate> defineUniformVariate();
-		template<typename VariateType> requires ktm::is_vector_v<VariateType>
+		template<typename VariateType>
 		static std::shared_ptr<UniformVariate> defineUniformVariate();
 
 		template<typename T> requires std::is_aggregate_v<T>
@@ -148,7 +146,7 @@ namespace EmbeddedShader::Ast
 	template<typename T> requires std::is_aggregate_v<T>
 	std::shared_ptr<AggregateType> AST::createType()
 	{
-		return createAggregateType<T>();
+		return createAggregateType<T>({});
 	}
 
 	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
@@ -156,7 +154,7 @@ namespace EmbeddedShader::Ast
 	{
 		auto basicValue = std::make_shared<BasicValue>();
 		basicValue->value = Generator::SlangGenerator::getValueOutput(std::forward<VariateType>(value));
-		basicValue->type = createType<VariateType>();
+		basicValue->type = createType<std::remove_cvref_t<VariateType>>();
 		return basicValue;
 	}
 
@@ -216,43 +214,49 @@ namespace EmbeddedShader::Ast
 	template<typename ElementType>
 	std::shared_ptr<UniversalArray> AST::defineUniversalArray()
 	{
-		return defineUniversalArray(createType<ElementType>());
+		return defineUniversalArray(createType<std::remove_cvref_t<ElementType>>());
 	}
 
-	template<typename VariateType> requires std::is_arithmetic_v<VariateType>
+	template<typename VariateType>
 	std::shared_ptr<UniformVariate> AST::defineUniformVariate()
 	{
-		auto type = std::make_shared<BasicType>();
-		type->name = Generator::SlangGenerator::getVariateTypeName<VariateType>();
-		return defineUniformVariate(type);
-	}
-
-	template<typename VariateType> requires ktm::is_vector_v<VariateType>
-	std::shared_ptr<UniformVariate> AST::defineUniformVariate()
-	{
-		return defineUniformVariate(createVecType<VariateType>());
+		return defineUniformVariate(createType<VariateType>());
 	}
 
 	template<typename T> requires std::is_aggregate_v<T>
 	std::shared_ptr<AggregateType> AST::createAggregateType(const T& value)
 	{
 		auto& map = AggregateType::aggregateTypeMap;
-		auto it = map.find(typeid(T).name());
+		auto it = map.find(typeid(T).raw_name());
 		if (it != map.end())
-			return it->second;
+		{
+			auto aggregateType = it->second;
+			if (aggregateType->isUsed)
+			{
+				auto defineNode = std::make_shared<DefineAggregateType>();
+				defineNode->aggregate = aggregateType;
+				addGlobalStatement(defineNode);
+			}
+
+			return aggregateType;
+		}
 
 		auto aggregateType = std::make_shared<AggregateType>();
-		aggregateType->name = typeid(T).raw_name();
+		aggregateType->name = typeid(T).name();
 		auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
 		{
-
+			auto member = std::make_shared<Variate>();
+			member->name = name;
+			member->type = createType<std::remove_cvref_t<typename std::remove_cvref_t<decltype(structMember)>::value_type>>();
+			aggregateType->members.push_back(std::move(member));
 		};
 		boost::pfr::for_each_field_with_name(value,reflect);
-		//T O D O
-		// auto defineNode = std::make_shared<DefineAggregateType>();
-		// defineNode->aggregate = aggregateType;
-		// addGlobalStatement(defineNode);
-		map.insert({typeid(T).name(), aggregateType});
+
+		auto defineNode = std::make_shared<DefineAggregateType>();
+		defineNode->aggregate = aggregateType;
+		addGlobalStatement(defineNode);
+
+		map.insert({typeid(T).raw_name(), aggregateType});
 		return aggregateType;
 	}
 }
