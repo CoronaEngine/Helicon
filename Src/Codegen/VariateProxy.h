@@ -26,6 +26,7 @@ namespace EmbeddedShader
 	template<typename Type>
 	struct VariateProxy
 	{
+		friend class RasterizedPipelineObject;
 	public:
 		VariateProxy()// requires (std::is_class<Type>::value&& std::is_aggregate<Type>::value && !is_mathematical<Type>)
 		{
