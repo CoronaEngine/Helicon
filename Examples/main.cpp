@@ -104,6 +104,7 @@ int main(int argc, char* argv[])
 	auto fragment = [&](VariateProxy<fvec4> a)
 	{
 		VariateProxy<fvec4> b = a;
+		return b;
 	};
 
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
