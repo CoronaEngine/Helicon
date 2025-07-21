@@ -52,11 +52,11 @@ std::shared_ptr<EmbeddedShader::Ast::InputVariate> EmbeddedShader::Ast::AST::def
 }
 
 std::shared_ptr<EmbeddedShader::Ast::MemberAccess> EmbeddedShader::Ast::AST::access(std::shared_ptr<Value> value,
-	std::string memberName) {
+                                                                                    std::string memberName, std::shared_ptr<Type> memberType) {
 	auto memberAccess = std::make_shared<MemberAccess>();
 	memberAccess->value = std::move(value);
 	memberAccess->memberName = std::move(memberName);
-    memberAccess->type = memberAccess->value->type;
+    memberAccess->type = std::move(memberType);
 	return memberAccess;
 }
 

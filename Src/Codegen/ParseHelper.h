@@ -1,5 +1,7 @@
 #pragma once
 #include <functional>
+#include <stack>
+#include <Codegen/AST/Node.hpp>
 
 namespace EmbeddedShader
 {
@@ -126,10 +128,33 @@ namespace EmbeddedShader
 		{
 			return --instance.currentInputIndex;
 		}
+
+	    static void beginAggregateParent(std::shared_ptr<Ast::Value> parent)
+		{
+		    instance.aggregateParentStack.emplace(std::move(parent),0);
+        }
+
+	    static void endAggregateParent()
+		{
+		    instance.aggregateParentStack.pop();
+		}
+
+	    static std::shared_ptr<Ast::Value> getAggregateParent()
+		{
+		    if (instance.aggregateParentStack.empty())
+		        return nullptr;
+		    return instance.aggregateParentStack.top().first;
+		}
+
+	    static size_t getAggregateMemberIndex()
+		{
+		    return instance.aggregateParentStack.top().second++;
+		}
 	private:
 		bool bIsInInputParameter = false;
 		bool bIsInShaderCodeLambda = false;
 		size_t currentInputIndex = 0;
+	    std::stack<std::pair<std::shared_ptr<Ast::Value>,size_t>> aggregateParentStack;
 		static thread_local ParseHelper instance;
 
 		template<typename T>

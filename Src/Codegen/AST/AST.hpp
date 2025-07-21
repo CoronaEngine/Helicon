@@ -59,7 +59,7 @@ namespace EmbeddedShader::Ast
 		template<typename VariateType>
 		static std::shared_ptr<InputVariate> defineInputVariate(size_t location);
 
-		static std::shared_ptr<MemberAccess> access(std::shared_ptr<Value> value, std::string memberName);
+		static std::shared_ptr<MemberAccess> access(std::shared_ptr<Value> value, std::string memberName, std::shared_ptr<Type> memberType);
 
 		static std::shared_ptr<OutputVariate> defineOutputVariate(std::shared_ptr<Type> type, size_t location);
 		template<typename VariateType>

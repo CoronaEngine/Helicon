@@ -32,6 +32,15 @@ namespace EmbeddedShader
 		{
 		    value = std::make_unique<Type>();
 
+		    if (auto parent = ParseHelper::getAggregateParent())
+		    {
+		        auto index = ParseHelper::getAggregateMemberIndex();
+		        auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+		        auto member = aggregateType->members[index];
+		        node = Ast::AST::access(parent,member->name, member->type);
+		        return;
+		    }
+
 			//Uniform,Input,Local Variate
 			if (ParseHelper::isInInputParameter())
 			{
@@ -45,6 +54,27 @@ namespace EmbeddedShader
 				return;
 			}
 			node = Ast::AST::defineUniformVariate<Type>();
+		}
+
+	    VariateProxy() requires std::is_aggregate_v<Type>
+		{
+		    //Uniform,Input,Local Variate
+		    if (ParseHelper::isInInputParameter())
+		    {
+		        node = Ast::AST::defineInputVariate<Type>(ParseHelper::getCurrentInputIndex());
+		    }
+		    else if (ParseHelper::isInShaderCodeLambda())
+		    {
+		        node = Ast::AST::defineLocalVariate<Type>({});
+		    }
+		    else
+		    {
+		        node = Ast::AST::defineUniformVariate<Type>();
+		    }
+
+            ParseHelper::beginAggregateParent(node);
+		    value = std::make_unique<Type>();
+		    ParseHelper::beginAggregateParent(node);
 		}
 
 		VariateProxy(const Type& value)
@@ -87,7 +117,7 @@ namespace EmbeddedShader
 
 		Type* operator->()
 		{
-			return &value;
+			return value.get();
 		}
 
 		VariateProxy& operator=(const VariateProxy& rhs)

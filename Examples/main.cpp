@@ -91,7 +91,6 @@ int main(int argc, char* argv[])
 	boost::pfr::for_each_field_with_name(A{},lambdaReflect);
 	// boost::pfr::for_each_field_with_name(MyStruct2{}, lammdaReflect);
 
-
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
@@ -122,6 +121,7 @@ int main(int argc, char* argv[])
 	auto vertex = [&]()
 	{
 	    VariateProxy<TestStruct0> a;
+	    VariateProxy b = a->member1;
 		return VariateProxy(fvec4{114.f,514.f,1919.f,810.f});
 	};
 
