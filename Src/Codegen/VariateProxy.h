@@ -92,7 +92,7 @@ namespace EmbeddedShader
 		    ParseHelper::endAggregateParent();
 		}
 
-		VariateProxy(const Type& value)
+		VariateProxy(const Type& value) requires !std::is_aggregate_v<Type>
 		{
 			//Local Variate
 			if (ParseHelper::isInShaderCodeLambda())

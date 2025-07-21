@@ -120,6 +120,7 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&](VariateProxy<TestStruct> a)
 	{
+	    VariateProxy<TestStruct> b;
 		return a->member0;
 	};
 
