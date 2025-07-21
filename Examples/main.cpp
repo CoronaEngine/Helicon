@@ -76,7 +76,7 @@ struct TestStruct0
 struct TestStruct
 {
 	VariateProxy<TestStruct0> member0;
-	VariateProxy<int> member1;
+	VariateProxy<int> member1 = 114;
 	VariateProxy<ktm::fvec4> member2;
 };
 

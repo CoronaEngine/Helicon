@@ -263,10 +263,7 @@ namespace EmbeddedShader::Ast
 			auto member = std::make_shared<Variate>();
 			member->name = name;
 
-			if constexpr (ParseHelper::isProxy<MemberType>())
-				member->type = createType<std::remove_cvref_t<typename MemberType::value_type>>();
-			else
-				member->type = createType<MemberType>();
+			member->type = createType<std::remove_cvref_t<typename MemberType::value_type>>();
 
 			aggregateType->members.push_back(std::move(member));
 		};

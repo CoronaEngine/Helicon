@@ -27,15 +27,15 @@ namespace EmbeddedShader
 	struct VariateProxy
 	{
 		friend class RasterizedPipelineObject;
+		friend class Generator::SlangGenerator;
 		using value_type = Type;
 		VariateProxy()
 		{
-		    if (ParseHelper::notInitNode())
+            value = std::make_unique<Type>();
+            if (ParseHelper::notInitNode())
 		        return;
 
-            value = std::make_unique<Type>();
-
-		    if (auto parent = ParseHelper::getAggregateParent())
+            if (auto parent = ParseHelper::getAggregateParent())
 		    {
 		        auto index = ParseHelper::getAggregateMemberIndex();
 		        auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
@@ -62,9 +62,12 @@ namespace EmbeddedShader
 	    VariateProxy() requires std::is_aggregate_v<Type>
 		{
 		    if (ParseHelper::notInitNode())
+		    {
+		        value = std::make_unique<Type>();
 		        return;
+		    }
 
-		    //Uniform,Input,Local Variate
+            //Uniform,Input,Local Variate
 		    ParseHelper::beginNotInitNode();
 		    if (auto parent = ParseHelper::getAggregateParent())
 		    {
@@ -94,6 +97,12 @@ namespace EmbeddedShader
 
 		VariateProxy(const Type& value) requires !std::is_aggregate_v<Type>
 		{
+		    if (ParseHelper::notInitNode())
+		    {
+		        this->value = std::make_unique<Type>(value);
+		        return;
+		    }
+
 			//Local Variate
 			if (ParseHelper::isInShaderCodeLambda())
 			{
