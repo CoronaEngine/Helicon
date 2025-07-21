@@ -20,13 +20,13 @@ using namespace EmbeddedShader;
 struct MyStruct1
 {
 	VariateProxy<int> int_A = 85244;
-	VariateProxy<VariateProxy<int>> arr = { 1, 2 };
+	VariateProxy<VariateProxy<int>> arr;
 };
 
 struct MyStruct2
 {
 	VariateProxy<int> int_A = 85244;
-	VariateProxy<VariateProxy<int>> arr = { 1, 2 };
+	VariateProxy<VariateProxy<int>> arr;
 };
 
 struct MyStruct3
@@ -126,9 +126,11 @@ int main(int argc, char* argv[])
 
 	puts("------------------- Front-End Test -------------------");
 
+    VariateProxy<VariateProxy<fvec4>> array;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
-	    position() = input->pos;
+	    VariateProxy i = 1;
+	    position() = array[i];
 	    return input->color;
 	};
 

@@ -26,6 +26,21 @@ namespace EmbeddedShader
 	template<typename Type>
 	struct VariateProxy
 	{
+	    template<typename OtherType>
+	    friend struct VariateProxy;
+	private:
+	    template<typename T>
+       struct ArrayProxyTraits
+	    {
+	        static constexpr bool value = false;
+	    };
+
+	    template<typename T> requires !ArrayProxyTraits<T>::value
+        struct ArrayProxyTraits<VariateProxy<T>>
+	    {
+	        static constexpr bool value = true;
+	    };
+	public:
 	    friend VariateProxy<ktm::fvec4> position();
 		friend class RasterizedPipelineObject;
 		friend class Generator::SlangGenerator;
@@ -114,9 +129,9 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
-		VariateProxy(const std::initializer_list<Type>& value)
+		VariateProxy() requires ArrayProxyTraits<Type>::value
 		{
-			//Array 后续特化
+			node = Ast::AST::defineUniversalArray<typename Type::value_type>();
 		}
 
 		VariateProxy(const VariateProxy& value)
@@ -131,11 +146,16 @@ namespace EmbeddedShader
 		{
 		}
 
-		VariateProxy& operator[](uint32_t input)
+		Type operator[](uint32_t input) requires ArrayProxyTraits<Type>::value
 		{
-			//Array 后续特化
-			return *(new VariateProxy());
+			return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::UniversalArray>&>(node), input));
 		}
+
+	    template<typename IndexType>
+	    Type operator[](const VariateProxy<IndexType>& input) requires ArrayProxyTraits<Type>::value && std::is_integral_v<IndexType>
+	    {
+	        return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::UniversalArray>&>(node), input.node));
+	    }
 
 		Type* operator->()
 		{
