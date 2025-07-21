@@ -126,11 +126,12 @@ int main(int argc, char* argv[])
 
 	puts("------------------- Front-End Test -------------------");
 
-    VariateProxy<VariateProxy<fvec4>> array;
+    VariateProxy<VariateProxy<VariateProxy<fvec4>>> texture2d;
+    VariateProxy<VariateProxy<VariateProxy<fvec4>>> texture2d2;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
-	    VariateProxy i = 1;
-	    position() = array[i];
+	    texture2d2[0][0] = texture2d[0][0];
+	    position() = texture2d[0][0];
 	    return input->color;
 	};
 
@@ -145,6 +146,8 @@ int main(int argc, char* argv[])
 
     ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
     ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+    // ShaderCodeCompiler vertxShader(code1, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+    // ShaderCodeCompiler fragShader(code2, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 

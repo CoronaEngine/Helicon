@@ -30,13 +30,25 @@ namespace EmbeddedShader
 	    friend struct VariateProxy;
 	private:
 	    template<typename T>
-       struct ArrayProxyTraits
+        struct ArrayProxyTraits
 	    {
 	        static constexpr bool value = false;
 	    };
 
 	    template<typename T> requires !ArrayProxyTraits<T>::value
         struct ArrayProxyTraits<VariateProxy<T>>
+	    {
+	        static constexpr bool value = true;
+	    };
+
+	    template<typename T>
+        struct Texture2DProxyTraits
+	    {
+	        static constexpr bool value = false;
+	    };
+
+	    template<typename T> requires !ArrayProxyTraits<T>::value
+        struct Texture2DProxyTraits<VariateProxy<VariateProxy<T>>>
 	    {
 	        static constexpr bool value = true;
 	    };
@@ -134,6 +146,11 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniversalArray<typename Type::value_type>();
 		}
 
+	    VariateProxy() requires Texture2DProxyTraits<Type>::value
+		{
+		    node = Ast::AST::defineUniversalTexture2D<typename Type::value_type::value_type>();
+		}
+
 		VariateProxy(const VariateProxy& value)
 		{
 			//Local Variate
@@ -148,24 +165,35 @@ namespace EmbeddedShader
 
 		Type operator[](uint32_t input) requires ArrayProxyTraits<Type>::value
 		{
-			return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::UniversalArray>&>(node), input));
+			return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input));
 		}
 
 	    template<typename IndexType>
 	    Type operator[](const VariateProxy<IndexType>& input) requires ArrayProxyTraits<Type>::value && std::is_integral_v<IndexType>
 	    {
-	        return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::UniversalArray>&>(node), input.node));
+	        return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
 	    }
 
-		Type* operator->()
+	    Type operator[](uint32_t input) requires Texture2DProxyTraits<Type>::value
+	    {
+	        return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input));
+	    }
+
+	    template<typename IndexType>
+        Type operator[](const VariateProxy<IndexType>& input) requires Texture2DProxyTraits<Type>::value && std::is_integral_v<IndexType>
+        {
+            return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
+        }
+
+		Type* operator->() requires std::is_aggregate_v<Type>
 		{
 			return value.get();
 		}
 
-		VariateProxy& operator=(const VariateProxy& rhs)
+		VariateProxy& operator=(const VariateProxy& rhs) requires !ArrayProxyTraits<Type>::value
 		{
-			Ast::AST::assign(node,rhs.node);
-			return *this;
+		    Ast::AST::assign(node,rhs.node);
+		    return *this;
 		}
 
 		VariateProxy& operator++()

@@ -3,10 +3,10 @@
 #include <memory>
 
 #include <Codegen/AST/Enum.hpp>
+#include <Codegen/AST/Node.hpp>
 
 namespace EmbeddedShader::Ast
 {
-	struct Statement;
 	struct DefineLocalVariate;
 	struct Node
 	{
@@ -143,7 +143,7 @@ namespace EmbeddedShader::Ast
 
 	struct ElementVariate : Variate
 	{
-		std::shared_ptr<UniversalArray> array;
+		std::shared_ptr<Variate> array;
 		void access(AccessPermissions permissions) override;
 	};
 
@@ -187,4 +187,20 @@ namespace EmbeddedShader::Ast
 		std::string value;
 		std::string parse() override;
 	};
+
+    //RWTexture2D/Texture2D
+    struct UniversalTexture2D : Variate
+    {
+        //Variate::type 将被解释为元素类型
+
+        AccessPermissions permissions = AccessPermissions::None;
+        void access(AccessPermissions permissions) override;
+    };
+
+    struct DefineUniversalTexture2D : Statement
+    {
+        std::shared_ptr<UniversalTexture2D> texture;
+        std::string parse() override;
+        void resetAccessPermissions() override;
+    };
 }

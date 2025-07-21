@@ -152,10 +152,6 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 		return "";
 
 	std::string bufferType = "StructuredBuffer";
-	// if (std::dynamic_pointer_cast<Ast::BasicType>(node->array->type))
-	// {
-	// 	bufferType = "Buffer";
-	// }
 
 	if (node->array->permissions == Ast::AccessPermissions::ReadOnly)
 	{
@@ -189,6 +185,21 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	}
 	result += "}";
 	return result;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniversalTexture2D *node)
+{
+    if (node->texture->permissions == Ast::AccessPermissions::None)
+        return "";
+
+    std::string bufferType = "Texture2D";
+
+    if (node->texture->permissions == Ast::AccessPermissions::ReadOnly)
+    {
+        return bufferType + "<" + node->texture->type->parse() + "> " + node->texture->name + ";";
+    }
+
+    return "RW" + bufferType + "<" + node->texture->type->parse() + "> " + node->texture->name + ";";
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()

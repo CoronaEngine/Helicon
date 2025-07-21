@@ -132,6 +132,21 @@ std::string EmbeddedShader::Ast::AggregateValue::parse()
 	return value;
 }
 
+void EmbeddedShader::Ast::UniversalTexture2D::access(AccessPermissions permissions)
+{
+    this->permissions = permissions;
+}
+
+std::string EmbeddedShader::Ast::DefineUniversalTexture2D::parse()
+{
+    return Generator::SlangGenerator::getParseOutput(this);
+}
+
+void EmbeddedShader::Ast::DefineUniversalTexture2D::resetAccessPermissions()
+{
+    texture->permissions = AccessPermissions::None;
+}
+
 void EmbeddedShader::Ast::DefineAggregateType::resetUsedFlag()
 {
 	aggregate->isUsed = false;

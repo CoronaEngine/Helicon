@@ -96,6 +96,17 @@ std::shared_ptr<EmbeddedShader::Ast::UniversalArray> EmbeddedShader::Ast::AST::d
 	return variate;
 }
 
+std::shared_ptr<EmbeddedShader::Ast::UniversalTexture2D> EmbeddedShader::Ast::AST::defineUniversalTexture2D(std::shared_ptr<Type> elementType)
+{
+    auto variate = std::make_shared<UniversalTexture2D>();
+    variate->type = std::move(elementType);
+    variate->name = Parser::getUniqueGlobalVariateName();
+    auto defineNode = std::make_shared<DefineUniversalTexture2D>();
+    defineNode->texture = variate;
+    addGlobalStatement(defineNode);
+    return variate;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::defineUniformVariate(
 	std::shared_ptr<Type> type)
 {
@@ -118,7 +129,7 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 }
 
 std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(
-	std::shared_ptr<UniversalArray> array, uint32_t index)
+	std::shared_ptr<Variate> array, uint32_t index)
 {
 	auto variate = std::make_shared<ElementVariate>();
 	variate->type = array->type;
@@ -127,7 +138,7 @@ std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::a
 	return variate;
 }
 
-std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(std::shared_ptr<UniversalArray> array,
+std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(std::shared_ptr<Variate> array,
 	const std::shared_ptr<Value>& index)
 {
 	auto variate = std::make_shared<ElementVariate>();

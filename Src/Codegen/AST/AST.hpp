@@ -72,6 +72,10 @@ namespace EmbeddedShader::Ast
 		template<typename ElementType>
 		static std::shared_ptr<UniversalArray> defineUniversalArray();
 
+	    static std::shared_ptr<UniversalTexture2D> defineUniversalTexture2D(std::shared_ptr<Type> elementType);
+	    template<typename ElementType>
+        static std::shared_ptr<UniversalTexture2D> defineUniversalTexture2D();
+
 		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type);
 		template<typename VariateType>
 		static std::shared_ptr<UniformVariate> defineUniformVariate();
@@ -81,8 +85,8 @@ namespace EmbeddedShader::Ast
 
 		static std::shared_ptr<Variate> getPositionOutput();
 
-		static std::shared_ptr<ElementVariate> at(std::shared_ptr<UniversalArray> array, uint32_t index);
-		static std::shared_ptr<ElementVariate> at(std::shared_ptr<UniversalArray> array, const std::shared_ptr<Value>& index);
+		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Variate> array, uint32_t index);
+		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Variate> array, const std::shared_ptr<Value>& index);
 	private:
 		static void addLocalStatement(std::shared_ptr<Statement> statement);
 		static void addInputStatement(std::shared_ptr<Statement> inputStatement);
@@ -229,7 +233,13 @@ namespace EmbeddedShader::Ast
 		return defineUniversalArray(createType<std::remove_cvref_t<ElementType>>());
 	}
 
-	template<typename VariateType>
+    template <typename ElementType>
+    std::shared_ptr<UniversalTexture2D> AST::defineUniversalTexture2D()
+	{
+	    return defineUniversalTexture2D(createType<std::remove_cvref_t<ElementType>>());
+	}
+
+    template<typename VariateType>
 	std::shared_ptr<UniformVariate> AST::defineUniformVariate()
 	{
 		return defineUniformVariate(createType<VariateType>());
