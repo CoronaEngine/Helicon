@@ -120,14 +120,12 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 	auto vertex = [&](VariateProxy<TestStruct> a)
 	{
-	    VariateProxy b = a->member0->member1;
-		return VariateProxy(fvec4{114.f,514.f,1919.f,810.f});
+		return a->member0;
 	};
 
-	auto fragment = [&](VariateProxy<fvec4> a)
+	auto fragment = [&](VariateProxy<TestStruct0> a)
 	{
-		VariateProxy<fvec4> b = a;
-		return b;
+	    return a;
 	};
 
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
