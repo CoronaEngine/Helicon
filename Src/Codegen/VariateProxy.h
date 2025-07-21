@@ -174,15 +174,16 @@ namespace EmbeddedShader
 	        return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
 	    }
 
-	    Type operator[](uint32_t input) requires Texture2DProxyTraits<Type>::value
+	    template<typename IndexType> requires std::is_integral_v<IndexType>
+	    auto operator[](ktm::vec<2,IndexType> input) requires Texture2DProxyTraits<Type>::value
 	    {
-	        return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input));
+	        return typename Type::value_type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input));
 	    }
 
-	    template<typename IndexType>
-        Type operator[](const VariateProxy<IndexType>& input) requires Texture2DProxyTraits<Type>::value && std::is_integral_v<IndexType>
+	    template<typename IndexType> requires std::is_integral_v<IndexType>
+        auto operator[](const VariateProxy<ktm::vec<2,IndexType>>& input) requires Texture2DProxyTraits<Type>::value
         {
-            return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
+            return typename Type::value_type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
         }
 
 		Type* operator->() requires std::is_aggregate_v<Type>

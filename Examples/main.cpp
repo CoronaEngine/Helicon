@@ -101,7 +101,6 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-
 	auto vertShaderCode = [&]()
 	{
 		auto aPos = AST::defineInputVariate<fvec3>(0);
@@ -127,11 +126,11 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 
     VariateProxy<VariateProxy<VariateProxy<fvec4>>> texture2d;
-    VariateProxy<VariateProxy<VariateProxy<fvec4>>> texture2d2;
+    VariateProxy<VariateProxy<fvec4>> array;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
-	    texture2d2[0][0] = texture2d[0][0];
-	    position() = texture2d[0][0];
+	    array[0] = texture2d[svec2{0,0}];
+	    position() = texture2d[svec2{0,0}];
 	    return input->color;
 	};
 

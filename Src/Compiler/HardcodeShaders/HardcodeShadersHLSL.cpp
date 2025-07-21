@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_147_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_146_35",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -11,8 +11,8 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 2 "248e66be880b8341f89f4c36a392af451ecb1595"
-RWTexture2D<float4 > global_var_2_0 : register(u0);
+#line 2 "320287cf2c1d0515236ac41d55edbbd94a1785a0"
+RWStructuredBuffer<float4 > global_var_2_0 : register(u0);
 
 
 #line 1
@@ -50,25 +50,22 @@ vertex_output_0 main(vertex_input_0 input_0)
 #line 15
     vertex_input_0 _S1 = input_0;
 
-    uint2 _S2 = uint2((int2)int(0));
+    float4 _S2 = global_var_1_0[uint2(int2(int(0), int(0)))];
 
 #line 17
-    float4 _S3 = global_var_1_0[_S2];
-
-#line 17
-    global_var_2_0[_S2][int(0)] = _S3[int(0)];
+    global_var_2_0[int(0)] = _S2;
 
 #line 16
     vertex_output_0 output_0;
 
-    output_0.position_output_0 = (float4)_S3[int(0)];
+    output_0.position_output_0 = _S2;
 
     output_0.var_2_0 = _S1.var_0_0.color_0;
     return output_0;
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_148_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_147_34",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -80,7 +77,7 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 10 "fe373c8e9f70c9731a58ab64e43cb2cc85ff5cfe"
+#line 10 "dda71ed30ce88db4e1ae8d5d0b2545c769b203d4"
 struct fragment_output_0
 {
     float4 var_1_0 : SV_TARGET0;
