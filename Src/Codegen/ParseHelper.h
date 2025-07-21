@@ -150,14 +150,31 @@ namespace EmbeddedShader
 		{
 		    return instance.aggregateParentStack.top().second++;
 		}
-	private:
-		bool bIsInInputParameter = false;
-		bool bIsInShaderCodeLambda = false;
-		size_t currentInputIndex = 0;
-	    std::stack<std::pair<std::shared_ptr<Ast::Value>,size_t>> aggregateParentStack;
-		static thread_local ParseHelper instance;
 
-		template<typename T>
+	    static void beginNotInitNode()
+		{
+		    instance.notInitNodeStack.push(true);
+		}
+	    static void endNotInitNode()
+		{
+		    instance.notInitNodeStack.pop();
+		}
+
+	    static bool notInitNode()
+		{
+		    if (instance.notInitNodeStack.empty())
+		        return false;
+		    return instance.notInitNodeStack.top();
+		}
+    private:
+        bool bIsInInputParameter = false;
+        bool bIsInShaderCodeLambda = false;
+        size_t currentInputIndex = 0;
+        std::stack<std::pair<std::shared_ptr<Ast::Value>,size_t>> aggregateParentStack;
+        std::stack<bool> notInitNodeStack;
+        static thread_local ParseHelper instance;
+
+        template<typename T>
 		struct sIsProxy
 		{
 			static constexpr bool value = false;
