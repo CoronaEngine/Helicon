@@ -13,6 +13,7 @@
 #include <ktm/type/vec.h>
 
 #include <Codegen/RasterizedPipelineObject.h>
+#include <Codegen/BuiltinVariate.h>
 
 using namespace EmbeddedShader;
 
@@ -118,15 +119,15 @@ int main(int argc, char* argv[])
 	// ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	puts("------------------- Front-End Test -------------------");
-	auto vertex = [&](VariateProxy<TestStruct> a)
+	auto vertex = [&](VariateProxy<fvec4> pos)
 	{
-	    VariateProxy<TestStruct> b;
-		return a->member0;
+	    position() = pos;
 	};
 
-	auto fragment = [&](VariateProxy<TestStruct0> a)
+    VariateProxy<fvec4> uniformColor;
+	auto fragment = [&]()
 	{
-	    return a;
+	    return uniformColor;
 	};
 
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);

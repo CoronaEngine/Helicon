@@ -26,6 +26,7 @@ namespace EmbeddedShader
 	template<typename Type>
 	struct VariateProxy
 	{
+	    friend VariateProxy<ktm::fvec4> position();
 		friend class RasterizedPipelineObject;
 		friend class Generator::SlangGenerator;
 		using value_type = Type;
