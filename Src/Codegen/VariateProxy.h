@@ -35,7 +35,7 @@ namespace EmbeddedShader
 	        static constexpr bool value = false;
 	    };
 
-	    template<typename T> requires !ArrayProxyTraits<T>::value
+	    template<typename T> requires (!ArrayProxyTraits<T>::value)
         struct ArrayProxyTraits<VariateProxy<T>>
 	    {
 	        static constexpr bool value = true;
@@ -47,7 +47,7 @@ namespace EmbeddedShader
 	        static constexpr bool value = false;
 	    };
 
-	    template<typename T> requires !ArrayProxyTraits<T>::value
+	    template<typename T> requires (!ArrayProxyTraits<T>::value)
         struct Texture2DProxyTraits<VariateProxy<VariateProxy<T>>>
 	    {
 	        static constexpr bool value = true;
@@ -123,7 +123,7 @@ namespace EmbeddedShader
 		    ParseHelper::endAggregateParent();
 		}
 
-		VariateProxy(const Type& value) requires !std::is_aggregate_v<Type>
+		VariateProxy(const Type& value) requires (!std::is_aggregate_v<Type>)
 		{
 		    if (ParseHelper::notInitNode())
 		    {
@@ -191,7 +191,7 @@ namespace EmbeddedShader
 			return value.get();
 		}
 
-		VariateProxy& operator=(const VariateProxy& rhs) requires !ArrayProxyTraits<Type>::value
+		VariateProxy& operator=(const VariateProxy& rhs) requires (!ArrayProxyTraits<Type>::value)
 		{
 		    Ast::AST::assign(node,rhs.node);
 		    return *this;
