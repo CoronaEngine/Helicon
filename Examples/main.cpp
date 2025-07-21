@@ -81,6 +81,12 @@ struct TestStruct
 	VariateProxy<ktm::fvec4> member2;
 };
 
+struct VertexData
+{
+    VariateProxy<ktm::fvec4> pos;
+    VariateProxy<ktm::fvec4> color;
+};
+
 int main(int argc, char* argv[])
 {
 	auto lambdaReflect = [&](std::string_view name, auto&& structMember, std::size_t i) {
@@ -119,20 +125,24 @@ int main(int argc, char* argv[])
 	// ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	puts("------------------- Front-End Test -------------------");
-	auto vertex = [&](VariateProxy<fvec4> pos)
+
+	auto vertex = [&](VariateProxy<VertexData> input)
 	{
-	    position() = pos;
+	    position() = input->pos;
+	    return input->color;
 	};
 
-    VariateProxy<fvec4> uniformColor;
-	auto fragment = [&]()
+	auto fragment = [&](VariateProxy<fvec4> input)
 	{
-	    return uniformColor;
+	    return input;
 	};
 
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
+
+    ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+    ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 
