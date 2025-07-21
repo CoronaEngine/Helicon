@@ -50,7 +50,7 @@ if(SLANG_DLLS)
         TARGET Helicon POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${SLANG_DLLS} # 源文件列表
-        $<TARGET_FILE_DIR:Helicon> # 目标目录
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} # 目标目录
         COMMENT "Copying Slang DLLs to the output directory"
     )
 endif()
