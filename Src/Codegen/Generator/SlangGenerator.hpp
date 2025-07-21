@@ -13,8 +13,22 @@ namespace EmbeddedShader::Generator
 	{
 		template<typename T>
 		static constexpr std::string variateBasicTypeNameMap = "unknown";
-
 	public:
+#define DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(type, name) \
+template<> constexpr std::string variateBasicTypeNameMap<type> = #name
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int8_t, int8_t);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int16_t, int16_t);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int, int);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int64_t, int64_t);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint8_t, uint8_t);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint16_t, uint16_t);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint32_t, uint);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint64_t, uint64_t);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(float, float);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(double, double);
+	    //DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(std::float16_t, half);
+#undef DEFINE_VARIATE_BASIC_TYPE_NAME_MAP
+
 		static std::string getShaderOutput(const Ast::EmbeddedShaderStructure& structure);
 		static std::string getGlobalOutput(const Ast::EmbeddedShaderStructure& structure);
 
@@ -97,21 +111,6 @@ namespace EmbeddedShader::Generator
 			using scalar_type = T;
 		};
 	};
-
-#define DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(type, name) \
-template<> constexpr std::string SlangGenerator::variateBasicTypeNameMap<type> = #name
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int8_t, int8_t);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int16_t, int16_t);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int, int);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int64_t, int64_t);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint8_t, uint8_t);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint16_t, uint16_t);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint32_t, uint);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint64_t, uint64_t);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(float, float);
-	DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(double, double);
-	//DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(std::float16_t, half);
-#undef DEFINE_VARIATE_BASIC_TYPE_NAME_MAP
 
 	template<typename T> requires ktm::is_vector_v<T>
 	std::string SlangGenerator::getVariateTypeName()
