@@ -89,7 +89,7 @@ namespace EmbeddedShader
 
             ParseHelper::beginAggregateParent(node);
 		    value = std::make_unique<Type>();
-		    ParseHelper::beginAggregateParent(node);
+		    ParseHelper::endAggregateParent();
 		}
 
 		VariateProxy(const Type& value)
@@ -115,10 +115,7 @@ namespace EmbeddedShader
 			node = Ast::AST::defineLocalVariate(value.node->type, value.node);
 		}
 
-		VariateProxy(VariateProxy&& value) : node(std::move(value.node))
-		{
-
-		}
+		VariateProxy(VariateProxy&& value) = default;
 
 		~VariateProxy()
 		{

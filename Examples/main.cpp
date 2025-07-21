@@ -118,9 +118,8 @@ int main(int argc, char* argv[])
 	// ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	puts("------------------- Front-End Test -------------------");
-	auto vertex = [&]()
+	auto vertex = [&](VariateProxy<TestStruct> a)
 	{
-	    VariateProxy<TestStruct> a;
 	    VariateProxy b = a->member0->member1;
 		return VariateProxy(fvec4{114.f,514.f,1919.f,810.f});
 	};
