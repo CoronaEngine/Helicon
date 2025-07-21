@@ -75,7 +75,7 @@ struct TestStruct0
 
 struct TestStruct
 {
-	TestStruct0 member0;
+	VariateProxy<TestStruct0> member0;
 	VariateProxy<int> member1;
 	VariateProxy<ktm::fvec4> member2;
 };
@@ -118,10 +118,10 @@ int main(int argc, char* argv[])
 	// ShaderCodeCompiler fragShader(parseOutput[1].output, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	puts("------------------- Front-End Test -------------------");
-    VariateProxy<TestStruct0> a;
 	auto vertex = [&]()
 	{
-	    VariateProxy b = a->member1;
+	    VariateProxy<TestStruct> a;
+	    VariateProxy b = a->member0->member1;
 		return VariateProxy(fvec4{114.f,514.f,1919.f,810.f});
 	};
 

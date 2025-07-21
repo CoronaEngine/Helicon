@@ -61,9 +61,19 @@ namespace EmbeddedShader
 
 	    VariateProxy() requires std::is_aggregate_v<Type>
 		{
+		    if (ParseHelper::notInitNode())
+		        return;
+
 		    //Uniform,Input,Local Variate
 		    ParseHelper::beginNotInitNode();
-		    if (ParseHelper::isInInputParameter())
+		    if (auto parent = ParseHelper::getAggregateParent())
+		    {
+		        auto index = ParseHelper::getAggregateMemberIndex();
+		        auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+		        auto member = aggregateType->members[index];
+		        node = Ast::AST::access(parent,member->name, member->type);
+		    }
+		    else if (ParseHelper::isInInputParameter())
 		    {
 		        node = Ast::AST::defineInputVariate<Type>(ParseHelper::getCurrentInputIndex());
 		    }
