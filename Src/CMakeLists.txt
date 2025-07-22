@@ -40,3 +40,17 @@ target_link_libraries(Helicon PUBLIC
     slang-rt
     gfx
 )
+
+file(GLOB SLANG_DLLS "${PROJECT_SOURCE_DIR}/Env/slang/bin/*.dll")
+
+if(SLANG_DLLS)
+    message(STATUS "Found Slang DLLs: ${SLANG_DLLS}")
+
+    add_custom_command(
+        TARGET Helicon POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${SLANG_DLLS} # 源文件列表
+        ${CMAKE_BINARY_DIR}/bin/$<CONFIG> # 目标目录
+        COMMENT "Copying Slang DLLs to the output directory"
+    )
+endif()
