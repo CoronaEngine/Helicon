@@ -129,6 +129,8 @@ int main(int argc, char* argv[])
     VariateProxy<VariateProxy<fvec4>> array;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
+		VariateProxy<fvec4> testA;
+		testA->x = 1.f;
 	    array[0] = texture2d[svec2{0,0}];
 	    position() = texture2d[svec2{0,0}];
 	    return input->color;

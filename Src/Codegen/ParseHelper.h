@@ -169,11 +169,47 @@ namespace EmbeddedShader
 		        return false;
 		    return instance.notInitNodeStack.top();
 		}
+
+		static void beginVecComponentInit(std::shared_ptr<Ast::Value> vec)
+		{
+			instance.vec = std::move(vec);
+		}
+
+		static void endVecComponentInit()
+		{
+			instance.vec = nullptr;
+			instance.currentVecComponentIndex = 0;
+		}
+
+		static std::shared_ptr<Ast::Value> getVecParent()
+		{
+			return instance.vec;
+		}
+
+		static std::string getVecComponentName()
+		{
+			auto index = instance.currentVecComponentIndex++;
+			switch (index)
+			{
+				case 0:
+					return "x";
+				case 1:
+					return "y";
+				case 2:
+					return "z";
+				case 3:
+					return "w";
+				default:break;
+			}
+			return "unknown";
+		}
     private:
         bool bIsInInputParameter = false;
         bool bIsInShaderCodeLambda = false;
-        size_t currentInputIndex = 0;
-        std::stack<std::pair<std::shared_ptr<Ast::Value>,size_t>> aggregateParentStack;
+		std::shared_ptr<Ast::Value> vec;
+		size_t currentVecComponentIndex = 0;
+		size_t currentInputIndex = 0;
+		std::stack<std::pair<std::shared_ptr<Ast::Value>,size_t>> aggregateParentStack;
         std::stack<bool> notInitNodeStack;
         static thread_local ParseHelper instance;
 

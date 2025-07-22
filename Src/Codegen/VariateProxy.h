@@ -61,8 +61,16 @@ namespace EmbeddedShader
 		VariateProxy()
 		{
             value = std::make_unique<Type>();
+
             if (ParseHelper::notInitNode())
 		        return;
+
+			if (auto parent = ParseHelper::getVecParent())
+			{
+				auto name = ParseHelper::getVecComponentName();
+				node = Ast::AST::access(parent,name,Ast::AST::createType<Type>());
+				return;
+			}
 
             if (auto parent = ParseHelper::getAggregateParent())
 		    {
@@ -187,9 +195,18 @@ namespace EmbeddedShader
             return typename Type::value_type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
         }
 
-		Type* operator->() requires std::is_aggregate_v<Type> && !IsVecProxy<Type>::value
+		Type* operator->() requires std::is_aggregate_v<Type> && !ktm::is_vector_v<Type>
 		{
 			return value.get();
+		}
+
+		auto operator->() requires ktm::is_vector_v<Type>
+		{
+			ParseHelper::beginVecComponentInit(node);
+			auto vecComponents = std::make_unique<typename VecProxyMap<Type>::proxy_type>();
+			vecComponents->parent = node;
+			ParseHelper::endVecComponentInit();
+			return std::move(vecComponents);
 		}
 
 		VariateProxy& operator=(const VariateProxy& rhs) requires (!ArrayProxyTraits<Type>::value)
