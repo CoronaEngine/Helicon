@@ -106,12 +106,15 @@ namespace EmbeddedShader
 		}
 
 		template<typename T,typename... ParamTypes>
-		static constexpr bool isReturnProxy(const std::function<T(ParamTypes...)>& f);
+		static constexpr bool isReturnProxy(const std::function<T(ParamTypes...)>& f)
+		{
+		    return IsReturnProxy<std::remove_cvref_t<decltype(f)>>::value;
+		}
 
 		template<typename T>
 		static constexpr bool isProxy()
 		{
-			return sIsProxy<std::remove_cvref_t<T>>::value;
+			return IsProxy<std::remove_cvref_t<T>>::value;
 		}
 
 		static bool isInInputParameter()
@@ -175,16 +178,28 @@ namespace EmbeddedShader
         static thread_local ParseHelper instance;
 
         template<typename T>
-		struct sIsProxy
+		struct IsProxy
 		{
 			static constexpr bool value = false;
 		};
 
 		template<typename T>
-		struct sIsProxy<VariateProxy<T>>
+		struct IsProxy<VariateProxy<T>>
 		{
 			static constexpr bool value = true;
 		};
+
+	    template<typename T>
+        struct IsReturnProxy
+	    {
+	        static constexpr bool value = false;
+	    };
+
+	    template<typename T, typename... ParamTypes>
+        struct IsReturnProxy<std::function<VariateProxy<T>(ParamTypes...)>>
+	    {
+	        static constexpr bool value = true;
+	    };
 	};
 
 	inline thread_local ParseHelper ParseHelper::instance;
