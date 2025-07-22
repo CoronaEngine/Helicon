@@ -12,6 +12,7 @@
 #include <ktm/type/vec.h>
 #include <Codegen/AST/AST.hpp>
 #include <Codegen/ParseHelper.h>
+#include <Codegen/MathProxy.h>
 
 
 namespace EmbeddedShader
@@ -186,7 +187,7 @@ namespace EmbeddedShader
             return typename Type::value_type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
         }
 
-		Type* operator->() requires std::is_aggregate_v<Type>
+		Type* operator->() requires std::is_aggregate_v<Type> && !IsVecProxy<Type>::value
 		{
 			return value.get();
 		}

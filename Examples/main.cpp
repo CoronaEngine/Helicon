@@ -139,6 +139,10 @@ int main(int argc, char* argv[])
 	    return input;
 	};
 
+	fvec4 a = {1,2,3,4};
+	fvec2 b = a.xy();
+	std::cout << b.x << " " << b.y << std::endl;
+
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
