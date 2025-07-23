@@ -387,9 +387,19 @@ namespace EmbeddedShader
 			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,">",Ast::AST::createType<bool>()));
 		}
 
+		VariateProxy<bool> operator>(const Type& rhs)
+		{
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,Ast::AST::createValue(rhs),">",Ast::AST::createType<bool>()));
+		}
+
 		VariateProxy<bool> operator>=(const VariateProxy& rhs)
 		{
 			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,">=",Ast::AST::createType<bool>()));
+		}
+
+		VariateProxy<bool> operator>=(const Type& rhs)
+		{
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,Ast::AST::createValue(rhs),">=",Ast::AST::createType<bool>()));
 		}
 
 		VariateProxy<bool> operator<(const VariateProxy& rhs)
@@ -397,9 +407,19 @@ namespace EmbeddedShader
 			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"<",Ast::AST::createType<bool>()));
 		}
 
+		VariateProxy<bool> operator<(const Type& rhs)
+		{
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,Ast::AST::createValue(rhs),"<",Ast::AST::createType<bool>()));
+		}
+
 		VariateProxy<bool> operator<=(const VariateProxy& rhs)
 		{
 			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"<=",Ast::AST::createType<bool>()));
+		}
+
+		VariateProxy<bool> operator<=(const Type& rhs)
+		{
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,Ast::AST::createValue(rhs),"<=",Ast::AST::createType<bool>()));
 		}
 
 		VariateProxy<bool> operator!=(const VariateProxy& rhs)
@@ -407,11 +427,20 @@ namespace EmbeddedShader
 			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"!=",Ast::AST::createType<bool>()));
 		}
 
+		VariateProxy<bool> operator!=(const Type& rhs)
+		{
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,Ast::AST::createValue(rhs),"!=",Ast::AST::createType<bool>()));
+		}
+
 		VariateProxy<bool> operator==(const VariateProxy& rhs)
 		{
 			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"==",Ast::AST::createType<bool>()));
 		}
 
+		VariateProxy<bool> operator==(const Type& rhs)
+		{
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,Ast::AST::createValue(rhs),"==",Ast::AST::createType<bool>()));
+		}
 
 		VariateProxy operator+() { return VariateProxy(Ast::AST::unaryOperator(node,"+")); }
 		VariateProxy operator-() { return VariateProxy(Ast::AST::unaryOperator(node,"-")); }

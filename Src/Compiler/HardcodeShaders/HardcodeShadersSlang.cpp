@@ -11,7 +11,7 @@ struct vertex_input {
 }
 struct vertex_output {
 	float4 position_output : SV_POSITION;
-	float4 var_5 : LOCATION0;
+	float4 var_4 : LOCATION0;
 }
 [shader("vertex")]
 vertex_output main(vertex_input input) {
@@ -19,14 +19,13 @@ vertex_output main(vertex_input input) {
 	float4 var_1 = float4(1.000000, 2.000000, 3.000000, 4.000000);
 	float var_2 = 1.000000;
 	(var_2--);
-	float var_3 = 0.000000;
-	if ((var_2 > var_3)) {
+	if ((var_2 > 0.000000)) {
 		var_1.xy = float2(0.000000, 0.000000);
 	}
 	global_var_2[0] = global_var_1[int2(0, 0)];
 	output.position_output = global_var_1[int2(0, 0)];
-	float4 var_4 = input.var_0.color;
-	output.var_5 = var_4;
+	float4 var_3 = input.var_0.color;
+	output.var_4 = var_3;
 	return output;
 }
  )")

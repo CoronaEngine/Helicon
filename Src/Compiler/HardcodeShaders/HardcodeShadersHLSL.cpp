@@ -11,7 +11,7 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 2 "99d8b6f22f6333fe6f4c82b89566ea92a6a4d53a"
+#line 2 "7d5c71ca6f213d5aa12b388c921e2ee0861a1bea"
 RWStructuredBuffer<float4 > global_var_2_0 : register(u0);
 
 
@@ -23,7 +23,7 @@ Texture2D<float4 > global_var_1_0 : register(t0);
 struct vertex_output_0
 {
     float4 position_output_0 : SV_POSITION;
-    float4 var_5_0 : LOCATION0;
+    float4 var_4_0 : LOCATION0;
 };
 
 
@@ -50,19 +50,19 @@ vertex_output_0 main(vertex_input_0 input_0)
 #line 15
     vertex_input_0 _S1 = input_0;
 
-#line 24
+#line 23
     float4 _S2 = global_var_1_0[uint2(int2(int(0), int(0)))];
 
-#line 24
+#line 23
     global_var_2_0[int(0)] = _S2;
 
 #line 16
     vertex_output_0 output_0;
 
-#line 25
+#line 24
     output_0.position_output_0 = _S2;
 
-    output_0.var_5_0 = _S1.var_0_0.color_0;
+    output_0.var_4_0 = _S1.var_0_0.color_0;
     return output_0;
 }
 
