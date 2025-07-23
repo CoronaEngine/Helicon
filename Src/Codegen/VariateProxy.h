@@ -177,28 +177,47 @@ namespace EmbeddedShader
 				Ast::AST::addLocalUniversalStatement(node);
 		}
 
-		Type operator[](uint32_t input) requires ArrayProxyTraits<Type>::value
+		Type operator[](uint32_t input) requires (ArrayProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type>)
 		{
 			return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input));
 		}
 
 	    template<typename IndexType>
-	    Type operator[](const VariateProxy<IndexType>& input) requires ArrayProxyTraits<Type>::value && std::is_integral_v<IndexType>
+	    Type operator[](const VariateProxy<IndexType>& input) requires (ArrayProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type>)
 	    {
 	        return Type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
 	    }
 
 	    template<typename IndexType> requires std::is_integral_v<IndexType>
-	    auto operator[](ktm::vec<2,IndexType> input) requires Texture2DProxyTraits<Type>::value
+	    auto operator[](ktm::vec<2,IndexType> input) requires (Texture2DProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type::value_type>)
 	    {
 	        return typename Type::value_type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input));
 	    }
 
 	    template<typename IndexType> requires std::is_integral_v<IndexType>
-        auto operator[](const VariateProxy<ktm::vec<2,IndexType>>& input) requires Texture2DProxyTraits<Type>::value
+        auto operator[](const VariateProxy<ktm::vec<2,IndexType>>& input) requires (Texture2DProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type::value_type>)
         {
             return typename Type::value_type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
         }
+
+		Type operator[](uint32_t input) requires (ArrayProxyTraits<Type>::value && std::is_aggregate_v<typename Type::value_type>)
+		{
+			Type result(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input));
+			ParseHelper::beginAggregateParent(result.node);
+			result.value = std::make_unique<Type::value_type>();
+			ParseHelper::endAggregateParent();
+			return result;
+		}
+
+		template<typename IndexType>
+		Type operator[](const VariateProxy<IndexType>& input) requires (ArrayProxyTraits<Type>::value && std::is_aggregate_v<typename Type::value_type>)
+		{
+			Type result(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
+			ParseHelper::beginAggregateParent(result.node);
+			result.value = std::make_unique<Type::value_type>();
+			ParseHelper::endAggregateParent();
+			return result;
+		}
 
 		Type* operator->() requires (std::is_aggregate_v<Type> && !ktm::is_vector_v<Type>)
 		{
@@ -478,7 +497,7 @@ namespace EmbeddedShader
 		//VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 
 	protected:
-		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))
+		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))//,value(std::make_unique<Type>())
 		{
 		}
 		std::unique_ptr<Type> value{};

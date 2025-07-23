@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_159_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_153_35",
 ShaderCodeModule(R"(Texture2D<float4> global_var_1;
 RWStructuredBuffer<float4> global_var_2;
 struct aggregate_type_0 {
@@ -19,19 +19,15 @@ vertex_output main(vertex_input input) {
 	float4 var_1 = float4(1.000000, 2.000000, 3.000000, 4.000000);
 	float var_2 = 1.000000;
 	(var_2--);
-	if ((var_2 > 0.000000)) {
-		var_1.xy = float2(0.000000, 0.000000);
-	}
-	else {
-		global_var_2[0] = global_var_1[int2(0, 0)];
-	}
+	var_1.xy = float2(0.000000, 0.000000);
+	global_var_2[0] = global_var_1[int2(0, 0)];
 	output.position_output = global_var_1[int2(0, 0)];
 	float4 var_3 = input.var_0.color;
 	output.var_4 = var_3;
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_160_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_154_34",
 ShaderCodeModule(R"(Texture2D<float4> global_var_1;
 RWStructuredBuffer<float4> global_var_2;
 struct aggregate_type_0 {
