@@ -17,7 +17,8 @@ std::shared_ptr<EmbeddedShader::Ast::LocalVariate> EmbeddedShader::Ast::AST::def
 	return localVariate;
 }
 
-std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType)
+std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2,
+	std::string operatorType,std::shared_ptr<Type> type)
 {
 	value1->access(AccessPermissions::ReadOnly);
 	value2->access(AccessPermissions::ReadOnly);
@@ -25,7 +26,7 @@ std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOper
 	binaryOp->value1 = std::move(value1);
 	binaryOp->value2 = std::move(value2);
 	binaryOp->operatorType = std::move(operatorType);
-	binaryOp->type = binaryOp->value1->type;
+	binaryOp->type = type? std::move(type) : binaryOp->value1->type;
 	return binaryOp; // 这里需要实现具体的操作符逻辑
 }
 

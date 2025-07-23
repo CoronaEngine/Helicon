@@ -53,7 +53,8 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<LocalVariate> defineLocalVariate(VariateType&& value);
 		static std::shared_ptr<LocalVariate> defineLocalVariate(std::shared_ptr<Type> type, std::shared_ptr<Value> initValue);
 
-		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType);
+		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType, std::shared_ptr<Type> type =
+				                                             nullptr);
 		static std::shared_ptr<Value> binaryOperator(auto&& value1, auto&& value2, std::string operatorType);
 		static std::shared_ptr<Value> unaryOperator(std::shared_ptr<Value> value, std::string operatorType, bool isPrefix = true, AccessPermissions accessPermissions =
 				                                            AccessPermissions::ReadOnly);

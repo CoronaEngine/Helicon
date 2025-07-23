@@ -312,124 +312,104 @@ namespace EmbeddedShader
 			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"&"));
 		}
 
-		VariateProxy& operator|(const VariateProxy& rhs)
+		VariateProxy operator|(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"|");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"|"));
 		}
 
-		VariateProxy& operator^(const VariateProxy& rhs)
+		VariateProxy operator^(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"^");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"^"));
 		}
 
-		VariateProxy& operator<<(const VariateProxy& rhs)
+		VariateProxy operator<<(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"<<");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"<<"));
 		}
 
-		VariateProxy& operator>>(const VariateProxy& rhs)
+		VariateProxy operator>>(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,">>");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,">>"));
 		}
 
 		VariateProxy& operator+=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"+=");
-			return *this;
+			return *this = *this + rhs;
 		}
 
 		VariateProxy& operator-=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"-=");
-			return *this;
+			return *this = *this - rhs;
 		}
 
 		VariateProxy& operator*=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"*=");
-			return *this;
+			return *this = *this * rhs;
 		}
 
 		VariateProxy& operator/=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"/=");
-			return *this;
+			return *this = *this / rhs;
 		}
 
 		VariateProxy& operator%=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"%=");
-			return *this;
+			return *this = *this % rhs;
 		}
 
 		VariateProxy& operator&=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"&=");
-			return *this;
+			return *this = *this & rhs;
 		}
 
 		VariateProxy& operator|=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"|=");
-			return *this;
+			return *this = *this | rhs;
 		}
 
 		VariateProxy& operator^=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"^=");
-			return *this;
+			return *this = *this ^ rhs;
 		}
 
 		VariateProxy& operator>>=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,">>=");
-			return *this;
+			return *this = *this >> rhs;
 		}
 
 		VariateProxy& operator<<=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"<<=");
-			return *this;
+			return *this = *this << rhs;
 		}
 		
-		VariateProxy<bool>& operator>(const VariateProxy& rhs)
+		VariateProxy<bool> operator>(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,">");
-			return *(new VariateProxy<bool>(true));
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,">",Ast::AST::createType<bool>()));
 		}
 
-		VariateProxy<bool>& operator>=(const VariateProxy& rhs)
+		VariateProxy<bool> operator>=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,">=");
-			return *(new VariateProxy<bool>(true));
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,">=",Ast::AST::createType<bool>()));
 		}
 
-		VariateProxy<bool>& operator<(const VariateProxy& rhs)
+		VariateProxy<bool> operator<(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"<");
-			return *(new VariateProxy<bool>(true));
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"<",Ast::AST::createType<bool>()));
 		}
 
-		VariateProxy<bool>& operator<=(const VariateProxy& rhs)
+		VariateProxy<bool> operator<=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"<=");
-			return *(new VariateProxy<bool>(true));
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"<=",Ast::AST::createType<bool>()));
 		}
 
-		VariateProxy<bool>& operator!=(const VariateProxy& rhs)
+		VariateProxy<bool> operator!=(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"!=");
-			return *(new VariateProxy<bool>(true));
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"!=",Ast::AST::createType<bool>()));
 		}
 
-		VariateProxy<bool>& operator==(const VariateProxy& rhs)
+		VariateProxy<bool> operator==(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"==");
-			return *(new VariateProxy<bool>(true));
+			return VariateProxy<bool>(Ast::AST::binaryOperator(node,rhs.node,"==",Ast::AST::createType<bool>()));
 		}
 
 
