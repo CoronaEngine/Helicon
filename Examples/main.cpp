@@ -138,8 +138,12 @@ int main(int argc, char* argv[])
 		{
 			testA->xy() = fvec2{};
 		}
-	    array[0] = texture2d[svec2{0,0}];
-	    position() = texture2d[svec2{0,0}];
+		$ELSE
+		{
+			array[0] = texture2d[svec2{0, 0}];
+		}
+
+		position() = texture2d[svec2{0,0}];
 	    return input->color;
 	};
 

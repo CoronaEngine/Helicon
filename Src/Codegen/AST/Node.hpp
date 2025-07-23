@@ -132,6 +132,12 @@ namespace EmbeddedShader::Ast
         std::string parse() override;
     };
 
+	struct ElseStatement : Statement
+	{
+		std::vector<std::shared_ptr<Statement>> statements;
+		std::string parse() override;
+	};
+
 	//StructuredBuffer or RWStructuredBuffer
 	struct UniversalArray : Variate
 	{

@@ -84,6 +84,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 		static std::string getParseOutput(const Ast::MemberAccess* node);
 		static std::string getParseOutput(const Ast::DefineOutputVariate* node);
 		static std::string getParseOutput(const Ast::IfStatement* node);
+		static std::string getParseOutput(const Ast::ElseStatement* node);
 		static std::string getParseOutput(const Ast::InputVariate* node);
 		static std::string getParseOutput(const Ast::OutputVariate* node);
 		static std::string getParseOutput(const Ast::DefineUniversalArray* node);

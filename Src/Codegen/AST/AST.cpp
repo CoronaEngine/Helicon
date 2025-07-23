@@ -98,6 +98,18 @@ void EmbeddedShader::Ast::AST::endIf()
 	getLocalStatementStack().pop();
 }
 
+void EmbeddedShader::Ast::AST::beginElse()
+{
+	auto elseStatement = std::make_shared<ElseStatement>();
+	addLocalStatement(elseStatement);
+	getLocalStatementStack().push(&elseStatement->statements);
+}
+
+void EmbeddedShader::Ast::AST::endElse()
+{
+	getLocalStatementStack().pop();
+}
+
 std::shared_ptr<EmbeddedShader::Ast::UniversalArray> EmbeddedShader::Ast::AST::defineUniversalArray(std::shared_ptr<Type> elementType)
 {
 	auto variate = std::make_shared<UniversalArray>();

@@ -6,7 +6,7 @@
 
 namespace EmbeddedShader
 {
-#define GPU_PUSH_VARIATE_WITH_CONDITION(define,name,condition) for (define; name.index < 1 && (condition); ++name.index)
+#define GPU_PUSH_VARIATE_WITH_CONDITION(define,name,condition) for (uint32_t varJ6hF4rT9mK2zV8cX5bN1pQ3{}; varJ6hF4rT9mK2zV8cX5bN1pQ3 < 1 && (condition); ++varJ6hF4rT9mK2zV8cX5bN1pQ3) for (define; name.index < 1; ++name.index)
 #define GPU_PUSH_VARIATE(define,name) for (define;name.index < 1; ++name.index)
 #define GPU_IF_CONDITION TheIfElseStatementMustBeGuidedByIf.currentIndex++ == TheIfElseStatementMustBeGuidedByIf.maxCount ? (++TheIfElseStatementMustBeGuidedByIf.maxCount,true) : (++TheIfElseStatementMustBeGuidedByIf.lastMaxIndex,false)
 	struct GPU_IF
@@ -61,11 +61,13 @@ GPU_PUSH_VARIATE(GPU_ELSEIF_BRANCH gpuElseIfBranchJ6hF4rT9mK2zV8cX5bN1pQ3{condit
 	{
 		GPU_ELSE_BRANCH()
 		{
+			Ast::AST::beginElse();
 			//else begin pattern
 		}
 
 		~GPU_ELSE_BRANCH()
 		{
+			Ast::AST::endElse();
 			//else end pattern
 		}
 		int8_t index = 0;

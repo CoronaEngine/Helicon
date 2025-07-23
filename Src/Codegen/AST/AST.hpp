@@ -74,6 +74,8 @@ namespace EmbeddedShader::Ast
 
 		static void beginIf(std::shared_ptr<Value> condition);
 		static void endIf();
+		static void beginElse();
+		static void endElse();
 
 		static std::shared_ptr<UniversalArray> defineUniversalArray(std::shared_ptr<Type> elementType);
 		template<typename ElementType>

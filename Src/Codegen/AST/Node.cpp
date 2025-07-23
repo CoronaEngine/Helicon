@@ -82,6 +82,11 @@ std::string EmbeddedShader::Ast::IfStatement::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+std::string EmbeddedShader::Ast::ElseStatement::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
 void EmbeddedShader::Ast::UniversalArray::access(AccessPermissions permissions)
 {
 	this->permissions = this->permissions | permissions;
