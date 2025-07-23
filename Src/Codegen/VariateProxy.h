@@ -248,14 +248,18 @@ namespace EmbeddedShader
 			return proxy;
 		}
 
-		VariateProxy& operator++(int)
+		VariateProxy operator++(int)
 		{
-			return *this;
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"++",true,Ast::AccessPermissions::ReadAndWrite));
+			proxy.isNeedUniversalStatementCheck = true;
+			return proxy;
 		}
 
-		VariateProxy& operator--(int)
+		VariateProxy operator--(int)
 		{
-			return *this;
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"--",true,Ast::AccessPermissions::ReadAndWrite));
+			proxy.isNeedUniversalStatementCheck = true;
+			return proxy;
 		}
 
 		VariateProxy operator+(const VariateProxy& rhs) const
