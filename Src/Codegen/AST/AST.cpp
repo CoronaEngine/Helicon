@@ -30,9 +30,9 @@ std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOper
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::unaryOperator(std::shared_ptr<Value> value,
-	std::string operatorType, bool isPrefix)
+	std::string operatorType, bool isPrefix, AccessPermissions accessPermissions)
 {
-	value->access(AccessPermissions::ReadOnly);
+	value->access(accessPermissions);
 	auto unaryOp = std::make_shared<UnaryOperator>();
 	unaryOp->value = std::move(value);
 	unaryOp->operatorType = std::move(operatorType);

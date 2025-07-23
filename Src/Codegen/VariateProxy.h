@@ -29,6 +29,9 @@ namespace EmbeddedShader
 	{
 	    template<typename OtherType>
 	    friend struct VariateProxy;
+
+		template<typename T>
+		friend struct GPU_IF_BRANCH;
 	private:
 	    template<typename T>
         struct ArrayProxyTraits
@@ -233,14 +236,14 @@ namespace EmbeddedShader
 
 		VariateProxy operator++()
 		{
-			VariateProxy proxy(Ast::AST::unaryOperator(node,"++"));
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"++",false,Ast::AccessPermissions::ReadAndWrite));
 			proxy.isNeedUniversalStatementCheck = true;
 			return proxy;
 		}
 
 		VariateProxy operator--()
 		{
-			VariateProxy proxy(Ast::AST::unaryOperator(node,"--"));
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"--",false,Ast::AccessPermissions::ReadAndWrite));
 			proxy.isNeedUniversalStatementCheck = true;
 			return proxy;
 		}
@@ -285,16 +288,14 @@ namespace EmbeddedShader
 			return VariateProxy(Ast::AST::unaryOperator(node,"!"));
 		}
 
-		VariateProxy& operator||(const VariateProxy& rhs)
+		VariateProxy operator||(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"||");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"||"));
 		}
 
-		VariateProxy& operator&&(const VariateProxy& rhs)
+		VariateProxy operator&&(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"&&");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"&&"));
 		}
 
 		VariateProxy operator~()
@@ -302,10 +303,9 @@ namespace EmbeddedShader
 			return VariateProxy(Ast::AST::unaryOperator(node,"~"));
 		}
 
-		VariateProxy& operator&(const VariateProxy& rhs)
+		VariateProxy operator&(const VariateProxy& rhs)
 		{
-			Ast::AST::binaryOperator(node,rhs.node,"&");
-			return *this;
+			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"&"));
 		}
 
 		VariateProxy& operator|(const VariateProxy& rhs)

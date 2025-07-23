@@ -2,7 +2,7 @@
 
 #include <stack>
 
-#include "VariateProxy.h"
+#include <Codegen/VariateProxy.h>
 
 namespace EmbeddedShader
 {
@@ -21,13 +21,15 @@ namespace EmbeddedShader
 	template<typename Type>
 	struct GPU_IF_BRANCH
 	{
-		GPU_IF_BRANCH(VariateProxy<Type>& condition)
+		GPU_IF_BRANCH(const VariateProxy<Type>& condition)
 		{
+			Ast::AST::beginIf(condition.node);
 			//if begin pattern
 		}
 
 		~GPU_IF_BRANCH()
 		{
+			Ast::AST::endIf();
 			//if end pattern
 		}
 

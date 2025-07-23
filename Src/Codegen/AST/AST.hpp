@@ -55,7 +55,8 @@ namespace EmbeddedShader::Ast
 
 		static std::shared_ptr<Value> binaryOperator(std::shared_ptr<Value> value1, std::shared_ptr<Value> value2, std::string operatorType);
 		static std::shared_ptr<Value> binaryOperator(auto&& value1, auto&& value2, std::string operatorType);
-		static std::shared_ptr<Value> unaryOperator(std::shared_ptr<Value> value, std::string operatorType, bool isPrefix = true);
+		static std::shared_ptr<Value> unaryOperator(std::shared_ptr<Value> value, std::string operatorType, bool isPrefix = true, AccessPermissions accessPermissions =
+				                                            AccessPermissions::ReadOnly);
 
 		static void assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value);
 		static void assign(auto&& variate, auto&& value);
