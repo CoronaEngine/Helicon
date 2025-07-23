@@ -32,6 +32,8 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<BasicType> createType();
 		template<typename T> requires ktm::is_vector_v<T>
 		static std::shared_ptr<VecType> createType();
+		template<typename T> requires ktm::is_matrix_v<T>
+		static std::shared_ptr<MatType> createType();
 		template<typename T> requires std::is_aggregate_v<T>
 		static std::shared_ptr<AggregateType> createType();
 
@@ -39,6 +41,8 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<BasicValue> createValue(VariateType value);
 		template<typename VariateType> requires ktm::is_vector_v<VariateType>
 		static std::shared_ptr<VecValue> createValue(const VariateType& value);
+		template<typename VariateType> requires ktm::is_matrix_v<VariateType>
+		static std::shared_ptr<MatValue> createValue(const VariateType& value);
 		template<typename VariateType> requires std::is_aggregate_v<VariateType>
 		static std::shared_ptr<AggregateValue> createValue(const VariateType& value);
 
@@ -152,6 +156,14 @@ namespace EmbeddedShader::Ast
 		return createVecType<T>();
 	}
 
+	template<typename T> requires ktm::is_matrix_v<T>
+	std::shared_ptr<MatType> AST::createType()
+	{
+		auto type = std::make_shared<MatType>();
+		type->name = Generator::SlangGenerator::getVariateTypeName<T>();
+		return type;
+	}
+
 	template<typename T> requires std::is_aggregate_v<T>
 	std::shared_ptr<AggregateType> AST::createType()
 	{
@@ -172,6 +184,17 @@ namespace EmbeddedShader::Ast
 	{
 		auto type = createVecType<VariateType>();
 		auto vecValue = std::make_shared<VecValue>();
+		vecValue->type = type;
+
+		vecValue->value = Generator::SlangGenerator::getValueOutput<VariateType>(value);
+		return vecValue;
+	}
+
+	template<typename VariateType> requires ktm::is_matrix_v<VariateType>
+	std::shared_ptr<MatValue> AST::createValue(const VariateType& value)
+	{
+		auto type = createType<VariateType>();
+		auto vecValue = std::make_shared<MatValue>();
 		vecValue->type = type;
 
 		vecValue->value = Generator::SlangGenerator::getValueOutput<VariateType>(value);

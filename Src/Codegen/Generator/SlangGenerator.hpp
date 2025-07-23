@@ -58,6 +58,22 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 			return output;
 		}
 
+		template<typename T> requires ktm::is_matrix_v<T>
+		static std::string getValueOutput(const T& value)
+		{
+			auto array = value.to_array();
+			std::string output = getVariateTypeName<T>() + "(";
+
+			output += getValueOutput(array[0]);
+
+			for (size_t i = 1; i < array.size(); ++i)
+			{
+				output += "," + getValueOutput(array[i]);
+			}
+			output += ")";
+			return output;
+		}
+
 		template<typename T> requires std::is_aggregate_v<T>
 		static std::string getValueOutput(const T& value);
 

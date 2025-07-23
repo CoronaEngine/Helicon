@@ -203,4 +203,15 @@ namespace EmbeddedShader::Ast
         std::string parse() override;
         void resetAccessPermissions() override;
     };
+
+	struct MatType : NameType
+	{
+
+	};
+
+	struct MatValue : Value
+	{
+		std::string value;
+		std::string parse() override;
+	};
 }

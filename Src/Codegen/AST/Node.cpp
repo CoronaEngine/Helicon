@@ -147,6 +147,11 @@ void EmbeddedShader::Ast::DefineUniversalTexture2D::resetAccessPermissions()
     texture->permissions = AccessPermissions::None;
 }
 
+std::string EmbeddedShader::Ast::MatValue::parse()
+{
+	return value;
+}
+
 void EmbeddedShader::Ast::DefineAggregateType::resetUsedFlag()
 {
 	aggregate->isUsed = false;

@@ -129,7 +129,9 @@ int main(int argc, char* argv[])
     VariateProxy<VariateProxy<fvec4>> array;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
-		VariateProxy<fvec4> testA;
+		VariateProxy testMat = fmat4x4{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
+		VariateProxy testMat2 = fmat4x4{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
+		VariateProxy testA = fvec4{1,2,3,4};
 		testA->x = 1.f;
 	    array[0] = texture2d[svec2{0,0}];
 	    position() = texture2d[svec2{0,0}];
