@@ -195,12 +195,12 @@ namespace EmbeddedShader
             return typename Type::value_type(Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), input.node));
         }
 
-		Type* operator->() requires std::is_aggregate_v<Type> && !ktm::is_vector_v<Type>
+		Type* operator->() requires (std::is_aggregate_v<Type> && !ktm::is_vector_v<Type>)
 		{
 			return value.get();
 		}
 
-		auto operator->() requires ktm::is_vector_v<Type>
+		auto operator->() requires (ktm::is_vector_v<Type>)
 		{
 			ParseHelper::beginVecComponentInit(node);
 			auto vecComponents = std::make_unique<typename VecProxyMap<Type>::proxy_type>();
@@ -456,10 +456,9 @@ namespace EmbeddedShader
 		//VariateProxy<bool>& operator<(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 		//VariateProxy<bool>& operator<=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 		//VariateProxy<bool>& operator!=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
-		//VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }    
+		//VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 
-
-	private:
+	protected:
 		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))
 		{
 		}
