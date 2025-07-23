@@ -170,6 +170,8 @@ namespace EmbeddedShader
 
 		~VariateProxy()
 		{
+			if (isNeedUniversalStatementCheck && node && node.use_count() == 1)
+				Ast::AST::addLocalUniversalStatement(node);
 		}
 
 		Type operator[](uint32_t input) requires ArrayProxyTraits<Type>::value
@@ -229,14 +231,18 @@ namespace EmbeddedShader
 			return *this;
 		}
 
-		VariateProxy& operator++()
+		VariateProxy operator++()
 		{
-			return *this;
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"++"));
+			proxy.isNeedUniversalStatementCheck = true;
+			return proxy;
 		}
 
-		VariateProxy& operator--()
+		VariateProxy operator--()
 		{
-			return *this;
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"--"));
+			proxy.isNeedUniversalStatementCheck = true;
+			return proxy;
 		}
 
 		VariateProxy& operator++(int)
@@ -464,5 +470,6 @@ namespace EmbeddedShader
 		}
 		std::unique_ptr<Type> value{};
 		std::shared_ptr<Ast::Value> node;
+		bool isNeedUniversalStatementCheck = false;
 	};
 }

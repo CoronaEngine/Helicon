@@ -222,4 +222,10 @@ namespace EmbeddedShader::Ast
 		bool isPrefix = true;
 		std::string parse() override;
 	};
+
+	struct UniversalStatement : Statement
+	{
+		std::shared_ptr<Node> node;
+		std::string parse() override;
+	};
 }

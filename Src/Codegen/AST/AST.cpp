@@ -160,6 +160,14 @@ std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::a
 	return variate;
 }
 
+void EmbeddedShader::Ast::AST::addLocalUniversalStatement(
+	std::shared_ptr<Node> node)
+{
+	auto universalStatement = std::make_shared<UniversalStatement>();
+	universalStatement->node = std::move(node);
+	addLocalStatement(universalStatement);
+}
+
 void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)
 {
 	getLocalStatementStack().top()->push_back(std::move(statement));

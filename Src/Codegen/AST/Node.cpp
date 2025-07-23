@@ -157,6 +157,11 @@ std::string EmbeddedShader::Ast::UnaryOperator::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+std::string EmbeddedShader::Ast::UniversalStatement::parse()
+{
+	return node->parse() + ";";
+}
+
 void EmbeddedShader::Ast::DefineAggregateType::resetUsedFlag()
 {
 	aggregate->isUsed = false;

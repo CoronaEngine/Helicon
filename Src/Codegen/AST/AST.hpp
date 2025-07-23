@@ -94,6 +94,7 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Variate> array, const std::shared_ptr<Value>& index);
 	    template<typename IndexType> requires std::is_integral_v<IndexType>
 	    static std::shared_ptr<ElementVariate> at(std::shared_ptr<Variate> array, ktm::vec<2,IndexType> index);
+		static void addLocalUniversalStatement(std::shared_ptr<Node> node);
 	private:
 		static void addLocalStatement(std::shared_ptr<Statement> statement);
 		static void addInputStatement(std::shared_ptr<Statement> inputStatement);

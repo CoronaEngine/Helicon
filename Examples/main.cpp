@@ -133,6 +133,7 @@ int main(int argc, char* argv[])
 		// VariateProxy testMat2 = fmat4x4{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
 		VariateProxy testA = fvec4{1,2,3,4};
 		VariateProxy a = 1.f;
+		--a;
 		testA->xy() = fvec2{};
 	    array[0] = texture2d[svec2{0,0}];
 	    position() = texture2d[svec2{0,0}];
