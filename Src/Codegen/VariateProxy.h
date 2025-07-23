@@ -209,10 +209,24 @@ namespace EmbeddedShader
 			return std::move(vecComponents);
 		}
 
-		VariateProxy& operator=(const VariateProxy& rhs) requires (!ArrayProxyTraits<Type>::value)
+		VariateProxy& operator=(const VariateProxy& rhs) requires (!ArrayProxyTraits<Type>::value && !Texture2DProxyTraits<Type>::value)
 		{
+			if (this == &rhs)
+				return *this;
 		    Ast::AST::assign(node,rhs.node);
 		    return *this;
+		}
+
+		VariateProxy& operator=(const Type& rhs) requires (!ArrayProxyTraits<Type>::value && !Texture2DProxyTraits<Type>::value)
+		{
+			Ast::AST::assign(node,Ast::AST::createValue(rhs));
+			return *this;
+		}
+
+		VariateProxy& operator=(Type&& rhs) requires (!ArrayProxyTraits<Type>::value && !Texture2DProxyTraits<Type>::value)
+		{
+			Ast::AST::assign(node,Ast::AST::createValue(std::forward<Type>(rhs)));
+			return *this;
 		}
 
 		VariateProxy& operator++()

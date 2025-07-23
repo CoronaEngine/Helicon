@@ -11,18 +11,17 @@ struct vertex_input {
 }
 struct vertex_output {
 	float4 position_output : SV_POSITION;
-	float4 var_4 : LOCATION0;
+	float4 var_3 : LOCATION0;
 }
 [shader("vertex")]
 vertex_output main(vertex_input input) {
 	vertex_output output;
 	float4 var_1 = float4(0.000000, 0.000000, 0.000000, 0.000000);
-	float var_2 = 1.000000;
-	var_1.x = var_2;
+	var_1.x = 1.000000;
 	global_var_2[0] = global_var_1[int2(0, 0)];
 	output.position_output = global_var_1[int2(0, 0)];
-	float4 var_3 = input.var_0.color;
-	output.var_4 = var_3;
+	float4 var_2 = input.var_0.color;
+	output.var_3 = var_2;
 	return output;
 }
  )")
