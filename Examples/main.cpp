@@ -143,10 +143,6 @@ int main(int argc, char* argv[])
 	    return input;
 	};
 
-	fvec2 a = {1,2};
-	fvec2 b = a.yx();
-	std::cout << b.x << " " << b.y << std::endl;
-
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
