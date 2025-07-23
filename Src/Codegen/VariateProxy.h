@@ -274,9 +274,9 @@ namespace EmbeddedShader
 			return VariateProxy(Ast::AST::binaryOperator(node,rhs.node,"%"));
 		}
 
-		VariateProxy& operator!()
+		VariateProxy operator!()
 		{
-			return *this;
+			return VariateProxy(Ast::AST::unaryOperator(node,"!"));
 		}
 
 		VariateProxy& operator||(const VariateProxy& rhs)
@@ -291,9 +291,9 @@ namespace EmbeddedShader
 			return *this;
 		}
 
-		VariateProxy& operator~()
+		VariateProxy operator~()
 		{
-			return *this;
+			return VariateProxy(Ast::AST::unaryOperator(node,"~"));
 		}
 
 		VariateProxy& operator&(const VariateProxy& rhs)
@@ -423,8 +423,8 @@ namespace EmbeddedShader
 		}
 
 
-		//VariateProxy& operator+() { return *(new VariateProxy()); }
-		//VariateProxy& operator-() { return *(new VariateProxy()); }
+		VariateProxy operator+() { return VariateProxy(Ast::AST::unaryOperator(node,"+")); }
+		VariateProxy operator-() { return VariateProxy(Ast::AST::unaryOperator(node,"-")); }
 		//VariateProxy& operator!() { return *(new VariateProxy()); }
 		//VariateProxy& operator~() { return *(new VariateProxy()); }
 

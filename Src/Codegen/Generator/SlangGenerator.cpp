@@ -108,7 +108,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::BinaryOperator* node)
 {
-	return node->value1->parse() + " " + node->operatorType + " " + node->value2->parse();
+	return "(" + node->value1->parse() + " " + node->operatorType + " " + node->value2->parse() + ")";
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::MemberAccess* node)
@@ -200,6 +200,14 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
     }
 
     return "RW" + bufferType + "<" + node->texture->type->parse() + "> " + node->texture->name + ";";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UnaryOperator* node)
+{
+	if (node->isPrefix)
+		return "(" + node->operatorType + node->value->parse() + ")";
+
+	return "(" + node->value->parse() + node->operatorType + ")";
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()

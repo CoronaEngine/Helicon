@@ -29,6 +29,18 @@ std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::binaryOper
 	return binaryOp; // 这里需要实现具体的操作符逻辑
 }
 
+std::shared_ptr<EmbeddedShader::Ast::Value> EmbeddedShader::Ast::AST::unaryOperator(std::shared_ptr<Value> value,
+	std::string operatorType, bool isPrefix)
+{
+	value->access(AccessPermissions::ReadOnly);
+	auto unaryOp = std::make_shared<UnaryOperator>();
+	unaryOp->value = std::move(value);
+	unaryOp->operatorType = std::move(operatorType);
+	unaryOp->isPrefix = isPrefix;
+	unaryOp->type = unaryOp->value->type;
+	return unaryOp;
+}
+
 void EmbeddedShader::Ast::AST::assign(std::shared_ptr<Value> variate, std::shared_ptr<Value> value)
 {
 	variate->access(AccessPermissions::WriteOnly);

@@ -214,4 +214,12 @@ namespace EmbeddedShader::Ast
 		std::string value;
 		std::string parse() override;
 	};
+
+	struct UnaryOperator : Value
+	{
+		std::shared_ptr<Value> value;
+		std::string operatorType;
+		bool isPrefix = true;
+		std::string parse() override;
+	};
 }
