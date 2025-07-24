@@ -228,9 +228,24 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (!node->aggregate->isUsed)
 		return "";
 	auto result = "struct " + node->aggregate->name + " {\n";
-	for (const auto& member: node->aggregate->members)
+	if ((node->aggregate->permissions & Ast::AccessPermissions::WriteOnly) == Ast::AccessPermissions::None)
 	{
-		result += "\t" + member->type->parse() + " " + member->name + ";\n";
+		for (const auto& member: node->aggregate->members)
+		{
+			result += "\t" + member->type->parse() + " " + member->name + ";\n";
+		}
+	}
+	else
+	{
+		for (const auto& member: node->aggregate->members)
+		{
+			if (std::dynamic_pointer_cast<Ast::ArrayType>(member->type))
+			{
+				result += "\t" "RW" + member->type->parse() + " " + member->name + ";\n";
+				continue;
+			}
+			result += "\t" + member->type->parse() + " " + member->name + ";\n";
+		}
 	}
 	result += "}";
 	return result;

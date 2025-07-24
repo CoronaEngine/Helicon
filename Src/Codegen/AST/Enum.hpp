@@ -27,6 +27,12 @@ namespace EmbeddedShader::Ast
 		return static_cast<AccessPermissions>(static_cast<UnderlyingType>(a) |static_cast<UnderlyingType>(b));
 	}
 
+	inline AccessPermissions operator&(AccessPermissions a, AccessPermissions b)
+	{
+		using UnderlyingType = std::underlying_type_t<AccessPermissions>;
+		return static_cast<AccessPermissions>(static_cast<UnderlyingType>(a) & static_cast<UnderlyingType>(b));
+	}
+
 	inline std::ostream& operator<<(std::ostream& os, AccessPermissions a)
 	{
 		switch (a)
