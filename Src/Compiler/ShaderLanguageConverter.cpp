@@ -248,11 +248,21 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
         SlangResult result = session->createCompositeComponentType(
             componentTypes.data(), componentTypes.size(), composedProgram.writeRef(), diagnosticsBlob.writeRef());
+		if (diagnosticsBlob != nullptr)
+		{
+			std::cout << static_cast<const char*>(diagnosticsBlob->getBufferPointer()) << "\n";
+			return {};
+		}
     }
     Slang::ComPtr<slang::IBlob> spirvCode;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
         SlangResult result = composedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
+		if (diagnosticsBlob != nullptr)
+		{
+			std::cout << static_cast<const char*>(diagnosticsBlob->getBufferPointer()) << "\n";
+			return {};
+		}
     }
     result.resize(spirvCode->getBufferSize() / sizeof(uint32_t));
     memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());

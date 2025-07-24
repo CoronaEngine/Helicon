@@ -152,18 +152,18 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 	template<typename T> requires std::is_aggregate_v<T>
 	std::string SlangGenerator::getValueOutput(const T& value)
 	{
-	    std::string output = "{";
-	    auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
-	    {
-	        using MemberType = std::remove_cvref_t<decltype(structMember)>;
-	        if (i == 0)
-	            output += getValueOutput<std::remove_cvref_t<typename MemberType::value_type>>(*structMember.value);
-	        else output += "," + getValueOutput<std::remove_cvref_t<typename MemberType::value_type>>(*structMember.value);
-	    };
-	    boost::pfr::for_each_field_with_name(value, reflect);
-	    output += "}";
-        return output;
-    }
+	    // std::string output = "{";
+	    // auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
+	    // {
+	    //     using MemberType = std::remove_cvref_t<decltype(structMember)>;
+	    //     if (i == 0)
+	    //         output += getValueOutput<std::remove_cvref_t<typename MemberType::value_type>>(*structMember.value);
+	    //     else output += "," + getValueOutput<std::remove_cvref_t<typename MemberType::value_type>>(*structMember.value);
+	    // };
+	    // boost::pfr::for_each_field_with_name(value, reflect);
+	    // output += "}";
+        return "{}";
+	}
 
 	struct DefineSystemSemanticVariate : Ast::Statement
 	{

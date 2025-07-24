@@ -170,22 +170,22 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 }
 
 std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(
-	std::shared_ptr<Variate> array, uint32_t index)
+	std::shared_ptr<Value> array, uint32_t index)
 {
 	auto variate = std::make_shared<ElementVariate>();
 	variate->type = array->type;
-	variate->name = array->name + "[" + std::to_string(index) + "]";
+	variate->name = array->parse() + "[" + std::to_string(index) + "]";
 	variate->array = std::move(array);
 	return variate;
 }
 
-std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(std::shared_ptr<Variate> array,
+std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(std::shared_ptr<Value> array,
 	const std::shared_ptr<Value>& index)
 {
 	index->access(AccessPermissions::ReadOnly);
 	auto variate = std::make_shared<ElementVariate>();
 	variate->type = array->type;
-	variate->name = array->name + "[" + index->parse() + "]";
+	variate->name = array->parse() + "[" + index->parse() + "]";
 	variate->array = std::move(array);
 	return variate;
 }

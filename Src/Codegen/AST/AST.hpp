@@ -91,10 +91,10 @@ namespace EmbeddedShader::Ast
 
 		static std::shared_ptr<Variate> getPositionOutput();
 
-		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Variate> array, uint32_t index);
-		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Variate> array, const std::shared_ptr<Value>& index);
+		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Value> array, uint32_t index);
+		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Value> array, const std::shared_ptr<Value>& index);
 	    template<typename IndexType> requires std::is_integral_v<IndexType>
-	    static std::shared_ptr<ElementVariate> at(std::shared_ptr<Variate> array, ktm::vec<2,IndexType> index);
+	    static std::shared_ptr<ElementVariate> at(std::shared_ptr<Value> array, ktm::vec<2,IndexType> index);
 		static void addLocalUniversalStatement(std::shared_ptr<Node> node);
 	private:
 		static void addLocalStatement(std::shared_ptr<Statement> statement);
@@ -326,13 +326,13 @@ namespace EmbeddedShader::Ast
 		return aggregateType;
 	}
 
-    template <typename IndexType> requires std::is_integral_v<IndexType>
-    std::shared_ptr<ElementVariate> AST::at(std::shared_ptr<Variate> array, ktm::vec<2, IndexType> index)
+	template<typename IndexType> requires std::is_integral_v<IndexType>
+	std::shared_ptr<ElementVariate> AST::at(std::shared_ptr<Value> array, ktm::vec<2, IndexType> index)
 	{
-	    auto variate = std::make_shared<ElementVariate>();
-	    variate->type = array->type;
-	    variate->name = array->name + "[" + Generator::SlangGenerator::getValueOutput(index) + "]";
-	    variate->array = std::move(array);
-	    return variate;
+		auto variate = std::make_shared<ElementVariate>();
+		variate->type = array->type;
+		variate->name = array->parse() + "[" + Generator::SlangGenerator::getValueOutput(index) + "]";
+		variate->array = std::move(array);
+		return variate;
 	}
 }

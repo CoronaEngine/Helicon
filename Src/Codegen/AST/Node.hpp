@@ -157,7 +157,7 @@ namespace EmbeddedShader::Ast
 
 	struct ElementVariate : Variate
 	{
-		std::shared_ptr<Variate> array;
+		std::shared_ptr<Value> array;
 		void access(AccessPermissions permissions) override;
 	};
 

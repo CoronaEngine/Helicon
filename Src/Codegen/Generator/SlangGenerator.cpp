@@ -219,7 +219,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->pushConstant)
 		return "global_push_constant." + node->name;
 	if (bindless())
-		return "global_ubo[bindless_ubo_index]." + node->name;
+		return "global_ubo[global_push_constant.bindless_ubo_index]." + node->name;
 	return "global_ubo." + node->name;
 }
 
