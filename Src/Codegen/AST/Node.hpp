@@ -17,7 +17,8 @@ namespace EmbeddedShader::Ast
 
 	class Type : public Node
 	{
-
+	public:
+		virtual void access(AccessPermissions permissions);
 	};
 
 	struct NameType : Type
@@ -184,9 +185,11 @@ namespace EmbeddedShader::Ast
 
 	struct AggregateType : NameType
 	{
+		AccessPermissions permissions = AccessPermissions::None;
 		bool isUsed = false;
 		std::vector<std::shared_ptr<Variate>> members;
 		static thread_local inline std::unordered_map<std::string,std::shared_ptr<AggregateType>> aggregateTypeMap;
+		void access(AccessPermissions permissions) override;
 	};
 
 	struct DefineAggregateType : Statement
@@ -194,6 +197,7 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<AggregateType> aggregate;
 		void resetUsedFlag() override;
 		std::string parse() override;
+		void resetAccessPermissions() override;
 	};
 
 	struct AggregateValue : Value
@@ -241,5 +245,16 @@ namespace EmbeddedShader::Ast
 	{
 		std::shared_ptr<Node> node;
 		std::string parse() override;
+	};
+
+	struct ArrayType : Type
+	{
+		std::shared_ptr<Type> elementType;
+		std::string parse() override;
+	};
+
+	struct Texture2DType : Type
+	{
+		std::shared_ptr<Type> texelType;
 	};
 }

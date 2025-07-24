@@ -26,7 +26,7 @@ namespace EmbeddedShader
 		{
 			auto vsOutput = ParseHelper::callLambda(vsFunc,std::move(vsParams));
 
-			static_assert(ParseHelper::isReturnProxy(vsFunc), "The output of the shader must be a proxy!");
+			static_assert(ParseHelper::isReturnVariateProxy(vsFunc), "The output of the shader must be a proxy!");
 			auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(vsOutput.node.get())->type,0);
 			Ast::AST::assign(outputVar,vsOutput.node);
 
@@ -37,9 +37,9 @@ namespace EmbeddedShader
 			else
 			{
 				auto fsOutput = ParseHelper::callLambda(fsFunc, std::move(fsParam));
-				static_assert(ParseHelper::isReturnProxy(fsFunc) /*or struct*/, "The output of the shader must be a proxy!");
+				static_assert(ParseHelper::isReturnVariateProxy(fsFunc) /*or struct*/, "The output of the shader must be a proxy!");
 				//1.proxy
-				if constexpr (ParseHelper::isReturnProxy(fsFunc))
+				if constexpr (ParseHelper::isReturnVariateProxy(fsFunc))
 				{
 					auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(fsOutput.node.get())->type,0);
 					Ast::AST::assign(outputVar,fsOutput.node);
@@ -55,7 +55,7 @@ namespace EmbeddedShader
 			else
 			{
 				auto fsOutput = ParseHelper::callLambda(fsFunc);
-				static_assert(ParseHelper::isReturnProxy(fsFunc), "The output of the shader must be a proxy!");
+				static_assert(ParseHelper::isReturnVariateProxy(fsFunc), "The output of the shader must be a proxy!");
 				auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(fsOutput.node.get())->type,0);
 				Ast::AST::assign(outputVar,fsOutput.node);
 			}

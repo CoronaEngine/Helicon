@@ -10,12 +10,20 @@ std::string EmbeddedShader::Ast::Node::parse()
 	return "";
 }
 
+void EmbeddedShader::Ast::Type::access(AccessPermissions permissions)
+{
+
+}
+
 std::string EmbeddedShader::Ast::NameType::parse()
 {
 	return name;
 }
 
-void EmbeddedShader::Ast::Value::access(AccessPermissions permissions) {}
+void EmbeddedShader::Ast::Value::access(AccessPermissions permissions)
+{
+	type->access(permissions);
+}
 
 std::string EmbeddedShader::Ast::Variate::parse()
 {
@@ -64,6 +72,7 @@ std::string EmbeddedShader::Ast::MemberAccess::parse()
 
 void EmbeddedShader::Ast::MemberAccess::access(AccessPermissions permissions)
 {
+	Value::access(permissions);
 	value->access(permissions);
 }
 
@@ -94,11 +103,13 @@ std::string EmbeddedShader::Ast::ElseStatement::parse()
 
 void EmbeddedShader::Ast::UniversalArray::access(AccessPermissions permissions)
 {
+	Value::access(permissions);
 	this->permissions = this->permissions | permissions;
 }
 
 void EmbeddedShader::Ast::ElementVariate::access(AccessPermissions permissions)
 {
+	Value::access(permissions);
 	array->access(permissions);
 }
 
@@ -119,6 +130,7 @@ std::string EmbeddedShader::Ast::UniformVariate::parse()
 
 void EmbeddedShader::Ast::UniformVariate::access(AccessPermissions permissions)
 {
+	Value::access(permissions);
 	this->permissions = permissions;
 }
 
@@ -137,6 +149,11 @@ std::string EmbeddedShader::Ast::DefineAggregateType::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+void EmbeddedShader::Ast::DefineAggregateType::resetAccessPermissions()
+{
+	aggregate->permissions = AccessPermissions::None;
+}
+
 std::string EmbeddedShader::Ast::AggregateValue::parse()
 {
 	return value;
@@ -144,6 +161,7 @@ std::string EmbeddedShader::Ast::AggregateValue::parse()
 
 void EmbeddedShader::Ast::UniversalTexture2D::access(AccessPermissions permissions)
 {
+	Value::access(permissions);
     this->permissions = permissions;
 }
 
@@ -170,6 +188,17 @@ std::string EmbeddedShader::Ast::UnaryOperator::parse()
 std::string EmbeddedShader::Ast::UniversalStatement::parse()
 {
 	return node->parse() + ";";
+}
+
+std::string EmbeddedShader::Ast::ArrayType::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
+void EmbeddedShader::Ast::AggregateType::access(AccessPermissions permissions)
+{
+	NameType::access(permissions);
+	this->permissions = permissions;
 }
 
 void EmbeddedShader::Ast::DefineAggregateType::resetUsedFlag()

@@ -8,6 +8,12 @@ namespace EmbeddedShader
 	template<typename Type>
 	struct VariateProxy;
 
+	template<typename Type>
+	struct ArrayProxy;
+
+	template<typename Type>
+	struct Texture2DProxy;
+
 	class ParseHelper final
 	{
 	public:
@@ -106,15 +112,27 @@ namespace EmbeddedShader
 		}
 
 		template<typename T,typename... ParamTypes>
-		static constexpr bool isReturnProxy(const std::function<T(ParamTypes...)>& f)
+		static constexpr bool isReturnVariateProxy(const std::function<T(ParamTypes...)>& f)
 		{
-		    return IsReturnProxy<std::remove_cvref_t<decltype(f)>>::value;
+		    return IsReturnVariateProxy<std::remove_cvref_t<decltype(f)>>::value;
 		}
 
 		template<typename T>
-		static constexpr bool isProxy()
+		static constexpr bool isVariateProxy()
 		{
-			return IsProxy<std::remove_cvref_t<T>>::value;
+			return IsVariateProxy<std::remove_cvref_t<T>>::value;
+		}
+
+		template<typename T>
+		static constexpr bool isArrayProxy()
+		{
+			return IsArrayProxy<std::remove_cvref_t<T>>::value;
+		}
+
+		template<typename T>
+		static constexpr bool isTexture2DProxy()
+		{
+			return IsTexture2DProxy<std::remove_cvref_t<T>>::value;
 		}
 
 		static bool isInInputParameter()
@@ -214,25 +232,49 @@ namespace EmbeddedShader
         static thread_local ParseHelper instance;
 
         template<typename T>
-		struct IsProxy
+		struct IsVariateProxy
 		{
 			static constexpr bool value = false;
 		};
 
 		template<typename T>
-		struct IsProxy<VariateProxy<T>>
+		struct IsVariateProxy<VariateProxy<T>>
+		{
+			static constexpr bool value = true;
+		};
+
+		template<typename T>
+		struct IsArrayProxy
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename T>
+		struct IsArrayProxy<ArrayProxy<T>>
+		{
+			static constexpr bool value = true;
+		};
+
+		template<typename T>
+		struct IsTexture2DProxy
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename T>
+		struct IsTexture2DProxy<Texture2DProxy<T>>
 		{
 			static constexpr bool value = true;
 		};
 
 	    template<typename T>
-        struct IsReturnProxy
+        struct IsReturnVariateProxy
 	    {
 	        static constexpr bool value = false;
 	    };
 
 	    template<typename T, typename... ParamTypes>
-        struct IsReturnProxy<std::function<VariateProxy<T>(ParamTypes...)>>
+        struct IsReturnVariateProxy<std::function<VariateProxy<T>(ParamTypes...)>>
 	    {
 	        static constexpr bool value = true;
 	    };

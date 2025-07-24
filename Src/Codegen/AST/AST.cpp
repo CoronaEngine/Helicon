@@ -125,8 +125,10 @@ void EmbeddedShader::Ast::AST::endElse()
 
 std::shared_ptr<EmbeddedShader::Ast::UniversalArray> EmbeddedShader::Ast::AST::defineUniversalArray(std::shared_ptr<Type> elementType)
 {
+	auto arrayType = std::make_shared<ArrayType>();
+	arrayType->elementType = std::move(elementType);
 	auto variate = std::make_shared<UniversalArray>();
-	variate->type = std::move(elementType);
+	variate->type = std::move(arrayType);
 	variate->name = Parser::getUniqueGlobalVariateName();
 	auto defineNode = std::make_shared<DefineUniversalArray>();
 	defineNode->array = variate;

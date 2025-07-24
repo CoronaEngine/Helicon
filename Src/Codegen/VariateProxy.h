@@ -27,6 +27,10 @@ namespace EmbeddedShader
 	template<typename Type>
 	struct VariateProxy
 	{
+		template<typename T>
+		friend struct ArrayProxy;
+		template<typename T>
+		friend struct Texture2DProxy;
 	    template<typename OtherType>
 	    friend struct VariateProxy;
 		friend struct GPU_IF_BRANCH;
@@ -527,5 +531,109 @@ namespace EmbeddedShader
 	    std::unique_ptr<Type> value{};
 		std::shared_ptr<Ast::Value> node;
 		bool isNeedUniversalStatementCheck = false;
+	};
+
+	template<typename Type>
+	struct ArrayProxy
+	{
+		using value_type = Type;
+		ArrayProxy()
+		{
+			if (ParseHelper::notInitNode())
+				return;
+
+			if (auto parent = ParseHelper::getAggregateParent())
+			{
+				auto index = ParseHelper::getAggregateMemberIndex();
+				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+				auto member = aggregateType->members[index];
+				node = Ast::AST::access(parent,member->name, member->type);
+				return;
+			}
+
+			node = Ast::AST::defineUniversalArray<Type>();
+		}
+
+		template<std::integral IndexType>
+		VariateProxy<Type> operator[](IndexType index)
+		{
+			if constexpr (std::is_aggregate_v<Type>)
+			{
+				VariateProxy<Type> proxy{Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index)};
+				ParseHelper::beginAggregateParent(proxy.node);
+				proxy->value = std::make_unique<Type>();
+				ParseHelper::endAggregateParent(proxy.node);
+				return proxy;
+			}
+			else return {Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index)};
+		}
+
+		template<std::integral IndexType>
+		VariateProxy<Type> operator[](VariateProxy<IndexType> index)
+		{
+			if constexpr (std::is_aggregate_v<Type>)
+			{
+				VariateProxy<Type> proxy{Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index.node)};
+				ParseHelper::beginAggregateParent(proxy.node);
+				proxy->value = std::make_unique<Type>();
+				ParseHelper::endAggregateParent(proxy.node);
+				return proxy;
+			}
+			return {Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index.node)};
+		}
+	private:
+		std::shared_ptr<Ast::Value> node;
+	};
+
+	template<typename Type>
+	struct Texture2DProxy
+	{
+		using value_type = Type;
+		Texture2DProxy()
+		{
+			if (ParseHelper::notInitNode())
+				return;
+
+			if (auto parent = ParseHelper::getAggregateParent())
+			{
+				auto index = ParseHelper::getAggregateMemberIndex();
+				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+				auto member = aggregateType->members[index];
+				node = Ast::AST::access(parent,member->name, member->type);
+				return;
+			}
+
+			node = Ast::AST::defineUniversalTexture2D<Type>();
+		}
+
+		template<std::integral IndexType>
+		VariateProxy<Type> operator[](ktm::vec<2,IndexType> index)
+		{
+			if constexpr (std::is_aggregate_v<Type>)
+			{
+				VariateProxy<Type> proxy{Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index)};
+				ParseHelper::beginAggregateParent(proxy.node);
+				proxy->value = std::make_unique<Type>();
+				ParseHelper::endAggregateParent(proxy.node);
+				return proxy;
+			}
+			else return {Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index)};
+		}
+
+		template<std::integral IndexType>
+		VariateProxy<Type> operator[](VariateProxy<ktm::vec<2,IndexType>> index)
+		{
+			if constexpr (std::is_aggregate_v<Type>)
+			{
+				VariateProxy<Type> proxy{Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index.node)};
+				ParseHelper::beginAggregateParent(proxy.node);
+				proxy->value = std::make_unique<Type>();
+				ParseHelper::endAggregateParent(proxy.node);
+				return proxy;
+			}
+			return {Ast::AST::at(reinterpret_cast<std::shared_ptr<Ast::Variate>&>(node), index.node)};
+		}
+	private:
+		std::shared_ptr<Ast::Value> node;
 	};
 }

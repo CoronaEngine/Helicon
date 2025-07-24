@@ -301,7 +301,18 @@ namespace EmbeddedShader::Ast
 			auto member = std::make_shared<Variate>();
 			member->name = name;
 
-			member->type = createType<std::remove_cvref_t<typename MemberType::value_type>>();
+			if constexpr (ParseHelper::isVariateProxy<MemberType>())
+				member->type = createType<std::remove_cvref_t<typename MemberType::value_type>>();
+			else if constexpr (ParseHelper::isArrayProxy<MemberType>())
+			{
+				auto arrayType = std::make_shared<ArrayType>();
+				arrayType->elementType = createType<std::remove_cvref_t<typename MemberType::value_type>>();
+				member->type = std::move(arrayType);
+			}
+			else if constexpr (ParseHelper::isTexture2DProxy<MemberType>())
+			{
+
+			}
 
 			aggregateType->members.push_back(std::move(member));
 		};

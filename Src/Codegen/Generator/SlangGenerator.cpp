@@ -194,14 +194,11 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->array->permissions == Ast::AccessPermissions::None)
 		return "";
 
-	std::string bufferType = "StructuredBuffer";
-
+	auto result = node->array->type->parse() + " " + node->array->name + ";";
 	if (node->array->permissions == Ast::AccessPermissions::ReadOnly)
-	{
-		return bufferType + "<" + node->array->type->parse() + "> " + node->array->name + ";";
-	}
+		return result;
 
-	return "RW" + bufferType + "<" + node->array->type->parse() + "> " + node->array->name + ";";
+	return "RW" + result;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
@@ -260,6 +257,11 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 		return "(" + node->operatorType + node->value->parse() + ")";
 
 	return "(" + node->value->parse() + node->operatorType + ")";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::ArrayType* node)
+{
+	return "StructuredBuffer<" + node->elementType->parse() + ">";
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()
