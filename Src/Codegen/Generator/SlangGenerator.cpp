@@ -59,7 +59,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 		entrypoint += "\t" + outputStructName + " output;\n";
 	entrypoint += mainContent;
 	if (!structure.outputStatements.empty())
-		entrypoint += "\treturn output;\n";
+		entrypoint += "\t""return output;\n";
 	entrypoint += "}\n";
 
 	output += entrypoint;
@@ -77,10 +77,15 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 			output += std::move(statementContent) + '\n';
 	}
 
-	if (!pushConstantMembers.empty())
+	if (!pushConstantMembers.empty() || (bindless() && !uboMembers.empty()))
 	{
 		std::string pushConstantStructName = "global_push_constant_struct";
-		auto pushConstantStruct = "struct " + pushConstantStructName + " {\n" + pushConstantMembers + "}\n";
+		auto pushConstantStruct = "struct " + pushConstantStructName + " {\n" + pushConstantMembers;
+
+		if (bindless() && !uboMembers.empty())
+			pushConstantStruct += "\t" "uint bindless_ubo_index;\n";
+
+		pushConstantStruct += "}\n";
 		auto pushConstant = "[[vk::push_constant]] ConstantBuffer<" + pushConstantStructName + "> global_push_constant;\n";
 		output += pushConstantStruct + pushConstant;
 		pushConstantMembers.clear();
@@ -90,7 +95,10 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 	{
 		std::string uboStructName = "global_ubo_struct";
 		auto uboStruct = "struct " + uboStructName + " {\n" + uboMembers + "}\n";
-		auto ubo = "ConstantBuffer<" + uboStructName + "> global_ubo;\n";
+		auto ubo = "ConstantBuffer<" + uboStructName + "> global_ubo";
+		if (bindless())
+			ubo += "[]";
+		ubo+=";\n";
 		output += uboStruct + ubo;
 		uboMembers.clear();
 	}
@@ -213,6 +221,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 {
 	if (node->pushConstant)
 		return "global_push_constant." + node->name;
+	if (bindless())
+		return "global_ubo[bindless_ubo_index]." + node->name;
 	return "global_ubo." + node->name;
 }
 
@@ -263,6 +273,11 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGe
 	defineNode->semanticName = "SV_POSITION";
 	Ast::AST::addOutputStatement(defineNode);
 	return positionOutput;
+}
+
+bool EmbeddedShader::Generator::SlangGenerator::bindless()
+{
+	return Ast::Parser::getBindless();
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getCodeIndentation()

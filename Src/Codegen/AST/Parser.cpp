@@ -59,6 +59,16 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPi
 	return result;
 }
 
+void EmbeddedShader::Ast::Parser::setBindless(bool bindless)
+{
+	currentParser->bindless = bindless;
+}
+
+bool EmbeddedShader::Ast::Parser::getBindless()
+{
+	return currentParser->bindless;
+}
+
 std::string EmbeddedShader::Ast::Parser::parse(const std::function<void()>& shaderCode, ShaderStage stage)
 {
 	currentParser->structure.stage = stage;

@@ -155,11 +155,35 @@ namespace EmbeddedShader
 
 		VariateProxy() requires ArrayProxyTraits<Type>::value
 		{
+			if (ParseHelper::notInitNode())
+				return;
+
+			if (auto parent = ParseHelper::getAggregateParent())
+			{
+				auto index = ParseHelper::getAggregateMemberIndex();
+				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+				auto member = aggregateType->members[index];
+				node = Ast::AST::access(parent,member->name, member->type);
+				return;
+			}
+
 			node = Ast::AST::defineUniversalArray<typename Type::value_type>();
 		}
 
 	    VariateProxy() requires Texture2DProxyTraits<Type>::value
 		{
+			if (ParseHelper::notInitNode())
+				return;
+
+			if (auto parent = ParseHelper::getAggregateParent())
+			{
+				auto index = ParseHelper::getAggregateMemberIndex();
+				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+				auto member = aggregateType->members[index];
+				node = Ast::AST::access(parent,member->name, member->type);
+				return;
+			}
+
 		    node = Ast::AST::defineUniversalTexture2D<typename Type::value_type::value_type>();
 		}
 

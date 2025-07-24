@@ -127,7 +127,6 @@ int main(int argc, char* argv[])
 
 	auto index = VariateProxy<uint32_t>(AST::defineUniformVariate<uint32_t>(true));
     VariateProxy<VariateProxy<VariateProxy<fvec4>>> texture2d;
-    VariateProxy<VariateProxy<fvec4>> array;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
 		// VariateProxy testMat = fmat4x4{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
@@ -149,8 +148,6 @@ int main(int argc, char* argv[])
 		{
 		}
 
-		array[index] = texture2d[svec2{0, 0}];
-
 		position() = texture2d[svec2{0,0}];
 	    return input->color;
 	};
@@ -160,6 +157,7 @@ int main(int argc, char* argv[])
 	    return input;
 	};
 
+	Parser::setBindless(true);
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());

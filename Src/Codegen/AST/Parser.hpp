@@ -29,6 +29,8 @@ namespace EmbeddedShader::Ast
 		static std::vector<ParseOutput> parse(const std::vector<ParseParameter>& parameters);
 		static void beginShaderParse(ShaderStage stage);
 		static std::vector<ParseOutput> endPipelineParse();
+		static void setBindless(bool bindless);
+		static bool getBindless();
 	private:
 		static std::string parse(const std::function<void()>& shaderCode, ShaderStage stage);
 		Parser() = default;
@@ -47,6 +49,8 @@ namespace EmbeddedShader::Ast
 		std::vector<ParseOutput> parseOutputs;
 
 		bool isInShaderParse = false;
+
+		bool bindless = false;
 
 		static thread_local std::unique_ptr<Parser> currentParser;
 	public:
