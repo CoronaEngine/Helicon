@@ -125,6 +125,7 @@ int main(int argc, char* argv[])
 
 	puts("------------------- Front-End Test -------------------");
 
+	auto index = VariateProxy<uint32_t>(AST::defineUniformVariate<uint32_t>(true));
     VariateProxy<VariateProxy<VariateProxy<fvec4>>> texture2d;
     VariateProxy<VariateProxy<fvec4>> array;
 	auto vertex = [&](VariateProxy<VertexData> input)
@@ -135,7 +136,7 @@ int main(int argc, char* argv[])
 		VariateProxy a = 1.f;
 		--a;
 		testA->xy() = fvec2{};
-		array[0] = texture2d[svec2{0, 0}];
+		array[index] = texture2d[svec2{0, 0}];
 
 		position() = texture2d[svec2{0,0}];
 	    return input->color;

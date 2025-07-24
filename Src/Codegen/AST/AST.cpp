@@ -133,11 +133,12 @@ std::shared_ptr<EmbeddedShader::Ast::UniversalTexture2D> EmbeddedShader::Ast::AS
 }
 
 std::shared_ptr<EmbeddedShader::Ast::UniformVariate> EmbeddedShader::Ast::AST::defineUniformVariate(
-	std::shared_ptr<Type> type)
+	std::shared_ptr<Type> type, bool pushConstant)
 {
 	auto variate = std::make_shared<UniformVariate>();
 	variate->type = std::move(type);
 	variate->name = Parser::getUniqueGlobalVariateName();
+	variate->pushConstant = pushConstant;
 	auto defineNode = std::make_shared<DefineUniformVariate>();
 	defineNode->variate = variate;
 	addGlobalStatement(defineNode);

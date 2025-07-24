@@ -11,10 +11,6 @@
 namespace EmbeddedShader::Generator
 {
 	class SlangGenerator;
-	namespace OpenGL
-	{
-		class ShaderGenerator;
-	}
 }
 
 namespace EmbeddedShader::Ast
@@ -23,7 +19,6 @@ namespace EmbeddedShader::Ast
 
 	class AST
 	{
-		friend class Generator::OpenGL::ShaderGenerator;
 		friend class Generator::SlangGenerator;
 		AST() = default;
 	public:
@@ -85,9 +80,9 @@ namespace EmbeddedShader::Ast
 	    template<typename ElementType>
         static std::shared_ptr<UniversalTexture2D> defineUniversalTexture2D();
 
-		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type);
+		static std::shared_ptr<UniformVariate> defineUniformVariate(std::shared_ptr<Type> type, bool pushConstant = false);
 		template<typename VariateType>
-		static std::shared_ptr<UniformVariate> defineUniformVariate();
+		static std::shared_ptr<UniformVariate> defineUniformVariate(bool pushConstant = false);
 
 		template<typename T> requires std::is_aggregate_v<T>
 		static std::shared_ptr<AggregateType> createAggregateType(const T& value);
@@ -271,9 +266,9 @@ namespace EmbeddedShader::Ast
 	}
 
     template<typename VariateType>
-	std::shared_ptr<UniformVariate> AST::defineUniformVariate()
+	std::shared_ptr<UniformVariate> AST::defineUniformVariate(bool pushConstant)
 	{
-		return defineUniformVariate(createType<VariateType>());
+		return defineUniformVariate(createType<VariateType>(),pushConstant);
 	}
 
 	template<typename T> requires std::is_aggregate_v<T>

@@ -97,6 +97,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:
 		static thread_local inline std::string uboMembers;
+		static thread_local inline std::string pushConstantMembers;
 		static thread_local inline Ast::ShaderStage currentStage;
 
 		static thread_local inline size_t nestHierarchy = 1;

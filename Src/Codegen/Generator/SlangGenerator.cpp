@@ -77,6 +77,15 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 			output += std::move(statementContent) + '\n';
 	}
 
+	if (!pushConstantMembers.empty())
+	{
+		std::string pushConstantStructName = "global_push_constant_struct";
+		auto pushConstantStruct = "struct " + pushConstantStructName + " {\n" + pushConstantMembers + "}\n";
+		auto pushConstant = "[[vk::push_constant]] ConstantBuffer<" + pushConstantStructName + "> global_push_constant;\n";
+		output += pushConstantStruct + pushConstant;
+		pushConstantMembers.clear();
+	}
+
 	if (!uboMembers.empty())
 	{
 		std::string uboStructName = "global_ubo_struct";
@@ -178,12 +187,19 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 {
 	if (node->variate->permissions == Ast::AccessPermissions::None)
 		return "";
+	if (node->variate->pushConstant)
+	{
+		pushConstantMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
+		return "";
+	}
 	uboMembers += "\t" + node->variate->type->parse() + " " + node->variate->name + ";\n";
 	return "";
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniformVariate* node)
 {
+	if (node->pushConstant)
+		return "global_push_constant." + node->name;
 	return "global_ubo." + node->name;
 }
 

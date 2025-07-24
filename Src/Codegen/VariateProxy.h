@@ -496,11 +496,11 @@ namespace EmbeddedShader
 		//VariateProxy<bool>& operator!=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 		//VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 
-	protected:
-		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))//,value(std::make_unique<Type>())
-		{
-		}
-		std::unique_ptr<Type> value{};
+	    VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))//,value(std::make_unique<Type>())
+	    {
+	    }
+    protected:
+	    std::unique_ptr<Type> value{};
 		std::shared_ptr<Ast::Value> node;
 		bool isNeedUniversalStatementCheck = false;
 	};
