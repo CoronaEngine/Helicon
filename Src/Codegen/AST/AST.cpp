@@ -167,6 +167,7 @@ std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::a
 std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(std::shared_ptr<Variate> array,
 	const std::shared_ptr<Value>& index)
 {
+	index->access(AccessPermissions::ReadOnly);
 	auto variate = std::make_shared<ElementVariate>();
 	variate->type = array->type;
 	variate->name = array->name + "[" + index->parse() + "]";

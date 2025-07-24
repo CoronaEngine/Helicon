@@ -1,11 +1,15 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_153_35",
-ShaderCodeModule(R"(Texture2D<float4> global_var_1;
-RWStructuredBuffer<float4> global_var_2;
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_154_35",
+ShaderCodeModule(R"(Texture2D<float4> global_var_2;
+RWStructuredBuffer<float4> global_var_3;
 struct aggregate_type_0 {
 	float4 pos;
 	float4 color;
 }
+struct global_push_constant_struct {
+	uint global_var_1;
+}
+[[vk::push_constant]] ConstantBuffer<global_push_constant_struct> global_push_constant;
 struct vertex_input {
 	aggregate_type_0 var_0 : LOCATION0;
 }
@@ -20,20 +24,24 @@ vertex_output main(vertex_input input) {
 	float var_2 = 1.000000;
 	(var_2--);
 	var_1.xy = float2(0.000000, 0.000000);
-	global_var_2[0] = global_var_1[int2(0, 0)];
-	output.position_output = global_var_1[int2(0, 0)];
+	global_var_3[global_push_constant.global_var_1] = global_var_2[int2(0, 0)];
+	output.position_output = global_var_2[int2(0, 0)];
 	float4 var_3 = input.var_0.color;
 	output.var_4 = var_3;
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_154_34",
-ShaderCodeModule(R"(Texture2D<float4> global_var_1;
-RWStructuredBuffer<float4> global_var_2;
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_155_34",
+ShaderCodeModule(R"(Texture2D<float4> global_var_2;
+RWStructuredBuffer<float4> global_var_3;
 struct aggregate_type_0 {
 	float4 pos;
 	float4 color;
 }
+struct global_push_constant_struct {
+	uint global_var_1;
+}
+[[vk::push_constant]] ConstantBuffer<global_push_constant_struct> global_push_constant;
 struct fragment_input {
 	float4 var_0 : LOCATION0;
 }
