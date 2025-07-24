@@ -1,22 +1,18 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_171_35",
-ShaderCodeModule(R"(Texture2D<float4> global_var_2;
-RWStructuredBuffer<float4> global_var_3;
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_170_35",
+ShaderCodeModule(R"(Texture2D<float4> global_var_1;
+RWStructuredBuffer<float4> global_var_2;
 struct aggregate_type_0 {
 	int member1;
 	float4 member2;
-	StructuredBuffer<float4> member3;
+	RWStructuredBuffer<float4> member3;
 }
 struct aggregate_type_1 {
 	float4 pos;
 	float4 color;
 }
-struct global_push_constant_struct {
-	uint global_var_1;
-}
-[[vk::push_constant]] ConstantBuffer<global_push_constant_struct> global_push_constant;
 struct global_ubo_struct {
-	aggregate_type_0 global_var_4;
+	aggregate_type_0 global_var_3;
 }
 ConstantBuffer<global_ubo_struct> global_ubo;
 struct vertex_input {
@@ -24,13 +20,13 @@ struct vertex_input {
 }
 struct vertex_output {
 	float4 position_output : SV_POSITION;
-	float4 var_5 : LOCATION0;
+	float4 var_4 : LOCATION0;
 }
 [shader("vertex")]
 vertex_output main(vertex_input input) {
 	vertex_output output;
 	float4 var_1 = float4(1.000000, 2.000000, 3.000000, 4.000000);
-	var_1 = global_ubo.global_var_4.member3[0];
+	global_ubo.global_var_3.member3[0] = var_1;
 	float var_2 = 1.000000;
 	(var_2--);
 	var_1.xy = float2(0.000000, 0.000000);
@@ -40,32 +36,27 @@ vertex_output main(vertex_input input) {
 	}
 	else {
 	}
-	uint var_3 = global_push_constant.global_var_1;
-	global_var_3[var_3] = global_var_2[uint2(0, 0)];
-	output.position_output = global_var_2[int2(0, 0)];
-	float4 var_4 = input.var_0.color;
-	output.var_5 = var_4;
+	global_var_2[0] = global_var_1[uint2(0, 0)];
+	output.position_output = global_var_1[int2(0, 0)];
+	float4 var_3 = input.var_0.color;
+	output.var_4 = var_3;
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_172_34",
-ShaderCodeModule(R"(Texture2D<float4> global_var_2;
-RWStructuredBuffer<float4> global_var_3;
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_171_34",
+ShaderCodeModule(R"(Texture2D<float4> global_var_1;
+RWStructuredBuffer<float4> global_var_2;
 struct aggregate_type_0 {
 	int member1;
 	float4 member2;
-	StructuredBuffer<float4> member3;
+	RWStructuredBuffer<float4> member3;
 }
 struct aggregate_type_1 {
 	float4 pos;
 	float4 color;
 }
-struct global_push_constant_struct {
-	uint global_var_1;
-}
-[[vk::push_constant]] ConstantBuffer<global_push_constant_struct> global_push_constant;
 struct global_ubo_struct {
-	aggregate_type_0 global_var_4;
+	aggregate_type_0 global_var_3;
 }
 ConstantBuffer<global_ubo_struct> global_ubo;
 struct fragment_input {

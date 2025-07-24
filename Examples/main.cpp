@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 	    return input;
 	};
 
-	Parser::setBindless(true);
+	//Parser::setBindless(true);
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
