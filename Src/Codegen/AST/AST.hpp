@@ -78,7 +78,7 @@ namespace EmbeddedShader::Ast
 		template<typename ElementType>
 		static std::shared_ptr<UniversalArray> defineUniversalArray();
 
-	    static std::shared_ptr<UniversalTexture2D> defineUniversalTexture2D(std::shared_ptr<Type> elementType);
+	    static std::shared_ptr<UniversalTexture2D> defineUniversalTexture2D(std::shared_ptr<Type> texelType);
 	    template<typename ElementType>
         static std::shared_ptr<UniversalTexture2D> defineUniversalTexture2D();
 
@@ -311,7 +311,9 @@ namespace EmbeddedShader::Ast
 			}
 			else if constexpr (ParseHelper::isTexture2DProxy<MemberType>())
 			{
-
+				auto texture2DType = std::make_shared<Texture2DType>();
+				texture2DType->texelType = createType<std::remove_cvref_t<typename MemberType::value_type>>();
+				member->type = std::move(texture2DType);
 			}
 
 			aggregateType->members.push_back(std::move(member));

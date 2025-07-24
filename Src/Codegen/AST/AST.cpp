@@ -136,10 +136,12 @@ std::shared_ptr<EmbeddedShader::Ast::UniversalArray> EmbeddedShader::Ast::AST::d
 	return variate;
 }
 
-std::shared_ptr<EmbeddedShader::Ast::UniversalTexture2D> EmbeddedShader::Ast::AST::defineUniversalTexture2D(std::shared_ptr<Type> elementType)
+std::shared_ptr<EmbeddedShader::Ast::UniversalTexture2D> EmbeddedShader::Ast::AST::defineUniversalTexture2D(std::shared_ptr<Type> texelType)
 {
+	auto textureType = std::make_shared<Texture2DType>();
+	textureType->texelType = std::move(texelType);
     auto variate = std::make_shared<UniversalTexture2D>();
-    variate->type = std::move(elementType);
+    variate->type = textureType;
     variate->name = Parser::getUniqueGlobalVariateName();
     auto defineNode = std::make_shared<DefineUniversalTexture2D>();
     defineNode->texture = variate;

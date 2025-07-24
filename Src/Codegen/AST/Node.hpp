@@ -256,5 +256,6 @@ namespace EmbeddedShader::Ast
 	struct Texture2DType : Type
 	{
 		std::shared_ptr<Type> texelType;
+		std::string parse() override;
 	};
 }

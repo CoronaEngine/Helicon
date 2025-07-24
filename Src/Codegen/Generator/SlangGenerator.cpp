@@ -239,7 +239,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	{
 		for (const auto& member: node->aggregate->members)
 		{
-			if (std::dynamic_pointer_cast<Ast::ArrayType>(member->type))
+			if (std::dynamic_pointer_cast<Ast::ArrayType>(member->type) || std::dynamic_pointer_cast<Ast::Texture2DType>(member->type))
 			{
 				result += "\t" "RW" + member->type->parse() + " " + member->name + ";\n";
 				continue;
@@ -256,14 +256,14 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
     if (node->texture->permissions == Ast::AccessPermissions::None)
         return "";
 
-    std::string bufferType = "Texture2D";
+	auto result = node->texture->type->parse() + " " + node->texture->name + ";";
 
     if (node->texture->permissions == Ast::AccessPermissions::ReadOnly)
     {
-        return bufferType + "<" + node->texture->type->parse() + "> " + node->texture->name + ";";
+        return result;
     }
 
-    return "RW" + bufferType + "<" + node->texture->type->parse() + "> " + node->texture->name + ";";
+    return "RW" + result;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UnaryOperator* node)
@@ -277,6 +277,11 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::ArrayType* node)
 {
 	return "StructuredBuffer<" + node->elementType->parse() + ">";
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::Texture2DType* node)
+{
+	return "Texture2D<" + node->texelType->parse() + ">";
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()
