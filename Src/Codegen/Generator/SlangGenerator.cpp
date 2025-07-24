@@ -145,6 +145,19 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	return result;
 }
 
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::ElifStatement* node)
+{
+	auto result = "else if (" + node->condition->parse() + ") {\n";
+	nestHierarchy++;
+	for (auto& statement: node->statements)
+	{
+		result += getCodeIndentation() + statement->parse() + "\n";
+	}
+	nestHierarchy--;
+	result += getCodeIndentation() + "}";
+	return result;
+}
+
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::ElseStatement* node)
 {
 	std::string result = "else {\n";

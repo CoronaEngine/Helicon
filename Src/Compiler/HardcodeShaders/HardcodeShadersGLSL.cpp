@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_154_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_167_35",
 ShaderCodeModule(R"(#version 450
 #extension GL_EXT_samplerless_texture_functions : require
 layout(row_major) uniform;
@@ -54,44 +54,46 @@ void main()
 
 
     var_1_0.xy = vec2(0.0, 0.0);
+
+#line 31
     const uvec2 _S1 = uvec2(ivec2(0, 0));
 
-#line 25
+#line 31
     ;
 
-#line 25
+#line 31
     ivec3 _S2 = ivec3(uvec3(_S1, 0U));
 
-#line 25
+#line 31
     vec4 _S3 = (texelFetch((global_var_2_0), ((_S2)).xy, ((_S2)).z));
 
-#line 25
+#line 31
     global_var_3_0._data[uint(global_push_constant_0.global_var_1_0)] = _S3;
 
 #line 20
     vertex_output_0 output_0;
 
-#line 26
+#line 32
     ;
 
-#line 26
+#line 32
     output_0.position_output_0 = _S3;
 
     output_0.var_4_0 = input_var_0_color_0;
     vertex_output_0 _S4 = output_0;
 
-#line 29
+#line 35
     gl_Position = output_0.position_output_0;
 
-#line 29
+#line 35
     entryPointParam_main_var_4_0 = _S4.var_4_0;
 
-#line 29
+#line 35
     return;
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_155_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_168_34",
 ShaderCodeModule(R"(#version 450
 layout(row_major) uniform;
 layout(row_major) buffer;

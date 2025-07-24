@@ -136,6 +136,19 @@ int main(int argc, char* argv[])
 		VariateProxy a = 1.f;
 		--a;
 		testA->xy() = fvec2{};
+
+		$IF(true)
+		{
+
+		}
+		$ELIF(false)
+		{
+
+		}
+		$ELSE
+		{
+		}
+
 		array[index] = texture2d[svec2{0, 0}];
 
 		position() = texture2d[svec2{0,0}];

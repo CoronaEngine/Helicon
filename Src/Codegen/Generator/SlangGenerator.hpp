@@ -26,6 +26,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(uint64_t, uint64_t);
 	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(float, float);
 	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(double, double);
+	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(bool, bool);
 	    //DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(std::float16_t, half);
 #undef DEFINE_VARIATE_BASIC_TYPE_NAME_MAP
 
@@ -43,6 +44,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 
 		template<typename T> requires std::is_arithmetic_v<T>
 		static std::string getValueOutput(T value) {return std::to_string(value);}
+		static std::string getValueOutput(bool value) {return value? "true" : "false";}
 
 		template<typename T> requires ktm::is_vector_v<T>
 		static std::string getValueOutput(const T& value)
@@ -84,6 +86,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 		static std::string getParseOutput(const Ast::MemberAccess* node);
 		static std::string getParseOutput(const Ast::DefineOutputVariate* node);
 		static std::string getParseOutput(const Ast::IfStatement* node);
+		static std::string getParseOutput(const Ast::ElifStatement* node);
 		static std::string getParseOutput(const Ast::ElseStatement* node);
 		static std::string getParseOutput(const Ast::InputVariate* node);
 		static std::string getParseOutput(const Ast::OutputVariate* node);

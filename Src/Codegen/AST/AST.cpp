@@ -98,6 +98,19 @@ void EmbeddedShader::Ast::AST::endIf()
 	getLocalStatementStack().pop();
 }
 
+void EmbeddedShader::Ast::AST::beginElif(std::shared_ptr<Value> condition)
+{
+	auto elifStatement = std::make_shared<ElifStatement>();
+	elifStatement->condition = std::move(condition);
+	addLocalStatement(elifStatement);
+	getLocalStatementStack().push(&elifStatement->statements);
+}
+
+void EmbeddedShader::Ast::AST::endElif()
+{
+	getLocalStatementStack().pop();
+}
+
 void EmbeddedShader::Ast::AST::beginElse()
 {
 	auto elseStatement = std::make_shared<ElseStatement>();

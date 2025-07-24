@@ -69,6 +69,8 @@ namespace EmbeddedShader::Ast
 
 		static void beginIf(std::shared_ptr<Value> condition);
 		static void endIf();
+		static void beginElif(std::shared_ptr<Value> condition);
+		static void endElif();
 		static void beginElse();
 		static void endElse();
 

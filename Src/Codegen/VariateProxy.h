@@ -29,9 +29,9 @@ namespace EmbeddedShader
 	{
 	    template<typename OtherType>
 	    friend struct VariateProxy;
-
-		template<typename T>
 		friend struct GPU_IF_BRANCH;
+		friend struct GPU_ELSEIF_BRANCH;
+		friend struct GPU_ELSE_BRANCH;
 	private:
 	    template<typename T>
         struct ArrayProxyTraits

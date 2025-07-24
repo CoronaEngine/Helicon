@@ -132,6 +132,13 @@ namespace EmbeddedShader::Ast
         std::string parse() override;
     };
 
+	struct ElifStatement : Statement
+	{
+		std::shared_ptr<Value> condition;
+		std::vector<std::shared_ptr<Statement>> statements;
+		std::string parse() override;
+	};
+
 	struct ElseStatement : Statement
 	{
 		std::vector<std::shared_ptr<Statement>> statements;

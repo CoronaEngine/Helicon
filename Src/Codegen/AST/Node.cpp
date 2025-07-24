@@ -82,6 +82,11 @@ std::string EmbeddedShader::Ast::IfStatement::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+std::string EmbeddedShader::Ast::ElifStatement::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
 std::string EmbeddedShader::Ast::ElseStatement::parse()
 {
 	return Generator::SlangGenerator::getParseOutput(this);
