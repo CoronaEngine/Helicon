@@ -162,7 +162,7 @@ std::string EmbeddedShader::Ast::AggregateValue::parse()
 void EmbeddedShader::Ast::UniversalTexture2D::access(AccessPermissions permissions)
 {
 	Value::access(permissions);
-    this->permissions = permissions;
+    this->permissions = this->permissions | permissions;
 }
 
 std::string EmbeddedShader::Ast::DefineUniversalTexture2D::parse()

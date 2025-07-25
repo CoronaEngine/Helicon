@@ -36,30 +36,6 @@ namespace EmbeddedShader
 		friend struct GPU_IF_BRANCH;
 		friend struct GPU_ELSEIF_BRANCH;
 		friend struct GPU_ELSE_BRANCH;
-	private:
-	    template<typename T>
-        struct ArrayProxyTraits
-	    {
-	        static constexpr bool value = false;
-	    };
-
-	    template<typename T> requires (!ArrayProxyTraits<T>::value)
-        struct ArrayProxyTraits<VariateProxy<T>>
-	    {
-	        static constexpr bool value = true;
-	    };
-
-	    template<typename T>
-        struct Texture2DProxyTraits
-	    {
-	        static constexpr bool value = false;
-	    };
-
-	    template<typename T> requires (!ArrayProxyTraits<T>::value)
-        struct Texture2DProxyTraits<VariateProxy<VariateProxy<T>>>
-	    {
-	        static constexpr bool value = true;
-	    };
 	public:
 	    friend VariateProxy<ktm::fvec4> position();
 		friend class RasterizedPipelineObject;
@@ -157,40 +133,6 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniformVariate<Type>();
 		}
 
-		VariateProxy() requires ArrayProxyTraits<Type>::value
-		{
-			if (ParseHelper::notInitNode())
-				return;
-
-			if (auto parent = ParseHelper::getAggregateParent())
-			{
-				auto index = ParseHelper::getAggregateMemberIndex();
-				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
-				auto member = aggregateType->members[index];
-				node = Ast::AST::access(parent,member->name, member->type);
-				return;
-			}
-
-			node = Ast::AST::defineUniversalArray<typename Type::value_type>();
-		}
-
-	    VariateProxy() requires Texture2DProxyTraits<Type>::value
-		{
-			if (ParseHelper::notInitNode())
-				return;
-
-			if (auto parent = ParseHelper::getAggregateParent())
-			{
-				auto index = ParseHelper::getAggregateMemberIndex();
-				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
-				auto member = aggregateType->members[index];
-				node = Ast::AST::access(parent,member->name, member->type);
-				return;
-			}
-
-		    node = Ast::AST::defineUniversalTexture2D<typename Type::value_type::value_type>();
-		}
-
 		VariateProxy(const VariateProxy& value)
 		{
 			//Local Variate
@@ -203,48 +145,6 @@ namespace EmbeddedShader
 		{
 			if (isNeedUniversalStatementCheck && node && node.use_count() == 1)
 				Ast::AST::addLocalUniversalStatement(node);
-		}
-
-		Type operator[](uint32_t input) requires (ArrayProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type>)
-		{
-			return Type(Ast::AST::at(node, input));
-		}
-
-	    template<typename IndexType>
-	    Type operator[](const VariateProxy<IndexType>& input) requires (ArrayProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type>)
-	    {
-	        return Type(Ast::AST::at(node, input.node));
-	    }
-
-	    template<typename IndexType> requires std::is_integral_v<IndexType>
-	    auto operator[](ktm::vec<2,IndexType> input) requires (Texture2DProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type::value_type>)
-	    {
-	        return typename Type::value_type(Ast::AST::at(node, input));
-	    }
-
-	    template<typename IndexType> requires std::is_integral_v<IndexType>
-        auto operator[](const VariateProxy<ktm::vec<2,IndexType>>& input) requires (Texture2DProxyTraits<Type>::value && !std::is_aggregate_v<typename Type::value_type::value_type>)
-        {
-            return typename Type::value_type(Ast::AST::at(node, input.node));
-        }
-
-		Type operator[](uint32_t input) requires (ArrayProxyTraits<Type>::value && std::is_aggregate_v<typename Type::value_type>)
-		{
-			Type result(Ast::AST::at(node, input));
-			ParseHelper::beginAggregateParent(result.node);
-			result.value = std::make_unique<Type::value_type>();
-			ParseHelper::endAggregateParent();
-			return result;
-		}
-
-		template<typename IndexType>
-		Type operator[](const VariateProxy<IndexType>& input) requires (ArrayProxyTraits<Type>::value && std::is_aggregate_v<typename Type::value_type>)
-		{
-			Type result(Ast::AST::at(node, input.node));
-			ParseHelper::beginAggregateParent(result.node);
-			result.value = std::make_unique<Type::value_type>();
-			ParseHelper::endAggregateParent();
-			return result;
 		}
 
 		Type* operator->() requires (std::is_aggregate_v<Type> && !ktm::is_vector_v<Type>)
@@ -261,7 +161,7 @@ namespace EmbeddedShader
 			return std::move(vecComponents);
 		}
 
-		VariateProxy& operator=(const VariateProxy& rhs) requires (!ArrayProxyTraits<Type>::value && !Texture2DProxyTraits<Type>::value)
+		VariateProxy& operator=(const VariateProxy& rhs)
 		{
 			if (this == &rhs)
 				return *this;
@@ -269,13 +169,13 @@ namespace EmbeddedShader
 		    return *this;
 		}
 
-		VariateProxy& operator=(const Type& rhs) requires (!ArrayProxyTraits<Type>::value && !Texture2DProxyTraits<Type>::value)
+		VariateProxy& operator=(const Type& rhs)
 		{
 			Ast::AST::assign(node,Ast::AST::createValue(rhs));
 			return *this;
 		}
 
-		VariateProxy& operator=(Type&& rhs) requires (!ArrayProxyTraits<Type>::value && !Texture2DProxyTraits<Type>::value)
+		VariateProxy& operator=(Type&& rhs)
 		{
 			Ast::AST::assign(node,Ast::AST::createValue(std::forward<Type>(rhs)));
 			return *this;
@@ -534,6 +434,18 @@ namespace EmbeddedShader
 	};
 
 	template<typename Type>
+	struct Texture2DProxyTraits
+	{
+		static constexpr bool value = false;
+	};
+
+	template<typename Type>
+	struct Texture2DProxyTraits<Texture2DProxy<Type>>
+	{
+		static constexpr bool value = true;
+	};
+
+	template<typename Type>
 	struct ArrayProxy
 	{
 		using value_type = Type;
@@ -551,7 +463,13 @@ namespace EmbeddedShader
 				return;
 			}
 
-			node = Ast::AST::defineUniversalArray<Type>();
+			if constexpr (Texture2DProxyTraits<Type>::value)
+			{
+				auto textureType = std::make_shared<Ast::Texture2DType>();
+				textureType->texelType = Ast::AST::createType<Type::value_type>();
+				node = Ast::AST::defineUniversalArray(std::move(textureType));
+			}
+			else node = Ast::AST::defineUniversalArray<Type>();
 		}
 
 		template<std::integral IndexType>
@@ -579,6 +497,18 @@ namespace EmbeddedShader
 				ParseHelper::endAggregateParent(proxy.node);
 				return proxy;
 			}
+			return {Ast::AST::at(node, index.node)};
+		}
+
+		template<std::integral IndexType>
+		Type operator[](IndexType index) requires Texture2DProxyTraits<Type>::value
+		{
+			return {Ast::AST::at(node, index)};
+		}
+
+		template<std::integral IndexType>
+		Type operator[](VariateProxy<IndexType> index) requires Texture2DProxyTraits<Type>::value
+		{
 			return {Ast::AST::at(node, index.node)};
 		}
 	private:
@@ -633,6 +563,8 @@ namespace EmbeddedShader
 			}
 			return {Ast::AST::at(node, index.node)};
 		}
+
+		Texture2DProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node)) {}
 	private:
 		std::shared_ptr<Ast::Value> node;
 	};

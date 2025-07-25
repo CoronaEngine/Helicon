@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 
     Texture2DProxy<fvec4> texture2d;
-    ArrayProxy<fvec4> array;
+    ArrayProxy<Texture2DProxy<fvec4>> array;
 	VariateProxy<TestStruct0> test;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 		{
 		}
 
-		array[0] = texture2d[uvec2{0,0}];
+		texture2d[uvec2{0,0}] = array[0][uvec2{0,0}];
 
 		position() = texture2d[svec2{0,0}];
 	    return input->color;

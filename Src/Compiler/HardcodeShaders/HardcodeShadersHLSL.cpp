@@ -15,12 +15,12 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 RWTexture2D<float4 > global_ubo_global_var_3_member4_0 : register(u2);
 
 
-#line 2 "b978bef7095bf1043691bef106af319d7c73075b"
-RWStructuredBuffer<float4 > global_var_2_0 : register(u0);
+#line 2 "e796def32c11b7bc0231406237ea7b36612ac853"
+StructuredBuffer<Texture2D<float4 > > global_var_2_0 : register(t0);
 
 
 #line 1
-Texture2D<float4 > global_var_1_0 : register(t0);
+RWTexture2D<float4 > global_var_1_0 : register(u0);
 
 
 #line 20
@@ -68,13 +68,16 @@ vertex_output_0 main(vertex_input_0 input_0)
     var_1_0.xy = float2(0.0f, 0.0f);
 
 #line 39
-    global_var_2_0[int(0)] = global_var_1_0[_S3];
+    global_var_1_0[_S3] = global_var_2_0.Load(int(0))[_S3];
 
 #line 26
     vertex_output_0 output_0;
 
 #line 40
-    output_0.position_output_0 = global_var_1_0[uint2(int2(int(0), int(0)))];
+    float4 _S4 = global_var_1_0[uint2(int2(int(0), int(0)))];
+
+#line 40
+    output_0.position_output_0 = _S4;
 
     output_0.var_5_0 = _S1.var_0_0.color_0;
     return output_0;
@@ -93,7 +96,7 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 20 "788fc67664b86e060bca31fee55afd6e3018b1e5"
+#line 20 "4054033f865fc6253155fdac13ba77600d60ac23"
 struct fragment_output_0
 {
     float4 var_7_0 : SV_TARGET0;
