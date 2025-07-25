@@ -65,6 +65,12 @@ namespace EmbeddedShader
 		return {Ast::AST::callFunc("transpose", Ast::AST::createType<ktm::mat<Columns,Rows,Type>>(),{x.node})};
 	}
 
+	// template<typename Type> requires ktm::is_matrix_v<Type>
+	// VariateProxy<Type> inverse(const VariateProxy<Type>& x)
+	// {
+	// 	return {Ast::AST::callFunc("inverse", Ast::AST::createType<Type>(),{x.node})};
+	// }
+
 	template<typename Type> requires std::is_arithmetic_v<Type>
 	VariateProxy<Type> mul(const VariateProxy<Type>& x, const VariateProxy<Type>& y)
 	{
