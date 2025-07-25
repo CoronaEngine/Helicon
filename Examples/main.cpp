@@ -185,11 +185,16 @@ int main(int argc, char* argv[])
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
 
-	std::string code1 = R"(uniform RWStructuredBuffer<float4>.Handle output;
-uniform ConstantBuffer<float4>.Handle buffer;
+	std::string code1 = R"(
+struct uniform_struct
+{
+	float4 member1;
+}
+uniform RWStructuredBuffer<float4>.Handle output;
+uniform ConstantBuffer<uniform_struct>.Handle buffer;
 [numthreads(1,1,1)]
 void main() {
-	(*output)[0] = *buffer;
+	output[0] = buffer->member1;
 })";
 
     // ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
