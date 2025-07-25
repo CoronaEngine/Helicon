@@ -185,9 +185,16 @@ int main(int argc, char* argv[])
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
 
-    ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
-    ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
-	// ShaderCodeCompiler vertxShader(code1, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+	std::string code1 = R"(uniform RWStructuredBuffer<float4>.Handle output;
+uniform ConstantBuffer<float4>.Handle buffer;
+[numthreads(1,1,1)]
+void main() {
+	(*output)[0] = *buffer;
+})";
+
+    // ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+    // ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+	ShaderCodeCompiler vertxShader(code1, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
     // ShaderCodeCompiler fragShader(code2, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////

@@ -17,6 +17,7 @@
 
 #include"ShaderLanguageConverter.h"
 
+#include <array>
 #include <utility>
 
 
@@ -210,59 +211,118 @@ std::string ShaderLanguageConverter::slangCompiler(std::string shaderCode, Shade
     return result;
 }
 
+void diagnoseIfNeeded(slang::IBlob* diagnosticsBlob)
+{
+	if (diagnosticsBlob != nullptr)
+	{
+		std::cout << static_cast<const char*>(diagnosticsBlob->getBufferPointer()) << std::endl;
+	}
+}
+
 std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string& shaderCode)
 {
 	std::vector<uint32_t> result;
-    Slang::ComPtr<slang::IGlobalSession> slangGlobalSession;
-    slang::createGlobalSession(slangGlobalSession.writeRef());
+	// 1. Create Global Session
+    Slang::ComPtr<slang::IGlobalSession> globalSession;
+    createGlobalSession(globalSession.writeRef());
+
+    // 2. Create Session
     slang::SessionDesc sessionDesc = {};
     slang::TargetDesc targetDesc = {};
-
     targetDesc.format = SLANG_SPIRV;
-    slangGlobalSession->findProfile("spirv_1_6");
-    targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+    //targetDesc.profile = globalSession->findProfile("spirv_1_6");
+	targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
 
-    sessionDesc.targets = &targetDesc;
-    sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
-    sessionDesc.targetCount = 1;
+	sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
+	sessionDesc.targets = &targetDesc;
+	sessionDesc.targetCount = 1;
+
+    std::array options =
+        {
+	        slang::CompilerOptionEntry{
+                slang::CompilerOptionName::EmitSpirvDirectly,
+                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}
+            },
+    		slang::CompilerOptionEntry{
+    			slang::CompilerOptionName::BindlessSpaceIndex,
+			   {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}
+    		}
+        };
+    sessionDesc.compilerOptionEntries = options.data();
+    sessionDesc.compilerOptionEntryCount = options.size();
+
     Slang::ComPtr<slang::ISession> session;
-    (slangGlobalSession->createSession(sessionDesc, session.writeRef()));
-    slang::IModule *slangModule = nullptr;
+    globalSession->createSession(sessionDesc, session.writeRef());
+
+    // 3. Load module
+    Slang::ComPtr<slang::IModule> slangModule;
     {
-        Slang::ComPtr<slang::IBlob> diagnosticBlob;
-        //slangModule = session->loadModule(shaderCode.c_str(), diagnosticBlob.writeRef());
-    	slangModule = session->loadModuleFromSourceString(std::to_string(std::hash<std::string>()(shaderCode)).c_str(),"",shaderCode.c_str(),diagnosticBlob.writeRef());
-		if (diagnosticBlob != nullptr)
-		{
-			std::cout << static_cast<const char*>(diagnosticBlob->getBufferPointer()) << "\n";
-			return {};
-		}
+		auto hashStr = std::to_string(std::hash<std::string>()(shaderCode));
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        slangModule = session->loadModuleFromSourceString(hashStr.c_str(),(hashStr + ".slang").c_str(),shaderCode.c_str(),diagnosticsBlob.writeRef()); // Optional diagnostic container
+        diagnoseIfNeeded(diagnosticsBlob);
+        if (!slangModule)
+        {
+            return {};
+        }
     }
+
+    // 4. Query Entry Points
     Slang::ComPtr<slang::IEntryPoint> entryPoint;
-    slangModule->findEntryPointByName("main", entryPoint.writeRef());
-    std::vector<slang::IComponentType *> componentTypes;
-    componentTypes.push_back(slangModule);
-    componentTypes.push_back(entryPoint);
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        slangModule->findEntryPointByName("main", entryPoint.writeRef());
+        if (!entryPoint)
+        {
+            std::cout << "Error getting entry point" << std::endl;
+            return {};
+        }
+    }
+
+    // 5. Compose Modules + Entry Points
+    std::array<slang::IComponentType*, 2> componentTypes =
+        {
+            slangModule,
+            entryPoint
+        };
+
     Slang::ComPtr<slang::IComponentType> composedProgram;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
         SlangResult result = session->createCompositeComponentType(
-            componentTypes.data(), componentTypes.size(), composedProgram.writeRef(), diagnosticsBlob.writeRef());
-		if (diagnosticsBlob != nullptr)
-		{
-			std::cout << static_cast<const char*>(diagnosticsBlob->getBufferPointer()) << "\n";
+            componentTypes.data(),
+            componentTypes.size(),
+            composedProgram.writeRef(),
+            diagnosticsBlob.writeRef());
+        diagnoseIfNeeded(diagnosticsBlob);
+		if (SLANG_FAILED(result))
 			return {};
-		}
     }
+
+    // 6. Link
+    Slang::ComPtr<slang::IComponentType> linkedProgram;
+    {
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        SlangResult result = composedProgram->link(
+            linkedProgram.writeRef(),
+            diagnosticsBlob.writeRef());
+        diagnoseIfNeeded(diagnosticsBlob);
+		if (SLANG_FAILED(result))
+			return {};
+    }
+
+    // 7. Get Target Kernel Code
     Slang::ComPtr<slang::IBlob> spirvCode;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        SlangResult result = composedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
-		if (diagnosticsBlob != nullptr)
-		{
-			std::cout << static_cast<const char*>(diagnosticsBlob->getBufferPointer()) << "\n";
+        SlangResult result = linkedProgram->getEntryPointCode(
+            0,
+            0,
+            spirvCode.writeRef(),
+            diagnosticsBlob.writeRef());
+        diagnoseIfNeeded(diagnosticsBlob);
+		if (SLANG_FAILED(result))
 			return {};
-		}
     }
     result.resize(spirvCode->getBufferSize() / sizeof(uint32_t));
     memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
