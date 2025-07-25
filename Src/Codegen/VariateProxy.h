@@ -281,30 +281,30 @@ namespace EmbeddedShader
 			return *this;
 		}
 
-		VariateProxy operator++()
-		{
-			VariateProxy proxy(Ast::AST::unaryOperator(node,"++",false,Ast::AccessPermissions::ReadAndWrite));
-			proxy.isNeedUniversalStatementCheck = true;
-			return proxy;
-		}
-
-		VariateProxy operator--()
-		{
-			VariateProxy proxy(Ast::AST::unaryOperator(node,"--",false,Ast::AccessPermissions::ReadAndWrite));
-			proxy.isNeedUniversalStatementCheck = true;
-			return proxy;
-		}
-
-		VariateProxy operator++(int)
+		const VariateProxy operator++()
 		{
 			VariateProxy proxy(Ast::AST::unaryOperator(node,"++",true,Ast::AccessPermissions::ReadAndWrite));
 			proxy.isNeedUniversalStatementCheck = true;
 			return proxy;
 		}
 
-		VariateProxy operator--(int)
+		const VariateProxy operator--()
 		{
 			VariateProxy proxy(Ast::AST::unaryOperator(node,"--",true,Ast::AccessPermissions::ReadAndWrite));
+			proxy.isNeedUniversalStatementCheck = true;
+			return proxy;
+		}
+
+		const VariateProxy operator++(int)
+		{
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"++",false,Ast::AccessPermissions::ReadAndWrite));
+			proxy.isNeedUniversalStatementCheck = true;
+			return proxy;
+		}
+
+		const VariateProxy operator--(int)
+		{
+			VariateProxy proxy(Ast::AST::unaryOperator(node,"--",false,Ast::AccessPermissions::ReadAndWrite));
 			proxy.isNeedUniversalStatementCheck = true;
 			return proxy;
 		}
@@ -524,10 +524,10 @@ namespace EmbeddedShader
 		//VariateProxy<bool>& operator!=(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 		//VariateProxy<bool>& operator==(const VariateProxy& rhs) { return *(new VariateProxy<bool>(true)); }
 
-	    VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))//,value(std::make_unique<Type>())
+		VariateProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node))//,value(std::make_unique<Type>())
 	    {
 	    }
-    protected:
+
 	    std::unique_ptr<Type> value{};
 		std::shared_ptr<Ast::Value> node;
 		bool isNeedUniversalStatementCheck = false;

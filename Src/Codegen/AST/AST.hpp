@@ -96,6 +96,8 @@ namespace EmbeddedShader::Ast
 	    template<typename IndexType> requires std::is_integral_v<IndexType>
 	    static std::shared_ptr<ElementVariate> at(std::shared_ptr<Value> array, ktm::vec<2,IndexType> index);
 		static void addLocalUniversalStatement(std::shared_ptr<Node> node);
+		static std::shared_ptr<CallFunc> callFunc(std::string funcName,std::shared_ptr<Type> returnType,std::vector<std::shared_ptr<Value>> args);
+		static void callFunc(std::string funcName,std::vector<std::shared_ptr<Value>> args);
 	private:
 		static void addLocalStatement(std::shared_ptr<Statement> statement);
 		static void addInputStatement(std::shared_ptr<Statement> inputStatement);

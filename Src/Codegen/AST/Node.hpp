@@ -258,4 +258,11 @@ namespace EmbeddedShader::Ast
 		std::shared_ptr<Type> texelType;
 		std::string parse() override;
 	};
+
+	struct CallFunc : Value
+	{
+		std::string funcName;
+		std::vector<std::shared_ptr<Value>> args;
+		std::string parse() override;
+	};
 }

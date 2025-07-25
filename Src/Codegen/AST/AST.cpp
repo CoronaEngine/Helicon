@@ -200,6 +200,21 @@ void EmbeddedShader::Ast::AST::addLocalUniversalStatement(
 	addLocalStatement(universalStatement);
 }
 
+std::shared_ptr<EmbeddedShader::Ast::CallFunc> EmbeddedShader::Ast::AST::callFunc(std::string funcName,
+	std::shared_ptr<Type> returnType, std::vector<std::shared_ptr<Value>> args)
+{
+	auto func = std::make_shared<CallFunc>();
+	func->type = std::move(returnType);
+	func->args = std::move(args);
+	func->funcName = std::move(funcName);
+	return func;
+}
+
+void EmbeddedShader::Ast::AST::callFunc(std::string funcName, std::vector<std::shared_ptr<Value>> args)
+{
+	addLocalUniversalStatement(callFunc(std::move(funcName),nullptr,std::move(args)));
+}
+
 void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)
 {
 	getLocalStatementStack().top()->push_back(std::move(statement));

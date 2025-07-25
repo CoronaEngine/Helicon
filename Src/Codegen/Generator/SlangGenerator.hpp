@@ -98,6 +98,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 		static std::string getParseOutput(const Ast::UnaryOperator* node);
 		static std::string getParseOutput(const Ast::ArrayType* node);
 		static std::string getParseOutput(const Ast::Texture2DType* node);
+		static std::string getParseOutput(const Ast::CallFunc* node);
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 	private:

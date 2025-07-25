@@ -200,6 +200,11 @@ std::string EmbeddedShader::Ast::Texture2DType::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+std::string EmbeddedShader::Ast::CallFunc::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
 void EmbeddedShader::Ast::AggregateType::access(AccessPermissions permissions)
 {
 	NameType::access(permissions);

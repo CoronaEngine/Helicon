@@ -137,7 +137,9 @@ int main(int argc, char* argv[])
 		VariateProxy testA = fvec4{1,2,3,4};
 		test->member4[uvec2{0,0}] = testA;
 		VariateProxy a = 1.f;
+		VariateProxy b = 1.f;
 		--a;
+
 		testA->xy() = fvec2{};
 
 		$IF(true)
@@ -160,7 +162,19 @@ int main(int argc, char* argv[])
 
 	auto fragment = [&](VariateProxy<fvec4> input)
 	{
-	    return input;
+		VariateProxy a = 1.f;
+		VariateProxy b = 1.f;
+		a = pow(a,b);
+		a = clamp(a,a,b);
+
+		VariateProxy vec1 = fvec4{};
+		VariateProxy vec2 = fvec4{};
+
+		vec2 = normalize(vec1);
+		a = lerp(a,b,{0.3f});
+
+
+		return input;
 	};
 
 	//Parser::setBindless(true);

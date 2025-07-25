@@ -284,6 +284,22 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	return "Texture2D<" + node->texelType->parse() + ">";
 }
 
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::CallFunc* node)
+{
+	auto result = node->funcName + "(";
+	if (node->args.empty())
+		return result + ")";
+
+	result += node->args[0]->parse();
+
+	for (size_t i = 1; i < node->args.size(); ++i)
+	{
+		result += "," + node->args[i]->parse();
+	}
+
+	return result + ")";
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()
 {
 	auto positionOutput = std::make_shared<Ast::OutputVariate>();

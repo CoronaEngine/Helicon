@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_171_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_184_35",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -15,7 +15,7 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 RWTexture2D<float4 > global_ubo_global_var_3_member4_0 : register(u2);
 
 
-#line 2 "9d17fc789fc1a35db5f4c38bcaaeee9b99a34554"
+#line 2 "b978bef7095bf1043691bef106af319d7c73075b"
 RWStructuredBuffer<float4 > global_var_2_0 : register(u0);
 
 
@@ -27,7 +27,7 @@ Texture2D<float4 > global_var_1_0 : register(t0);
 struct vertex_output_0
 {
     float4 position_output_0 : SV_POSITION;
-    float4 var_4_0 : LOCATION0;
+    float4 var_5_0 : LOCATION0;
 };
 
 
@@ -64,23 +64,24 @@ vertex_output_0 main(vertex_input_0 input_0)
     global_ubo_global_var_3_member4_0[_S3] = _S2;
 
 
+
     var_1_0.xy = float2(0.0f, 0.0f);
 
-#line 38
+#line 39
     global_var_2_0[int(0)] = global_var_1_0[_S3];
 
 #line 26
     vertex_output_0 output_0;
 
-#line 39
+#line 40
     output_0.position_output_0 = global_var_1_0[uint2(int2(int(0), int(0)))];
 
-    output_0.var_4_0 = _S1.var_0_0.color_0;
+    output_0.var_5_0 = _S1.var_0_0.color_0;
     return output_0;
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_172_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_185_34",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -92,10 +93,10 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 20 "83ec4d2c5bb18e7dc36a7078d35cee08692c8e64"
+#line 20 "07af20f18aa498d0957946d73fb8df2dc15de141"
 struct fragment_output_0
 {
-    float4 var_1_0 : SV_TARGET0;
+    float4 var_6_0 : SV_TARGET0;
 };
 
 
@@ -112,7 +113,9 @@ fragment_output_0 main(fragment_input_0 input_0)
 
 #line 25
     fragment_output_0 output_0;
-    output_0.var_1_0 = input_0.var_0_0;
+
+#line 35
+    output_0.var_6_0 = input_0.var_0_0;
     return output_0;
 }
 
