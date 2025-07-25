@@ -195,6 +195,12 @@ std::string EmbeddedShader::Ast::ArrayType::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+void EmbeddedShader::Ast::ArrayType::access(AccessPermissions permissions)
+{
+	Type::access(permissions);
+	this->permissions = this->permissions | permissions;
+}
+
 std::string EmbeddedShader::Ast::Texture2DType::parse()
 {
 	return Generator::SlangGenerator::getParseOutput(this);
@@ -208,7 +214,7 @@ std::string EmbeddedShader::Ast::CallFunc::parse()
 void EmbeddedShader::Ast::AggregateType::access(AccessPermissions permissions)
 {
 	NameType::access(permissions);
-	this->permissions = permissions;
+	this->permissions = this->permissions | permissions;
 }
 
 void EmbeddedShader::Ast::DefineAggregateType::resetUsedFlag()

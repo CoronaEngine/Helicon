@@ -249,8 +249,10 @@ namespace EmbeddedShader::Ast
 
 	struct ArrayType : Type
 	{
+		AccessPermissions permissions = AccessPermissions::None;
 		std::shared_ptr<Type> elementType;
 		std::string parse() override;
+		void access(AccessPermissions permissions) override;
 	};
 
 	struct Texture2DType : Type

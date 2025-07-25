@@ -11,23 +11,22 @@ layout(binding = 4)
 uniform image2D global_ubo_global_var_3_member4_0;
 
 
-#line 2 1
-layout(std430, binding = 1) readonly buffer StructuredBuffer_Texture2D_t_0 {
-    texture2D _data[];
+#line 1 1
+layout(binding = 0)
+uniform texture2D global_var_1_0;
+
+
+#line 2
+layout(std430, binding = 1) buffer StructuredBuffer_Texture2D_t_0 {
+    image2D _data[];
 } global_var_2_0;
 
-#line 1
-layout(rgba32f)
-layout(binding = 0)
-uniform image2D global_var_1_0;
-
-
-#line 4138 2
+#line 3621 2
 layout(location = 0)
 out vec4 entryPointParam_main_var_5_0;
 
 
-#line 4138
+#line 3621
 layout(location = 1)
 in vec4 input_var_0_color_0;
 
@@ -66,25 +65,31 @@ void main()
     ivec3 _S4 = ivec3(uvec3(_S2, 0U));
 
 #line 39
-    imageStore((global_var_1_0), (_S3), (texelFetch((global_var_2_0._data[uint(0)]), ((_S4)).xy, ((_S4)).z)));
+    imageStore((global_var_2_0._data[uint(0)]), (_S3), (texelFetch((global_var_1_0), ((_S4)).xy, ((_S4)).z)));
 
 #line 26
     vertex_output_0 output_0;
 
 #line 40
-    vec4 _S5 = (imageLoad((global_var_1_0), (ivec2(uvec2(ivec2(0, 0))))));
+    const uvec2 _S5 = uvec2(ivec2(0, 0));
 
 #line 40
-    output_0.position_output_0 = _S5;
+    ;
+
+#line 40
+    ivec3 _S6 = ivec3(uvec3(_S5, 0U));
+
+#line 40
+    output_0.position_output_0 = (texelFetch((global_var_1_0), ((_S6)).xy, ((_S6)).z));
 
     output_0.var_5_0 = input_var_0_color_0;
-    vertex_output_0 _S6 = output_0;
+    vertex_output_0 _S7 = output_0;
 
 #line 43
     gl_Position = output_0.position_output_0;
 
 #line 43
-    entryPointParam_main_var_5_0 = _S6.var_5_0;
+    entryPointParam_main_var_5_0 = _S7.var_5_0;
 
 #line 43
     return;

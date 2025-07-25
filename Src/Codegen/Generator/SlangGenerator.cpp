@@ -276,6 +276,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::ArrayType* node)
 {
+	if ((node->permissions & Ast::AccessPermissions::WriteOnly) != Ast::AccessPermissions::None && std::dynamic_pointer_cast<Ast::Texture2DType>(node->elementType))
+		return "StructuredBuffer<RW" + node->elementType->parse() + ">";
 	return "StructuredBuffer<" + node->elementType->parse() + ">";
 }
 

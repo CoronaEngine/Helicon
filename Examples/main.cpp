@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 		{
 		}
 
-		texture2d[uvec2{0,0}] = array[0][uvec2{0,0}];
+		array[0][uvec2{0,0}] = texture2d[uvec2{0,0}];
 
 		position() = texture2d[svec2{0,0}];
 	    return input->color;
