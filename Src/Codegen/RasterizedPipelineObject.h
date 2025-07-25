@@ -41,8 +41,9 @@ namespace EmbeddedShader
 				//1.proxy
 				if constexpr (ParseHelper::isReturnVariateProxy(fsFunc))
 				{
-					auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(fsOutput.node.get())->type,0);
-					Ast::AST::assign(outputVar,fsOutput.node);
+					auto fsOutputVar = Ast::AST::defineOutputVariate(
+						reinterpret_cast<Ast::Variate*>(fsOutput.node.get())->type, 0);
+					Ast::AST::assign(fsOutputVar, fsOutput.node);
 				}
 			}
 		}

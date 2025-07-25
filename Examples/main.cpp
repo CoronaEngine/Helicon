@@ -180,14 +180,14 @@ int main(int argc, char* argv[])
 		return input;
 	};
 
-	//Parser::setBindless(true);
+	Parser::setBindless(true);
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
 
     ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
     ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
-    // ShaderCodeCompiler vertxShader(code1, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+	// ShaderCodeCompiler vertxShader(code1, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
     // ShaderCodeCompiler fragShader(code2, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
