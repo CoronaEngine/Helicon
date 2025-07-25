@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_184_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_188_35",
 ShaderCodeModule(R"(Texture2D<float4> global_var_1;
 RWStructuredBuffer<float4> global_var_2;
 struct aggregate_type_0 {
@@ -45,7 +45,7 @@ vertex_output main(vertex_input input) {
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_185_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_189_34",
 ShaderCodeModule(R"(Texture2D<float4> global_var_1;
 RWStructuredBuffer<float4> global_var_2;
 struct aggregate_type_0 {
@@ -66,7 +66,7 @@ struct fragment_input {
 	float4 var_0 : LOCATION0;
 }
 struct fragment_output {
-	float4 var_6 : SV_TARGET0;
+	float4 var_7 : SV_TARGET0;
 }
 [shader("fragment")]
 fragment_output main(fragment_input input) {
@@ -80,7 +80,9 @@ fragment_output main(fragment_input input) {
 	var_4 = normalize(var_3);
 	float var_5 = 0.300000;
 	var_1 = lerp(var_1,var_2,var_5);
-	output.var_6 = input.var_0;
+	float4x4 var_6 = float4x4(float4(0.000000, 0.000000, 0.000000, 0.000000),float4(0.000000, 0.000000, 0.000000, 0.000000),float4(0.000000, 0.000000, 0.000000, 0.000000),float4(0.000000, 0.000000, 0.000000, 0.000000));
+	var_6 = transpose(var_6);
+	output.var_7 = input.var_0;
 	return output;
 }
  )")

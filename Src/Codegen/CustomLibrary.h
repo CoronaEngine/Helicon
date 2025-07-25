@@ -58,4 +58,10 @@ namespace EmbeddedShader
 	{
 		return lerp(x,y,s);
 	}
+
+	template<typename Type,size_t Rows,size_t Columns>
+	VariateProxy<ktm::mat<Columns,Rows,Type>> transpose(const VariateProxy<ktm::mat<Rows,Columns,Type>>& x)
+	{
+		return {Ast::AST::callFunc("transpose", Ast::AST::createType<ktm::mat<Columns,Rows,Type>>(),{x.node})};
+	}
 }

@@ -173,6 +173,9 @@ int main(int argc, char* argv[])
 		vec2 = normalize(vec1);
 		a = lerp(a,b,{0.3f});
 
+		VariateProxy mat = fmat4x4{};
+
+		mat = transpose(mat);
 
 		return input;
 	};
