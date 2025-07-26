@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_162_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_163_35",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -11,21 +11,18 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 1 "33e2ecfafbfbe8e8c3e590eeca40fd7d66ea147f"
-RWStructuredBuffer<float4 > global_var_2_0 : register(u0);
-
-
-
-
+#line 6 "02f6ccb61b4abcc043bb3646a2bb886260ce2b2c"
 struct global_ubo_struct_0
 {
     float4 global_var_1_0;
+    uint global_var_2_0;
 };
 
 
 #line 22879 "hlsl.meta.slang"
 struct GlobalParams_0
 {
+    uint2 global_var_3_0;
     uint2 global_ubo_0;
 };
 
@@ -36,11 +33,11 @@ cbuffer globalParams_0 : register(b0)
     GlobalParams_0 globalParams_0;
 }
 
-#line 13 "33e2ecfafbfbe8e8c3e590eeca40fd7d66ea147f"
+#line 14 "02f6ccb61b4abcc043bb3646a2bb886260ce2b2c"
 struct vertex_output_0
 {
     float4 position_output_0 : SV_POSITION;
-    float4 var_2_0 : LOCATION0;
+    float4 var_3_0 : LOCATION0;
 };
 
 
@@ -50,6 +47,7 @@ struct aggregate_type_0_0
     float4 pos_0;
     float4 color_0;
 };
+
 
 
 
@@ -64,24 +62,29 @@ struct vertex_input_0
 vertex_output_0 main(vertex_input_0 input_0)
 {
 
-#line 18
+#line 19
     vertex_input_0 _S1 = input_0;
 
-    global_var_2_0[int(0)] = ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_1_0;
+    uint var_1_0 = ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_2_0;
+    RWStructuredBuffer<float4 > _S2 = RWStructuredBuffer<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_3_0.x]);
+
+#line 22
+    _S2[var_1_0] = ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_1_0;
     _S1.var_0_0.pos_0[int(0)] = ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_1_0.x;
 
-#line 19
+#line 20
     vertex_output_0 output_0;
+
 
 
     output_0.position_output_0 = _S1.var_0_0.pos_0;
 
-    output_0.var_2_0 = _S1.var_0_0.color_0;
+    output_0.var_3_0 = _S1.var_0_0.color_0;
     return output_0;
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_163_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_164_34",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -93,14 +96,14 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 13 "859dc5178514a50539f405a6dc2e170e4e25f72f"
+#line 14 "7f034e6b1155ed766fe84c2389957f7c55127feb"
 struct fragment_output_0
 {
     float4 var_1_0 : SV_TARGET0;
 };
 
 
-#line 10
+#line 11
 struct fragment_input_0
 {
     float4 var_0_0 : LOCATION0;
@@ -111,7 +114,7 @@ struct fragment_input_0
 fragment_output_0 main(fragment_input_0 input_0)
 {
 
-#line 18
+#line 19
     fragment_output_0 output_0;
     output_0.var_1_0 = input_0.var_0_0;
     return output_0;

@@ -128,8 +128,11 @@ int main(int argc, char* argv[])
 	puts("------------------- Front-End Test -------------------");
 
 	VariateProxy<fvec4> uniform;
+	VariateProxy<uint32_t> index;
+	ArrayProxy<fvec4> ssbo;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
+		ssbo[index] = uniform;
 		input->pos->x = uniform->x;
 		position() = input->pos;
 	    return input->color;

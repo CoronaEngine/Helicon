@@ -193,10 +193,10 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 		return "";
 
 	auto result = node->array->type->parse() + " " + node->array->name + ";";
-	if (node->array->permissions == Ast::AccessPermissions::ReadOnly)
-		return result;
+	if (node->array->permissions != Ast::AccessPermissions::ReadOnly)
+		result = "RW" + result;
 
-	return "RW" + result;
+	return (bindless() ? "uniform " : "") + result;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
@@ -275,13 +275,13 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::ArrayType* node)
 {
 	if ((node->permissions & Ast::AccessPermissions::WriteOnly) != Ast::AccessPermissions::None && std::dynamic_pointer_cast<Ast::Texture2DType>(node->elementType))
-		return "StructuredBuffer<RW" + node->elementType->parse() + ">";
-	return "StructuredBuffer<" + node->elementType->parse() + ">";
+		return "StructuredBuffer<RW" + node->elementType->parse() + ">" + (bindless() ?  ".Handle" : "");
+	return "StructuredBuffer<" + node->elementType->parse() + ">" + (bindless() ?  ".Handle" : "");
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::Texture2DType* node)
 {
-	return "Texture2D<" + node->texelType->parse() + ">";
+	return "Texture2D<" + node->texelType->parse() + ">" + (bindless() ?  ".Handle" : "");
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::CallFunc* node)
