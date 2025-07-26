@@ -10,6 +10,15 @@ std::string EmbeddedShader::Ast::Node::parse()
 	return "";
 }
 
+const std::vector<std::shared_ptr<EmbeddedShader::Ast::Value>>& EmbeddedShader::Ast::Node::accessAll(const std::vector<std::shared_ptr<Value>>& values, AccessPermissions permissions)
+{
+	for (const auto& value: values)
+	{
+		value->access(permissions);
+	}
+	return values;
+}
+
 void EmbeddedShader::Ast::Type::access(AccessPermissions permissions)
 {
 

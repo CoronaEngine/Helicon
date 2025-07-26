@@ -18,10 +18,20 @@
 
 using namespace EmbeddedShader;
 
-struct VertexData
+struct VertexInput
 {
-    Float4 pos;
-    Float2 texCoord;
+	Float3 inPosition;
+	Float3 inNormal;
+	Float2 inTexCoord;
+	Float3 inColor;
+};
+
+struct VertexOutput
+{
+	Float3 fragPos;
+	Float3 fragNormal;
+	Float2 fragTexCoord;
+	Float3 fragColor;
 };
 
 int main(int argc, char* argv[])
@@ -29,17 +39,21 @@ int main(int argc, char* argv[])
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
 
-	Texture2D<fvec4> texture2d;
-	Sampler sampler;
-	auto vertex = [&](Aggregate<VertexData> input)
+	Float4x4 model;
+	Float4x4 view;
+	Float4x4 proj;
+	Float3 viewPos;
+	Float3 lightColor;
+	Float3 lightPos;
+	auto vertex = [&](Aggregate<VertexInput> input)
 	{
-		position() = input->pos;
-	    return texture2d.sample(sampler,input->texCoord);
+		Aggregate<VertexOutput> output;
+		position() = mul(mul(mul(proj,view),model),Float4(input->inPosition,1.0));
 	};
 
-	auto fragment = [&](Float4 input)
+	auto fragment = [&]()
 	{
-		return input;
+
 	};
 
 	Parser::setBindless(true);

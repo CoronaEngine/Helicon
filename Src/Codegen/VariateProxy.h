@@ -28,6 +28,30 @@ namespace EmbeddedShader
 	template<typename Type>
 	struct VariateProxy
 	{
+	private:
+		template<typename T>
+		struct VecArgProcessor
+		{
+			static T valueOrNode(T value)
+			{
+				return value;
+			}
+		};
+
+		template<typename T> requires ktm::is_vector_v<T>
+		struct VecArgProcessor<VariateProxy<T>>
+		{
+			static std::shared_ptr<Ast::Value> valueOrNode(const VariateProxy<T>& proxy)
+			{
+				return proxy.node;
+			}
+		};
+
+		auto valueOrNode(auto&& arg)
+		{
+			return VecArgProcessor<std::remove_cvref_t<decltype(arg)>>::valueOrNode(std::forward<decltype(arg)>(arg));
+		}
+	public:
 		template<typename T>
 		friend struct ArrayProxy;
 		template<typename T>
@@ -37,7 +61,7 @@ namespace EmbeddedShader
 		friend struct GPU_IF_BRANCH;
 		friend struct GPU_ELSEIF_BRANCH;
 		friend struct GPU_ELSE_BRANCH;
-	public:
+
 	    friend VariateProxy<ktm::fvec4> position();
 		friend class RasterizedPipelineObject;
 		friend class Generator::SlangGenerator;
@@ -114,6 +138,15 @@ namespace EmbeddedShader
             ParseHelper::beginAggregateParent(node);
 		    value = std::make_unique<Type>();
 		    ParseHelper::endAggregateParent();
+		}
+
+		template<typename... Args>
+		explicit VariateProxy(Args&&... args) requires ktm::is_vector_v<Type>
+		{
+			value = std::make_unique<Type>();
+			if (ParseHelper::notInitNode())
+				return;
+			node = Ast::AST::createVecValue<Type>(valueOrNode(std::forward<Args>(args))...);
 		}
 
 		VariateProxy(const Type& value) requires (!std::is_aggregate_v<Type>)

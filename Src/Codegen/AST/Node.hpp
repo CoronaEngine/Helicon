@@ -8,11 +8,13 @@
 namespace EmbeddedShader::Ast
 {
 	struct DefineLocalVariate;
+	class Value;
 	struct Node
 	{
 		friend class Parser;
 		virtual ~Node() = default;
 		virtual std::string parse();
+		static const std::vector<std::shared_ptr<Value>>& accessAll(const std::vector<std::shared_ptr<Value>>& values,AccessPermissions permissions);
 	};
 
 	class Type : public Node

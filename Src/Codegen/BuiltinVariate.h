@@ -5,6 +5,6 @@ namespace EmbeddedShader
 {
     inline VariateProxy<ktm::fvec4> position()
     {
-        return {Ast::AST::getPositionOutput()};
+        return VariateProxy<ktm::fvec4>{Ast::AST::getPositionOutput()};
     }
 }
