@@ -5,6 +5,7 @@
 #include <regex>
 #include <type_traits>
 #include <cassert>
+#include <slang.h>
 #include <unordered_map>
 #include <string>
 #include <tuple>
@@ -515,6 +516,20 @@ namespace EmbeddedShader
 		std::shared_ptr<Ast::Value> node;
 	};
 
+	struct SamplerProxy
+	{
+		void init(std::string name)
+		{
+			if (node)
+				return;
+			auto type = std::make_shared<Ast::SamplerType>();
+			type->name = std::move(name);
+			node = Ast::AST::defineUniformVariate(std::move(type));
+			node->access(Ast::AccessPermissions::ReadOnly);
+		}
+		std::shared_ptr<Ast::Value> node;
+	};
+
 	template<typename Type>
 	struct Texture2DProxy
 	{
@@ -562,6 +577,13 @@ namespace EmbeddedShader
 				return proxy;
 			}
 			return {Ast::AST::at(node, index.node)};
+		}
+
+		VariateProxy<Type> sample(SamplerProxy& sampler,const VariateProxy<ktm::fvec2>& location)
+		{
+			sampler.init("SamplerState");
+			auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{sampler.node,location.node});
+			return {Ast::AST::access(node,func->parse(), func->type)};
 		}
 
 		Texture2DProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node)) {}

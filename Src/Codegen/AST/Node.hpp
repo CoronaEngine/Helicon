@@ -267,4 +267,9 @@ namespace EmbeddedShader::Ast
 		std::vector<std::shared_ptr<Value>> args;
 		std::string parse() override;
 	};
+
+	struct SamplerType : NameType
+	{
+		std::string parse() override;
+	};
 }

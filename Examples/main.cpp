@@ -76,7 +76,7 @@ struct TestStruct
 struct VertexData
 {
     VariateProxy<ktm::fvec4> pos;
-    VariateProxy<ktm::fvec4> color;
+    VariateProxy<ktm::fvec2> texCoord;
 };
 
 int main(int argc, char* argv[])
@@ -117,19 +117,12 @@ int main(int argc, char* argv[])
 
 	puts("------------------- Front-End Test -------------------");
 
-	VariateProxy<fvec4> uniform;
-	VariateProxy<uint32_t> index;
-	VariateProxy<TestStruct> test;
-	ArrayProxy<fvec4> ssbo;
-	ArrayProxy<Texture2DProxy<fvec4>> texture;
+	Texture2DProxy<fvec4> texture2d;
+	SamplerProxy sampler;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
-		texture[index][uvec2(0,0)] = uniform;
-		test->member[index] = uniform;
-		ssbo[index] = uniform;
-		input->pos->x = uniform->x;
 		position() = input->pos;
-	    return input->color;
+	    return texture2d.sample(sampler,input->texCoord);
 	};
 
 	auto fragment = [&](VariateProxy<fvec4> input)
@@ -137,29 +130,22 @@ int main(int argc, char* argv[])
 		return input;
 	};
 
-	//Parser::setBindless(true);
+	Parser::setBindless(true);
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
 
 	std::string code1 = R"(
-uniform RWStructuredBuffer<float4>.Handle output;
-struct A
-{
-	float4 member;
-}
-uniform ConstantBuffer<A>.Handle buffer;
-uniform RWStructuredBuffer<float4>.Handle member2;
-[numthreads(1,1,1)]
-void main() {
-	output[0] = (*buffer).member;
-	member2[0] = float4(1,2,3,4);
+Texture2D texture;
+SamplerState sampler;
+[shader("fragment")]
+float4 main() : SV_TARGET0 {
+	return texture.Sample(sampler,float2(0,0));
 })";
 
     ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
     ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
-	// ShaderCodeCompiler vertxShader2(code1, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
-    // ShaderCodeCompiler fragShader2(code2, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+	// ShaderCodeCompiler testShader(code1, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 
