@@ -140,13 +140,13 @@ namespace EmbeddedShader
 		    ParseHelper::endAggregateParent();
 		}
 
-		template<typename... Args>
-		explicit VariateProxy(Args&&... args) requires ktm::is_vector_v<Type>
+		template<typename Arg0,typename Arg1,typename... Args>
+		explicit VariateProxy(Arg0&& arg0,Arg1&& arg1,Args&&... args) requires ktm::is_vector_v<Type>
 		{
 			value = std::make_unique<Type>();
 			if (ParseHelper::notInitNode())
 				return;
-			node = Ast::AST::createVecValue<Type>(valueOrNode(std::forward<Args>(args))...);
+			node = Ast::AST::createVecValue<Type>(valueOrNode(std::forward<Arg0>(arg0)),valueOrNode(std::forward<Arg1>(arg1)),valueOrNode(std::forward<Args>(args))...);
 		}
 
 		VariateProxy(const Type& value) requires (!std::is_aggregate_v<Type>)

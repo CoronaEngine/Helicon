@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 	using namespace ktm;
 
 	Float4x4 model;
+	Float3x3 modelInverse;
 	Float4x4 view;
 	Float4x4 proj;
 	Float3 viewPos;
@@ -49,9 +50,14 @@ int main(int argc, char* argv[])
 	{
 		Aggregate<VertexOutput> output;
 		position() = mul(mul(mul(proj,view),model),Float4(input->inPosition,1.0));
+		output->fragPos = mul(model,Float4(input->inPosition,1.0))->xyz();
+		output->fragNormal = normalize(mul(modelInverse,input->inNormal));
+		output->fragColor = input->inColor;
+		output->fragTexCoord = input->inTexCoord;
+		return output;
 	};
 
-	auto fragment = [&]()
+	auto fragment = [&](Aggregate<VertexOutput> input)
 	{
 
 	};

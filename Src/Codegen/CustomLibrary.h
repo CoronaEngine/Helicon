@@ -28,7 +28,7 @@ namespace EmbeddedShader
 	template<typename Type> requires ktm::is_vector_v<Type>
 	VariateProxy<Type> normalize(const VariateProxy<Type>& x)
 	{
-		return {Ast::AST::callFunc("normalize", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node},Ast::AccessPermissions::ReadOnly))};
+		return VariateProxy<Type>{Ast::AST::callFunc("normalize", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node},Ast::AccessPermissions::ReadOnly))};
 	}
 
 	template<typename Type>
@@ -113,7 +113,8 @@ namespace EmbeddedShader
 	template<typename Type,size_t Rows,size_t Columns>
 	VariateProxy<ktm::vec<Rows,Type>> mul(const VariateProxy<ktm::mat<Rows,Columns,Type>>& a, const VariateProxy<ktm::vec<Columns,Type>>& b)
 	{
-		return VariateProxy<ktm::vec<Rows,Type>>{Ast::AST::callFunc("mul", Ast::AST::createType<ktm::vec<Rows,Type>>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
+		auto func = Ast::AST::callFunc("mul", Ast::AST::createType<ktm::vec<Rows,Type>>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly));
+		return VariateProxy<ktm::vec<Rows,Type>>{func};
 	}
 
 	template<typename Type,size_t Rows,size_t Columns,size_t ColumnsB>
