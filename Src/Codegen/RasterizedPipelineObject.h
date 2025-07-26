@@ -6,8 +6,9 @@
 
 namespace EmbeddedShader
 {
-	struct RasterizedPipelineObject final
+	class RasterizedPipelineObject final
 	{
+	public:
 		std::string vertexGeneration;
 		std::string fragmentGeneration;
 		static RasterizedPipelineObject parse(auto vertexShaderCode, auto fragmentShaderCode);

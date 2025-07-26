@@ -10,7 +10,7 @@ namespace EmbeddedShader::Ast
 	{
 		Vertex,
 		Fragment,
-		//Compute,
+		Compute,
 	};
 
 	enum class AccessPermissions : uint8_t
