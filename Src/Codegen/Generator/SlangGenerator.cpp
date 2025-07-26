@@ -21,6 +21,9 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 		case Ast::ShaderStage::Fragment:
 			stageType = "fragment";
 			break;
+		case Ast::ShaderStage::Compute:
+			stageType = "compute";
+			break;
 	}
 
 	std::string outputStructName = "void";
