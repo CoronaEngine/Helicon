@@ -55,6 +55,12 @@ namespace EmbeddedShader
 		return {Ast::AST::callFunc("lerp", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node, y.node,s.node},Ast::AccessPermissions::ReadOnly))};
 	}
 
+	template<size_t N,typename Type>
+	VariateProxy<ktm::vec<N,Type>> lerp(const VariateProxy<ktm::vec<N,Type>>& x, const VariateProxy<ktm::vec<N,Type>>& y,const VariateProxy<Type>& s)
+	{
+		return VariateProxy<ktm::vec<N,Type>>{Ast::AST::callFunc("lerp", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node, y.node,s.node},Ast::AccessPermissions::ReadOnly))};
+	}
+
 	template<typename Type>
 	VariateProxy<Type> mix(const VariateProxy<Type>& x, const VariateProxy<Type>& y,const VariateProxy<Type>& s)
 	{
