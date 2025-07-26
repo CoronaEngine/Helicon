@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_146_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_50_35",
 ShaderCodeModule(R"(#version 450
 #extension GL_EXT_nonuniform_qualifier : require
 layout(row_major) uniform;
@@ -18,7 +18,7 @@ uniform sampler  _slang_resource_heap_1[];
 #line 22879
 struct global_ubo_struct_std140_0
 {
-    uvec2 global_var_2_0;
+    uvec2 global_var_1_0;
 };
 
 
@@ -26,13 +26,13 @@ struct global_ubo_struct_std140_0
 layout(binding = 2, set = 1)
 layout(std140) uniform block_global_ubo_struct_std140_0
 {
-    uvec2 global_var_2_0;
+    uvec2 global_var_1_0;
 }_slang_resource_heap_2[];
 
 #line 22879
 struct GlobalParams_std140_0
 {
-    uvec2 global_var_1_0;
+    uvec2 global_var_0_0;
     uvec2 global_ubo_0;
 };
 
@@ -41,7 +41,7 @@ struct GlobalParams_std140_0
 layout(binding = 0)
 layout(std140) uniform block_GlobalParams_std140_0
 {
-    uvec2 global_var_1_0;
+    uvec2 global_var_0_0;
     uvec2 global_ubo_0;
 }globalParams_0;
 
@@ -75,7 +75,7 @@ void main()
 #line 19
     vertex_output_0 output_0;
     output_0.position_output_0 = input_var_0_pos_0;
-    output_0.var_1_0 = (texture(sampler2D(_slang_resource_heap_0[globalParams_0.global_var_1_0.x],_slang_resource_heap_1[_slang_resource_heap_2[globalParams_0.global_ubo_0.x].global_var_2_0.x]), (input_var_0_texCoord_0)));
+    output_0.var_1_0 = (texture(sampler2D(_slang_resource_heap_0[globalParams_0.global_var_0_0.x],_slang_resource_heap_1[_slang_resource_heap_2[globalParams_0.global_ubo_0.x].global_var_1_0.x]), (input_var_0_texCoord_0)));
     vertex_output_0 _S1 = output_0;
 
 #line 22
@@ -89,7 +89,7 @@ void main()
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_147_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_51_34",
 ShaderCodeModule(R"(#version 450
 layout(row_major) uniform;
 layout(row_major) buffer;

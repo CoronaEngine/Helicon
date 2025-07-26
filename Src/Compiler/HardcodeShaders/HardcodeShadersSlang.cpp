@@ -1,12 +1,12 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_146_35",
-ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_1;
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_50_35",
+ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_0;
 struct aggregate_type_0 {
 	float4 pos;
 	float2 texCoord;
 }
 struct global_ubo_struct {
-	SamplerState.Handle global_var_2;
+	SamplerState.Handle global_var_1;
 }
 uniform ConstantBuffer<global_ubo_struct>.Handle global_ubo;
 struct vertex_input {
@@ -20,18 +20,18 @@ struct vertex_output {
 vertex_output main(vertex_input input) {
 	vertex_output output;
 	output.position_output = input.var_0.pos;
-	output.var_1 = global_var_1.Sample((*global_ubo).global_var_2,input.var_0.texCoord);
+	output.var_1 = global_var_0.Sample((*global_ubo).global_var_1,input.var_0.texCoord);
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_147_34",
-ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_1;
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_51_34",
+ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_0;
 struct aggregate_type_0 {
 	float4 pos;
 	float2 texCoord;
 }
 struct global_ubo_struct {
-	SamplerState.Handle global_var_2;
+	SamplerState.Handle global_var_1;
 }
 uniform ConstantBuffer<global_ubo_struct>.Handle global_ubo;
 struct fragment_input {
