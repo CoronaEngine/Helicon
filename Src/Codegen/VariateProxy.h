@@ -487,7 +487,7 @@ namespace EmbeddedShader
 		}
 
 		template<std::integral IndexType>
-		VariateProxy<Type> operator[](VariateProxy<IndexType> index)
+		VariateProxy<Type> operator[](const VariateProxy<IndexType>& index)
 		{
 			if constexpr (std::is_aggregate_v<Type>)
 			{
@@ -507,7 +507,7 @@ namespace EmbeddedShader
 		}
 
 		template<std::integral IndexType>
-		Type operator[](VariateProxy<IndexType> index) requires Texture2DProxyTraits<Type>::value
+		Type operator[](const VariateProxy<IndexType>& index) requires Texture2DProxyTraits<Type>::value
 		{
 			return {Ast::AST::at(node, index.node)};
 		}

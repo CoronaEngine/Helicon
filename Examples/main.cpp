@@ -68,19 +68,9 @@ struct A
 	B b;
 };
 
-struct TestStruct0
-{
-	VariateProxy<int> member1;
-	VariateProxy<ktm::fvec4> member2;
-	ArrayProxy<ktm::fvec4> member3;
-	Texture2DProxy<ktm::fvec4> member4;
-};
-
 struct TestStruct
 {
-	VariateProxy<TestStruct0> member0;
-	VariateProxy<int> member1 = 114;
-	VariateProxy<ktm::fvec4> member2;
+	ArrayProxy<ktm::fvec4> member;
 };
 
 struct VertexData
@@ -129,9 +119,13 @@ int main(int argc, char* argv[])
 
 	VariateProxy<fvec4> uniform;
 	VariateProxy<uint32_t> index;
+	VariateProxy<TestStruct> test;
 	ArrayProxy<fvec4> ssbo;
+	ArrayProxy<Texture2DProxy<fvec4>> texture;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
+		texture[index][uvec2(0,0)] = uniform;
+		test->member[index] = uniform;
 		ssbo[index] = uniform;
 		input->pos->x = uniform->x;
 		position() = input->pos;
@@ -143,7 +137,7 @@ int main(int argc, char* argv[])
 		return input;
 	};
 
-	Parser::setBindless(true);
+	//Parser::setBindless(true);
 	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
@@ -155,15 +149,17 @@ struct A
 	float4 member;
 }
 uniform ConstantBuffer<A>.Handle buffer;
+uniform RWStructuredBuffer<float4>.Handle member2;
 [numthreads(1,1,1)]
 void main() {
 	output[0] = (*buffer).member;
+	member2[0] = float4(1,2,3,4);
 })";
 
     ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
     ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
-	//ShaderCodeCompiler vertxShader(code1, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
-    // ShaderCodeCompiler fragShader(code2, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+	// ShaderCodeCompiler vertxShader2(code1, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
+    // ShaderCodeCompiler fragShader2(code2, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////
 

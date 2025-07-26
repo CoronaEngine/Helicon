@@ -256,12 +256,12 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 	auto result = node->texture->type->parse() + " " + node->texture->name + ";";
 
-    if (node->texture->permissions == Ast::AccessPermissions::ReadOnly)
+    if (node->texture->permissions != Ast::AccessPermissions::ReadOnly)
     {
-        return result;
+        result = "RW" + result;
     }
 
-    return "RW" + result;
+    return (bindless() ? "uniform " : "") + result;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UnaryOperator* node)
