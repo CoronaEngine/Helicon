@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_147_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_146_35",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -11,15 +11,28 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 90 "core"
-SamplerState global_ubo_global_var_2_0 : register(s0);
+#line 6 "38e62b4d28f29c324c9b905a1534d672ca55ff8f"
+struct global_ubo_struct_0
+{
+    uint2 global_var_2_0;
+};
 
 
-#line 1 "44e5f8a4f727c4f4bc8708636a53240e98f023fc"
-Texture2D<float4 > global_var_1_0 : register(t0);
+#line 22879 "hlsl.meta.slang"
+struct GlobalParams_0
+{
+    uint2 global_var_1_0;
+    uint2 global_ubo_0;
+};
 
 
-#line 13
+#line 22879
+cbuffer globalParams_0 : register(b0)
+{
+    GlobalParams_0 globalParams_0;
+}
+
+#line 13 "38e62b4d28f29c324c9b905a1534d672ca55ff8f"
 struct vertex_output_0
 {
     float4 position_output_0 : SV_POSITION;
@@ -47,15 +60,22 @@ struct vertex_input_0
 vertex_output_0 main(vertex_input_0 input_0)
 {
 
-#line 19
+#line 18
+    vertex_input_0 _S1 = input_0;
     vertex_output_0 output_0;
     output_0.position_output_0 = input_0.var_0_0.pos_0;
-    output_0.var_1_0 = global_var_1_0.Sample(global_ubo_global_var_2_0, input_0.var_0_0.texCoord_0);
+    Texture2D<float4 > _S2 = Texture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_1_0.x]);
+
+#line 21
+    SamplerState _S3 = SamplerState(SamplerDescriptorHeap[ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_2_0.x]);
+
+#line 21
+    output_0.var_1_0 = _S2.Sample(_S3, _S1.var_0_0.texCoord_0);
     return output_0;
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_148_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_147_34",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -67,7 +87,7 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 13 "2cdce097c0bd0542b3081e28db7c0c62bb33a6b0"
+#line 13 "bf75e34d92b8097b8978cfd0a0778e42c9779d6a"
 struct fragment_output_0
 {
     float4 var_1_0 : SV_TARGET0;

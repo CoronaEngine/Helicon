@@ -300,6 +300,11 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	return result + ")";
 }
 
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::SamplerType* node)
+{
+	return node->name + (bindless() ?  ".Handle" : "");
+}
+
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()
 {
 	auto positionOutput = std::make_shared<Ast::OutputVariate>();

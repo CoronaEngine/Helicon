@@ -213,7 +213,7 @@ std::string EmbeddedShader::Ast::CallFunc::parse()
 
 std::string EmbeddedShader::Ast::SamplerType::parse()
 {
-	return NameType::parse();
+	return Generator::SlangGenerator::getParseOutput(this);
 }
 
 void EmbeddedShader::Ast::AggregateType::access(AccessPermissions permissions)
