@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_E__Helicon_Examples_main_cpp_153_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_153_35",
 ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_7;
 struct aggregate_type_0 {
 	float3 inPosition;
@@ -44,7 +44,7 @@ vertex_output main(vertex_input input) {
 	return output;
 }
  )")
-},{"FragmentShader_E__Helicon_Examples_main_cpp_154_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_154_34",
 ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_7;
 struct aggregate_type_0 {
 	float3 inPosition;

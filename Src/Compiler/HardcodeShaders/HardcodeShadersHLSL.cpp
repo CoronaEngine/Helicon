@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_E__Helicon_Examples_main_cpp_153_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_153_35",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -126,7 +126,7 @@ vertex_output_0 main(vertex_input_0 input_0)
 }
 
  )")
-},{"FragmentShader_E__Helicon_Examples_main_cpp_154_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_154_34",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"

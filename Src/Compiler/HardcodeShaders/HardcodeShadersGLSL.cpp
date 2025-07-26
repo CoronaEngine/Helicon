@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_E__Helicon_Examples_main_cpp_153_35",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_153_35",
 ShaderCodeModule(R"(#version 450
 layout(row_major) uniform;
 layout(row_major) buffer;
@@ -183,7 +183,7 @@ void main()
 }
 
  )")
-},{"FragmentShader_E__Helicon_Examples_main_cpp_154_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_154_34",
 ShaderCodeModule(R"(#version 450
 #extension GL_EXT_nonuniform_qualifier : require
 layout(row_major) uniform;
