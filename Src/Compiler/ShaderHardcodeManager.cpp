@@ -54,37 +54,6 @@ std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_loc
 
 bool ShaderHardcodeManager::hardcodeShaderCode(const std::string& shaderCode, ShaderLanguage language, ShaderStage inputStage, const std::source_location& sourceLocation)
 {
-	std::string shaderLanguage = ShaderLanguageFlagToString(language);
-	std::string hardcodeVariableName = getHardcodeVariableName(sourceLocation, inputStage);
-
-	switch (language)
-	{
-	case ShaderLanguage::GLSL:
-	    HardcodeShaders::hardcodeShadersGLSL.insert(std::pair(hardcodeVariableName, shaderCode));
-		break;
-	case ShaderLanguage::HLSL:
-	    HardcodeShaders::hardcodeShadersHLSL.insert(std::pair(hardcodeVariableName, shaderCode));
-		break;
-	case ShaderLanguage::Slang:
-		HardcodeShaders::hardcodeShadersSlang.insert(std::pair(hardcodeVariableName, shaderCode));
-		break;
-
-	//case ShaderLanguage::ESSL:
-	//	if (HardcodeShaders::hardcodeShadersESSL.find(hardcodeVariableName) == HardcodeShaders::hardcodeShadersESSL.end())
-	//	{
-	//		HardcodeShaders::hardcodeShadersESSL.insert(std::pair<std::string, std::string>(hardcodeVariableName, shaderCode));
-	//	}
-	//	break;
-	//case ShaderLanguage::MSL:
-	//	if (HardcodeShaders::hardcodeShadersMSL.find(hardcodeVariableName) == HardcodeShaders::hardcodeShadersMSL.end())
-	//	{
-	//		HardcodeShaders::hardcodeShadersMSL.insert(std::pair<std::string, std::string>(hardcodeVariableName, shaderCode));
-	//	}
-	//	break;
-	default:
-		return false;
-	}
-
 #if CABBAGE_ENGINE_DEBUG
 	if (!hardcodeFileOpened)
 	{
@@ -92,87 +61,138 @@ bool ShaderHardcodeManager::hardcodeShaderCode(const std::string& shaderCode, Sh
 		hardcodeFileOpened = true;
 	}
 
-    std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
+    std::string shaderLanguage = ShaderLanguageFlagToString(language);
+    std::string hardcodeVariableName = getHardcodeVariableName(sourceLocation, inputStage);
 
-	if (sourceFileStream.is_open())
-	{
-		sourceFileStream.seekg(-int(sizeof("};")), std::ios::end);
+    bool hardcodeExists = false;
 
-		sourceFileStream << "{\"" + hardcodeVariableName + "\"," << std::endl;
-		sourceFileStream << "ShaderCodeModule(R\"(" << shaderCode << " )\")" << std::endl;
+    switch (language)
+    {
+    case ShaderLanguage::GLSL:
+        if (HardcodeShaders::hardcodeShadersGLSL.contains(hardcodeVariableName))
+        {
+            hardcodeExists = true;
+        }
+        else
+        {
+            hardcodeExists = false;
+            HardcodeShaders::hardcodeShadersGLSL.insert(std::pair(hardcodeVariableName, shaderCode));
+        }
+        break;
+    case ShaderLanguage::HLSL:
+        if (HardcodeShaders::hardcodeShadersHLSL.contains(hardcodeVariableName))
+        {
+            hardcodeExists = true;
+        }
+        else
+        {
+            hardcodeExists = false;
+            HardcodeShaders::hardcodeShadersHLSL.insert(std::pair(hardcodeVariableName, shaderCode));
+        }
+        break;
+    case ShaderLanguage::Slang:
+        if (HardcodeShaders::hardcodeShadersSlang.contains(hardcodeVariableName))
+        {
+            hardcodeExists = true;
+        }
+        else
+        {
+            hardcodeExists = false;
+            HardcodeShaders::hardcodeShadersSlang.insert(std::pair(hardcodeVariableName, shaderCode));
+        }
+        break;
+    default:
+        return false;
+    }
 
-		sourceFileStream << "}," << std::endl;
-		sourceFileStream << "};";
+    if (!hardcodeExists)
+    {
+        std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
 
-		sourceFileStream.close();
-	}
-	else
-	{
-		throw std::runtime_error("Failed to open source path.");
-		return false;
-	}
+        if (sourceFileStream.is_open())
+        {
+            sourceFileStream.seekg(-int(sizeof("};")), std::ios::end);
+
+            sourceFileStream << "{\"" + hardcodeVariableName + "\"," << std::endl;
+            sourceFileStream << "ShaderCodeModule(R\"(" << shaderCode << " )\")" << std::endl;
+
+            sourceFileStream << "}," << std::endl;
+            sourceFileStream << "};";
+
+            sourceFileStream.close();
+        }
+        else
+        {
+            throw std::runtime_error("Failed to open source path.");
+            return false;
+        }
+    }
 #endif
 
 	return true;
 }
 
 
-bool ShaderHardcodeManager::hardcodeShaderCode(const std::vector<uint32_t>& shaderCode, ShaderLanguage language, ShaderStage inputStage, const std::source_location& sourceLocation)
+bool ShaderHardcodeManager::hardcodeShaderCode(const std::vector<uint32_t> &shaderCode, ShaderLanguage language, ShaderStage inputStage, const std::source_location &sourceLocation)
 {
-	std::string shaderLanguage = ShaderLanguageFlagToString(language);
-	std::string hardcodeVariableName = getHardcodeVariableName(sourceLocation, inputStage);
-
-	switch (language)
-	{
-	case ShaderLanguage::SpirV:
-		if (!HardcodeShaders::hardcodeShadersSpirV.contains(hardcodeVariableName))
-		{
-			HardcodeShaders::hardcodeShadersSpirV.insert(std::pair<std::string, std::vector<uint32_t>>(hardcodeVariableName, shaderCode));
-		}
-		break;
-	//case ShaderLanguage::DXIL:
-	//	if (HardcodeShaders::hardcodeShadersDXIL.find(hardcodeVariableName) == HardcodeShaders::hardcodeShadersDXIL.end())
-	//	{
-	//		HardcodeShaders::hardcodeShadersDXIL.insert(std::pair<std::string, std::vector<uint32_t>>(hardcodeVariableName, shaderCode));
-	//	}
-	//	break;
-	default:
-		return false;
-	}
-
 #if CABBAGE_ENGINE_DEBUG
-	if (!hardcodeFileOpened)
-	{
-		generateHardcodeFiles();
-		hardcodeFileOpened = true;
-	}
+    if (!hardcodeFileOpened)
+    {
+        generateHardcodeFiles();
+        hardcodeFileOpened = true;
+    }
 
-	std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
+    std::string shaderLanguage = ShaderLanguageFlagToString(language);
+    std::string hardcodeVariableName = getHardcodeVariableName(sourceLocation, inputStage);
 
-	if (sourceFileStream.is_open())
-	{
-		sourceFileStream.seekg(-int(sizeof("};")), std::ios::end);
+    bool hardcodeExists = false;
 
-		sourceFileStream << "{\"" + hardcodeVariableName + "\",";
-		sourceFileStream << "ShaderCodeModule(std::vector<uint32_t>({";
-		for (size_t index = 0; index < shaderCode.size(); index++)
-		{
-			sourceFileStream << shaderCode[index] << ",";
-		}
+    switch (language)
+    {
+    case ShaderLanguage::SpirV:
+        if (HardcodeShaders::hardcodeShadersSpirV.contains(hardcodeVariableName))
+        {
+            hardcodeExists = true;
+        }
+        else
+        {
+            hardcodeExists = false;
+            HardcodeShaders::hardcodeShadersSpirV.insert(std::pair<std::string, std::vector<uint32_t>>(hardcodeVariableName, shaderCode));
+        }
+        break;
+    default:
+        return false;
+    }
 
-		sourceFileStream << "}))}," << std::endl;
-		sourceFileStream << "};";
+    if (!hardcodeExists)
+    {
+        std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
 
-		sourceFileStream.close();
-	}
-	else
-	{
-		throw std::runtime_error("Failed to open source path.");
-		return false;
-	}
+        if (sourceFileStream.is_open())
+        {
+            sourceFileStream.seekg(-int(sizeof("};")), std::ios::end);
+
+            sourceFileStream << "{\"" + hardcodeVariableName + "\",";
+            sourceFileStream << "ShaderCodeModule(std::vector<uint32_t>({";
+            for (size_t index = 0; index < shaderCode.size(); index++)
+            {
+                sourceFileStream << shaderCode[index] << ",";
+            }
+
+            sourceFileStream << "}))}," << std::endl;
+            sourceFileStream << "};";
+
+            sourceFileStream.close();
+        }
+        else
+        {
+            throw std::runtime_error("Failed to open source path.");
+            return false;
+        }
+    }
 #endif
 
-	return true;
+    return true;
 }
 
 
