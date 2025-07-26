@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 		auto V = normalize(viewPos - WorldPos);
 
 		Float3 F0 = fvec3(0.04f);
-		F0 = lerp(F0, albedo, metallic);
+		F0 = mix(F0, albedo, metallic);
 		Float3 Lo = fvec3(0);
 
 		Float3 L = normalize(lightPos - WorldPos);
