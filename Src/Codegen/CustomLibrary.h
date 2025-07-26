@@ -67,6 +67,12 @@ namespace EmbeddedShader
 		return lerp(x,y,s);
 	}
 
+	template<size_t N,typename Type>
+	VariateProxy<ktm::vec<N,Type>> mix(const VariateProxy<ktm::vec<N,Type>>& x, const VariateProxy<ktm::vec<N,Type>>& y,const VariateProxy<Type>& s)
+	{
+		return lerp(x,y,s);
+	}
+
 	template<typename Type,size_t Rows,size_t Columns>
 	VariateProxy<ktm::mat<Columns,Rows,Type>> transpose(const VariateProxy<ktm::mat<Rows,Columns,Type>>& x)
 	{
