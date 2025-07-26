@@ -1,10 +1,54 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_197_32",
-ShaderCodeModule(R"(uniform RWStructuredBuffer<float4>.Handle output;
-uniform ConstantBuffer<float4>.Handle buffer;
-[numthreads(1,1,1)]
-void main() {
-	(*output)[0] = *buffer;
-} )")
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_162_35",
+ShaderCodeModule(R"(RWStructuredBuffer<float4> global_var_2;
+struct aggregate_type_0 {
+	float4 pos;
+	float4 color;
+}
+struct global_ubo_struct {
+	float4 global_var_1;
+}
+uniform ConstantBuffer<global_ubo_struct>.Handle global_ubo;
+struct vertex_input {
+	aggregate_type_0 var_0 : LOCATION0;
+}
+struct vertex_output {
+	float4 position_output : SV_POSITION;
+	float4 var_2 : LOCATION0;
+}
+[shader("vertex")]
+vertex_output main(vertex_input input) {
+	vertex_output output;
+	global_var_2[0] = (*global_ubo).global_var_1;
+	input.var_0.pos.x = (*global_ubo).global_var_1.x;
+	output.position_output = input.var_0.pos;
+	float4 var_1 = input.var_0.color;
+	output.var_2 = var_1;
+	return output;
+}
+ )")
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_163_34",
+ShaderCodeModule(R"(RWStructuredBuffer<float4> global_var_2;
+struct aggregate_type_0 {
+	float4 pos;
+	float4 color;
+}
+struct global_ubo_struct {
+	float4 global_var_1;
+}
+uniform ConstantBuffer<global_ubo_struct>.Handle global_ubo;
+struct fragment_input {
+	float4 var_0 : LOCATION0;
+}
+struct fragment_output {
+	float4 var_1 : SV_TARGET0;
+}
+[shader("fragment")]
+fragment_output main(fragment_input input) {
+	fragment_output output;
+	output.var_1 = input.var_0;
+	return output;
+}
+ )")
 },
 };

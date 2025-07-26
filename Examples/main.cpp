@@ -127,56 +127,16 @@ int main(int argc, char* argv[])
 
 	puts("------------------- Front-End Test -------------------");
 
-    Texture2DProxy<fvec4> texture2d;
-    ArrayProxy<Texture2DProxy<fvec4>> array;
-	VariateProxy<TestStruct0> test;
+	VariateProxy<fvec4> uniform;
 	auto vertex = [&](VariateProxy<VertexData> input)
 	{
-		// VariateProxy testMat = fmat4x4{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
-		// VariateProxy testMat2 = fmat4x4{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
-		VariateProxy testA = fvec4{1,2,3,4};
-		test->member4[uvec2{0,0}] = testA;
-		VariateProxy a = 1.f;
-		VariateProxy b = 1.f;
-		--a;
-
-		testA->xy() = fvec2{};
-
-		$IF(true)
-		{
-
-		}
-		$ELIF(false)
-		{
-
-		}
-		$ELSE
-		{
-		}
-
-		array[0][uvec2{0,0}] = texture2d[uvec2{0,0}];
-
-		position() = texture2d[svec2{0,0}];
+		input->pos->x = uniform->x;
+		position() = input->pos;
 	    return input->color;
 	};
 
 	auto fragment = [&](VariateProxy<fvec4> input)
 	{
-		VariateProxy a = 1.f;
-		VariateProxy b = 1.f;
-		a = pow(a,b);
-		a = clamp(a,a,b);
-
-		VariateProxy vec1 = fvec4{};
-		VariateProxy vec2 = fvec4{};
-
-		vec2 = normalize(vec1);
-		a = lerp(a,b,{0.3f});
-
-		VariateProxy mat = fmat4x4{};
-
-		mat = transpose(mat);
-
 		return input;
 	};
 
@@ -186,20 +146,20 @@ int main(int argc, char* argv[])
 	puts(pipeline.fragmentGeneration.c_str());
 
 	std::string code1 = R"(
-struct uniform_struct
-{
-	float4 member1;
-}
 uniform RWStructuredBuffer<float4>.Handle output;
-uniform ConstantBuffer<uniform_struct>.Handle buffer;
+struct A
+{
+	float4 member;
+}
+uniform ConstantBuffer<A>.Handle buffer;
 [numthreads(1,1,1)]
 void main() {
-	output[0] = buffer->member1;
+	output[0] = (*buffer).member;
 })";
 
-    // ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
-    // ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
-	ShaderCodeCompiler vertxShader(code1, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
+    ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+    ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+	//ShaderCodeCompiler vertxShader(code1, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
     // ShaderCodeCompiler fragShader(code2, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 
 	//////////////////////////////////// A demo using the EDSL ////////////////////////////////////

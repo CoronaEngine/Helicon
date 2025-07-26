@@ -96,7 +96,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 		if (!bindless())
 			ubo = "ConstantBuffer<" + uboStructName + "> global_ubo;\n";
 		else
-			ubo = "StructuredBuffer<" + uboStructName + ">.Handle global_ubo;\n";
+			ubo = "uniform ConstantBuffer<" + uboStructName + ">.Handle global_ubo;\n";
 		output += uboStruct + ubo;
 		uboMembers.clear();
 	}
@@ -217,7 +217,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->pushConstant)
 		return "global_push_constant." + node->name;
 	if (bindless())
-		return "global_ubo[0]." + node->name;
+		return "(*global_ubo)." + node->name;
 	return "global_ubo." + node->name;
 }
 
