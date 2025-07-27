@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
 
 	auto fresnelSchlick = [&](const Float& cosTheta, const Float3& F0)
 	{
-		return F0 + (fvec3(1) - F0) * pow(clamp(1.0f - cosTheta, {0.0}, {1.0}), {5.0});
+		return F0 + (fvec3(1) - F0) * pow(clamp(1.0f - cosTheta, 0.0f, 1.0f), 5.0f);
 	};
 
 	auto calculateColor = [&](const Float3& WorldPos,const Float3& Normal,const Float3& albedo,const Float& metallic, const Float& roughness)
