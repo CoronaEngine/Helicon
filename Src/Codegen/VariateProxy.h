@@ -32,7 +32,7 @@ namespace EmbeddedShader
 	}
 
 	template<typename T>
-	std::shared_ptr<Ast::Value> proxy_wrap(VariateProxy<T> proxy);
+	std::shared_ptr<Ast::Value> proxy_wrap(const VariateProxy<T>& proxy);
 
 	template<typename T>
 	struct base_type
@@ -693,7 +693,7 @@ namespace EmbeddedShader
 	};
 
 	template<typename T>
-	std::shared_ptr<Ast::Value> proxy_wrap(VariateProxy<T> proxy)
+	std::shared_ptr<Ast::Value> proxy_wrap(const VariateProxy<T>& proxy)
 	{
 		return proxy.node;
 	}

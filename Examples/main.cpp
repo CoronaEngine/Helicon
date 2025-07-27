@@ -55,6 +55,8 @@ int main(int argc, char* argv[])
 		output->fragColor = input->inColor;
 		output->fragTexCoord = input->inTexCoord;
 		return output;
+		using Type1 = decltype(modelInverse);
+		using Type2 = decltype(input->inNormal);
 	};
 
 	Texture2D<fvec4> texture;
