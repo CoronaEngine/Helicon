@@ -69,9 +69,9 @@ int main(int argc, char* argv[])
 
 		Float nom = a2;
 		Float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-		Float NewDenom = 3.14159265359f * denom * denom;
+		denom = 3.14159265359f * denom * denom;
 
-		return nom / NewDenom;
+		return nom / denom;
 	};
 
 	auto GeometrySchlickGGX = [&](Float NdotV,Float roughness)

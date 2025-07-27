@@ -199,7 +199,12 @@ namespace EmbeddedShader
 		{
 			if (this == &rhs)
 				return *this;
-		    Ast::AST::assign(node,rhs.node);
+			if (!std::dynamic_pointer_cast<Ast::Variate>(node))
+			{
+				node = Ast::AST::defineLocalVariate(node->type, rhs.node);
+				return *this;
+			}
+			Ast::AST::assign(node,rhs.node);
 		    return *this;
 		}
 
