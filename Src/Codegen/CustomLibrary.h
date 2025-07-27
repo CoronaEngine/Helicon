@@ -132,4 +132,10 @@ namespace EmbeddedShader
 		return {Ast::AST::callFunc("mul",Ast::AST::createType<ktm::mat<ktm::mat_traits_row_v<base_type_t<Type1>>,ktm::mat_traits_col_v<base_type_t<Type2>>,ktm::mat_traits_base_t<base_type_t<Type2>>>>(),Ast::Node::accessAll({proxy_wrap(std::forward<decltype(a)>(a)),proxy_wrap(std::forward<decltype(b)>(b))},Ast::AccessPermissions::ReadOnly))};
 	}
 
+	template<typename Type>
+	VariateProxy<base_type_t<Type>> sqrt(Type&& x)
+	{
+		return {Ast::AST::callFunc("sqrt",Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<decltype(x)>(x))},Ast::AccessPermissions::ReadOnly))};
+	}
+
 }

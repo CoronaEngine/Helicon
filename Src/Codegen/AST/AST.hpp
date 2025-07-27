@@ -90,6 +90,7 @@ namespace EmbeddedShader::Ast
 		static std::shared_ptr<AggregateType> createAggregateType(const T& value);
 
 		static std::shared_ptr<Variate> getPositionOutput();
+		static std::shared_ptr<Variate> getDispatchThreadIDInput();
 
 		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Value> array, uint32_t index);
 		static std::shared_ptr<ElementVariate> at(std::shared_ptr<Value> array, const std::shared_ptr<Value>& index);

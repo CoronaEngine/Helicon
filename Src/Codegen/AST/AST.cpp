@@ -172,6 +172,15 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getPosit
 	return posOutput;
 }
 
+std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Ast::AST::getDispatchThreadIDInput()
+{
+	auto& idOutput = Parser::currentParser->dispatchThreadIDInput;
+	if (idOutput)
+		return idOutput;
+	idOutput = Generator::SlangGenerator::getDispatchThreadIDInput();
+	return idOutput;
+}
+
 std::shared_ptr<EmbeddedShader::Ast::ElementVariate> EmbeddedShader::Ast::AST::at(
 	std::shared_ptr<Value> array, uint32_t index)
 {

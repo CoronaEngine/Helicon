@@ -9,6 +9,11 @@ namespace EmbeddedShader
         return VariateProxy<ktm::fvec4>{Ast::AST::getPositionOutput()};
     }
 
+    inline VariateProxy<ktm::uvec3> dispatchThreadID()
+    {
+        return VariateProxy<ktm::uvec3>{Ast::AST::getDispatchThreadIDInput()};
+    }
+
     inline void numthreads(ktm::uvec3 xyz)
     {
         Generator::SlangGenerator::numthreads = std::move(xyz);

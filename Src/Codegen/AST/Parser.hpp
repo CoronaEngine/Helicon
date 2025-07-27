@@ -45,6 +45,7 @@ namespace EmbeddedShader::Ast
 		size_t currentAggregateTypeIndex = 0;
 
 		std::shared_ptr<Variate> positionOutput;
+		std::shared_ptr<Variate> dispatchThreadIDInput;
 
 		std::vector<ParseOutput> parseOutputs;
 

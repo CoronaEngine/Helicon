@@ -108,6 +108,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 		static std::string getParseOutput(const Ast::SamplerType* node);
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
+		static std::shared_ptr<Ast::Variate> getDispatchThreadIDInput();
 	private:
 		static bool bindless();
 		static thread_local inline std::string uboMembers;

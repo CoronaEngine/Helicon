@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_155_32",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersHLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_186_32",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -11,7 +11,7 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 14 "515555c2ece29a75a0d57107e62d905783b7ad4e"
+#line 14 "25ca870c7e98433c9a036eadc77fd7183776e110"
 struct global_ubo_struct_0
 {
     float4x4 global_var_0_0;
@@ -21,7 +21,7 @@ struct global_ubo_struct_0
     float3 global_var_4_0;
     float3 global_var_5_0;
     float3 global_var_6_0;
-    uint2 global_var_8_0;
+    uint2 global_var_9_0;
 };
 
 
@@ -39,7 +39,7 @@ cbuffer globalParams_0 : register(b0)
     GlobalParams_0 globalParams_0;
 }
 
-#line 8 "515555c2ece29a75a0d57107e62d905783b7ad4e"
+#line 8 "25ca870c7e98433c9a036eadc77fd7183776e110"
 struct aggregate_type_1_0
 {
     float3 fragPos_0;
@@ -121,7 +121,7 @@ vertex_output_0 main(vertex_input_0 input_0)
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_156_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_187_34",
 ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #ifdef SLANG_HLSL_ENABLE_NVAPI
 #include "nvHLSLExtns.h"
@@ -133,7 +133,7 @@ ShaderCodeModule(R"(#pragma pack_matrix(column_major)
 #endif
 
 
-#line 14 "75f4bfda9bd7bb1ea80340aa09647f0adafab1e5"
+#line 14 "0b013cac2bbb006311909e1f8466712f91e3d97f"
 struct global_ubo_struct_0
 {
     float4x4 global_var_0_0;
@@ -143,7 +143,7 @@ struct global_ubo_struct_0
     float3 global_var_4_0;
     float3 global_var_5_0;
     float3 global_var_6_0;
-    uint2 global_var_8_0;
+    uint2 global_var_9_0;
 };
 
 
@@ -161,7 +161,7 @@ cbuffer globalParams_0 : register(b0)
     GlobalParams_0 globalParams_0;
 }
 
-#line 28 "75f4bfda9bd7bb1ea80340aa09647f0adafab1e5"
+#line 28 "0b013cac2bbb006311909e1f8466712f91e3d97f"
 struct fragment_output_0
 {
     float4 var_32_0 : SV_TARGET0;
@@ -196,7 +196,7 @@ fragment_output_0 main(fragment_input_0 input_0)
     Texture2D<float4 > _S2 = Texture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
 
 #line 35
-    SamplerState _S3 = SamplerState(SamplerDescriptorHeap[ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_8_0.x]);
+    SamplerState _S3 = SamplerState(SamplerDescriptorHeap[ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_9_0.x]);
 
 #line 35
     float3 var_1_0;
@@ -209,7 +209,7 @@ fragment_output_0 main(fragment_input_0 input_0)
         Texture2D<float4 > _S4 = Texture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
 
 #line 36
-        SamplerState _S5 = SamplerState(SamplerDescriptorHeap[ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_8_0.x]);
+        SamplerState _S5 = SamplerState(SamplerDescriptorHeap[ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_9_0.x]);
 
 #line 36
         var_1_0 = _S4.Sample(_S5, _S1.var_0_0.fragTexCoord_0).xyz;
@@ -298,6 +298,134 @@ fragment_output_0 main(fragment_input_0 input_0)
 
     output_0.var_32_0 = float4(float3(0.02999999932944775f, 0.02999999932944775f, 0.02999999932944775f) * var_1_0 + _S24 * max(dot(_S6, normalize(ConstantBuffer<global_ubo_struct_0 >(ResourceDescriptorHeap[globalParams_0.global_ubo_0.x]).global_var_6_0 - _S1.var_0_0.fragPos_0)), 0.0f), 1.0f);
     return output_0;
+}
+
+ )")
+},{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_188_34",
+ShaderCodeModule(R"(#pragma pack_matrix(column_major)
+#ifdef SLANG_HLSL_ENABLE_NVAPI
+#include "nvHLSLExtns.h"
+#endif
+
+#ifndef __DXC_VERSION_MAJOR
+// warning X3557: loop doesn't seem to do anything, forcing loop to unroll
+#pragma warning(disable : 3557)
+#endif
+
+
+#line 22879 "hlsl.meta.slang"
+struct GlobalParams_0
+{
+    uint2 global_var_7_0;
+};
+
+
+#line 22879
+cbuffer globalParams_0 : register(b0)
+{
+    GlobalParams_0 globalParams_0;
+}
+
+#line 2 "b766333db470cb507842e8f34c6b71704f6ebe5a"
+struct compute_input_0
+{
+    uint3 dispatch_thread_id_input_0 : SV_DispatchThreadID;
+};
+
+[numthreads(8, 8, 1)]
+void main(compute_input_0 input_0)
+{
+
+#line 7
+    compute_input_0 _S1 = input_0;
+
+#line 13
+    RWTexture2D<float4 > _S2 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 13
+    uint2 _S3 = _S1.dispatch_thread_id_input_0.xy;
+
+#line 13
+    RWTexture2D<float4 > _S4 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 13
+    float4 _S5 = _S4[_S3];
+
+#line 13
+    float3 _S6 = _S5.xyz;
+
+#line 13
+    RWTexture2D<float4 > _S7 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 13
+    float4 _S8 = _S7[_S3];
+
+#line 13
+    float3 _S9 = _S6 * (0.02999999932944775f + 2.50999999046325684f * _S8.xyz);
+
+#line 13
+    RWTexture2D<float4 > _S10 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 13
+    float4 _S11 = _S10[_S3];
+
+#line 13
+    float3 _S12 = _S11.xyz;
+
+#line 13
+    RWTexture2D<float4 > _S13 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 13
+    float4 _S14 = _S13[_S3];
+
+#line 13
+    float3 _S15 = float3(0.0f, 0.0f, 0.0f);
+
+#line 13
+    float3 _S16 = float3(1.0f, 1.0f, 1.0f);
+
+#line 13
+    _S2[_S3] = float4(clamp(_S9 / (0.14000000059604645f + _S12 * (0.5899999737739563f + 2.43000006675720215f * _S14.xyz)), _S15, _S16), 1.0f);
+
+#line 19
+    RWTexture2D<float4 > _S17 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 19
+    RWTexture2D<float4 > _S18 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 19
+    float4 _S19 = _S18[_S3];
+
+#line 19
+    float3 _S20 = _S19.xyz;
+
+#line 19
+    RWTexture2D<float4 > _S21 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 19
+    float4 _S22 = _S21[_S3];
+
+#line 19
+    float3 _S23 = _S20 * (0.02999999932944775f + 2.50999999046325684f * _S22.xyz);
+
+#line 19
+    RWTexture2D<float4 > _S24 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 19
+    float4 _S25 = _S24[_S3];
+
+#line 19
+    float3 _S26 = _S25.xyz;
+
+#line 19
+    RWTexture2D<float4 > _S27 = RWTexture2D<float4 >(ResourceDescriptorHeap[globalParams_0.global_var_7_0.x]);
+
+#line 19
+    float4 _S28 = _S27[_S3];
+
+#line 19
+    _S17[_S3] = float4(clamp(_S23 / (0.14000000059604645f + _S26 * (0.5899999737739563f + 2.43000006675720215f * _S28.xyz)), _S15, _S16), 1.0f);
+    return;
 }
 
  )")

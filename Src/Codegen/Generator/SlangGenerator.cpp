@@ -326,6 +326,19 @@ std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGe
 	return positionOutput;
 }
 
+std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getDispatchThreadIDInput()
+{
+	auto id = std::make_shared<Ast::InputVariate>();
+	id->type = Ast::AST::createVecType<ktm::uvec3>();
+	id->name = "dispatch_thread_id_input";
+	id->location = 0;
+	auto defineNode = std::make_shared<DefineSystemSemanticVariate>();
+	defineNode->variate = id;
+	defineNode->semanticName = "SV_DispatchThreadID";
+	Ast::AST::addInputStatement(defineNode);
+	return id;
+}
+
 bool EmbeddedShader::Generator::SlangGenerator::bindless()
 {
 	return Ast::Parser::getBindless();

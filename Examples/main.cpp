@@ -14,6 +14,7 @@
 
 #include <Codegen/RasterizedPipelineObject.h>
 #include <Codegen/BuiltinVariate.h>
+#include <Codegen/ComputePipelineObject.h>
 #include <Codegen/TypeAlias.h>
 
 using namespace EmbeddedShader;
@@ -147,11 +148,42 @@ int main(int argc, char* argv[])
 		return outColor;
 	};
 
-	Parser::setBindless(true);
-	auto pipeline = RasterizedPipelineObject::parse(vertex, fragment);
-	puts(pipeline.vertexGeneration.c_str());
-	puts(pipeline.fragmentGeneration.c_str());
+	Texture2D<fvec4> inputImageRGBA16;
 
-	ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
-    ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+	auto acesFilmicToneMapCurve = [&](Float3 x)
+	{
+		Float a = 2.51f;
+		Float b = 0.03f;
+		Float c = 2.43f;
+		Float d = 0.59f;
+		Float e = 0.14f;
+
+		return clamp((x * (a * x + b)) / (x * (c * x + d) + e), fvec3(0.0f), fvec3(1.0f));
+	};
+
+	auto acesFilmicToneMapInverse = [&](Float3 x)
+	{
+		Float3 a = fvec3(-0.59f) * x + fvec3(0.03f);
+		Float3 b = sqrt(fvec3(-1.0127f) * x * x + fvec3(1.3702f) * x + fvec3(0.0009));
+		Float3 c = fvec3(2) * (fvec3(2.43f) * x - fvec3(2.51f));
+		return ((a - b) / c);
+	};
+
+	numthreads(8,8,1);
+	auto compute = [&]
+	{
+		Float4 color = texture[dispatchThreadID()->xy()];
+		texture[dispatchThreadID()->xy()] = Float4(acesFilmicToneMapCurve(color->xyz()),1.f);
+	};
+
+	Parser::setBindless(true);
+	auto rasterizedPipeline = RasterizedPipelineObject::parse(vertex, fragment);
+	puts(rasterizedPipeline.vertexGeneration.c_str());
+	puts(rasterizedPipeline.fragmentGeneration.c_str());
+	auto computePipeline = ComputePipelineObject::parse(compute);
+	puts(computePipeline.computeGeneration.c_str());
+
+	ShaderCodeCompiler vertxShader(rasterizedPipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+    ShaderCodeCompiler fragShader(rasterizedPipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
+    ShaderCodeCompiler compShader(computePipeline.computeGeneration, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
 }

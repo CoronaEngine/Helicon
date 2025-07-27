@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_155_32",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_186_32",
 ShaderCodeModule(R"(#version 450
 layout(row_major) uniform;
 layout(row_major) buffer;
@@ -28,7 +28,7 @@ struct global_ubo_struct_std140_0
     vec3 global_var_4_0;
     vec3 global_var_5_0;
     vec3 global_var_6_0;
-    uvec2 global_var_8_0;
+    uvec2 global_var_9_0;
 };
 
 
@@ -43,7 +43,7 @@ layout(std140) uniform block_global_ubo_struct_std140_0
     vec3 global_var_4_0;
     vec3 global_var_5_0;
     vec3 global_var_6_0;
-    uvec2 global_var_8_0;
+    uvec2 global_var_9_0;
 }_slang_resource_heap_0[];
 
 #line 22879
@@ -160,7 +160,7 @@ void main()
 }
 
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_156_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_187_34",
 ShaderCodeModule(R"(#version 450
 #extension GL_EXT_nonuniform_qualifier : require
 layout(row_major) uniform;
@@ -200,7 +200,7 @@ struct global_ubo_struct_std140_0
     vec3 global_var_4_0;
     vec3 global_var_5_0;
     vec3 global_var_6_0;
-    uvec2 global_var_8_0;
+    uvec2 global_var_9_0;
 };
 
 
@@ -215,7 +215,7 @@ layout(std140) uniform block_global_ubo_struct_std140_0
     vec3 global_var_4_0;
     vec3 global_var_5_0;
     vec3 global_var_6_0;
-    uvec2 global_var_8_0;
+    uvec2 global_var_9_0;
 }_slang_resource_heap_2[];
 
 #line 22879
@@ -282,11 +282,11 @@ void main()
 #line 33
     vec3 var_1_0;
 
-    if(((texture(sampler2D(_slang_resource_heap_0[globalParams_0.global_var_7_0.x],_slang_resource_heap_1[_slang_resource_heap_2[globalParams_0.global_ubo_0.x].global_var_8_0.x]), (input_var_0_fragTexCoord_0))).w) > 0.00999999977648258)
+    if(((texture(sampler2D(_slang_resource_heap_0[globalParams_0.global_var_7_0.x],_slang_resource_heap_1[_slang_resource_heap_2[globalParams_0.global_ubo_0.x].global_var_9_0.x]), (input_var_0_fragTexCoord_0))).w) > 0.00999999977648258)
     {
 
 #line 35
-        var_1_0 = (texture(sampler2D(_slang_resource_heap_0[_S1.x],_slang_resource_heap_1[_slang_resource_heap_2[_S2.x].global_var_8_0.x]), (input_var_0_fragTexCoord_0))).xyz;
+        var_1_0 = (texture(sampler2D(_slang_resource_heap_0[_S1.x],_slang_resource_heap_1[_slang_resource_heap_2[_S2.x].global_var_9_0.x]), (input_var_0_fragTexCoord_0))).xyz;
 
 #line 35
     }
@@ -322,6 +322,106 @@ void main()
     entryPointParam_main_var_32_0 = output_0.var_32_0;
 
 #line 73
+    return;
+}
+
+ )")
+},{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_188_34",
+ShaderCodeModule(R"(#version 450
+#extension GL_EXT_nonuniform_qualifier : require
+layout(row_major) uniform;
+layout(row_major) buffer;
+
+#line 90 0
+layout(rgba32f)
+layout(binding = 2, set = 1)
+uniform image2D  _slang_resource_heap_0[];
+
+
+#line 22879 1
+struct GlobalParams_std140_0
+{
+    uvec2 global_var_7_0;
+};
+
+
+#line 22879
+layout(binding = 0)
+layout(std140) uniform block_GlobalParams_std140_0
+{
+    uvec2 global_var_7_0;
+}globalParams_0;
+
+#line 7 2
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+void main()
+{
+
+#line 7
+    uvec2 _S1 = globalParams_0.global_var_7_0;
+
+#line 13
+    uint _S2 = globalParams_0.global_var_7_0.x;
+
+#line 13
+    ivec2 _S3 = ivec2(gl_GlobalInvocationID.xy);
+
+#line 13
+    vec4 _S4 = (imageLoad((_slang_resource_heap_0[globalParams_0.global_var_7_0.x]), (_S3)));
+
+#line 13
+    vec3 _S5 = _S4.xyz;
+
+#line 13
+    vec4 _S6 = (imageLoad((_slang_resource_heap_0[_S1.x]), (_S3)));
+
+#line 13
+    vec3 _S7 = _S5 * (0.02999999932944775 + 2.50999999046325684 * _S6.xyz);
+
+#line 13
+    vec4 _S8 = (imageLoad((_slang_resource_heap_0[_S1.x]), (_S3)));
+
+#line 13
+    vec3 _S9 = _S8.xyz;
+
+#line 13
+    vec4 _S10 = (imageLoad((_slang_resource_heap_0[_S1.x]), (_S3)));
+
+#line 13
+    const vec3 _S11 = vec3(0.0, 0.0, 0.0);
+
+#line 13
+    const vec3 _S12 = vec3(1.0, 1.0, 1.0);
+
+#line 13
+    imageStore((_slang_resource_heap_0[_S2]), (_S3), vec4(clamp(_S7 / (0.14000000059604645 + _S9 * (0.5899999737739563 + 2.43000006675720215 * _S10.xyz)), _S11, _S12), 1.0));
+
+#line 19
+    uint _S13 = _S1.x;
+
+#line 19
+    vec4 _S14 = (imageLoad((_slang_resource_heap_0[_S1.x]), (_S3)));
+
+#line 19
+    vec3 _S15 = _S14.xyz;
+
+#line 19
+    vec4 _S16 = (imageLoad((_slang_resource_heap_0[_S1.x]), (_S3)));
+
+#line 19
+    vec3 _S17 = _S15 * (0.02999999932944775 + 2.50999999046325684 * _S16.xyz);
+
+#line 19
+    vec4 _S18 = (imageLoad((_slang_resource_heap_0[_S1.x]), (_S3)));
+
+#line 19
+    vec3 _S19 = _S18.xyz;
+
+#line 19
+    vec4 _S20 = (imageLoad((_slang_resource_heap_0[_S1.x]), (_S3)));
+
+#line 19
+    imageStore((_slang_resource_heap_0[_S13]), (_S3), vec4(clamp(_S17 / (0.14000000059604645 + _S19 * (0.5899999737739563 + 2.43000006675720215 * _S20.xyz)), _S11, _S12), 1.0));
     return;
 }
 

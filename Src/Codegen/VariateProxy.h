@@ -500,6 +500,12 @@ namespace EmbeddedShader
 	};
 
 	template<typename Type>
+	VariateProxy<Type> operator+(Type a, const VariateProxy<Type>& b)
+	{
+		return VariateProxy<Type>(a) + b;
+	}
+
+	template<typename Type>
 	VariateProxy<Type> operator-(Type a, const VariateProxy<Type>& b)
 	{
 		return VariateProxy<Type>(a) - b;
@@ -509,6 +515,30 @@ namespace EmbeddedShader
 	VariateProxy<Type> operator*(Type a, const VariateProxy<Type>& b)
 	{
 		return VariateProxy<Type>(a) * b;
+	}
+
+	template<size_t N,typename Type> requires std::is_arithmetic_v<Type>
+	VariateProxy<ktm::vec<N,Type>> operator+(const VariateProxy<Type>& a,const VariateProxy<ktm::vec<N,Type>>& b)
+	{
+		return VariateProxy<ktm::vec<N,Type>>(Ast::AST::binaryOperator(a.node,b.node,"+"));
+	}
+
+	template<size_t N,typename Type> requires std::is_arithmetic_v<Type>
+	VariateProxy<ktm::vec<N,Type>> operator+(const VariateProxy<ktm::vec<N,Type>>& a,const VariateProxy<Type>& b)
+	{
+		return b + a;
+	}
+
+	template<size_t N,typename Type> requires std::is_arithmetic_v<Type>
+	VariateProxy<ktm::vec<N,Type>> operator-(const VariateProxy<Type>& a,const VariateProxy<ktm::vec<N,Type>>& b)
+	{
+		return VariateProxy<ktm::vec<N,Type>>(Ast::AST::binaryOperator(a.node,b.node,"-"));
+	}
+
+	template<size_t N,typename Type> requires std::is_arithmetic_v<Type>
+	VariateProxy<ktm::vec<N,Type>> operator-(const VariateProxy<ktm::vec<N,Type>>& a,const VariateProxy<Type>& b)
+	{
+		return b - a;
 	}
 
 	template<size_t N,typename Type> requires std::is_arithmetic_v<Type>
