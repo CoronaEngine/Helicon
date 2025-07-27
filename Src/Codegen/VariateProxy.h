@@ -25,6 +25,33 @@ namespace EmbeddedShader
 		a = a - a;
 	};
 
+	template<typename T>
+	std::shared_ptr<Ast::Value> proxy_wrap(T value)
+	{
+		return Ast::AST::createValue(value);
+	}
+
+	template<typename T>
+	std::shared_ptr<Ast::Value> proxy_wrap(VariateProxy<T> proxy);
+
+	template<typename T>
+	struct base_type
+	{
+		using type = T;
+	};
+
+	template<typename T>
+	struct base_type<VariateProxy<T>>
+	{
+		using type = T;
+	};
+
+	template<typename T>
+	using base_type_t = typename base_type<std::remove_cvref_t<T>>::type;
+
+	template<typename T1,typename T2>
+	concept proxy_wrapper = std::same_as<base_type_t<T1>,base_type_t<T2>>;
+
 	template<typename Type>
 	struct VariateProxy
 	{
@@ -664,4 +691,10 @@ namespace EmbeddedShader
 	private:
 		std::shared_ptr<Ast::Value> node;
 	};
+
+	template<typename T>
+	std::shared_ptr<Ast::Value> proxy_wrap(VariateProxy<T> proxy)
+	{
+		return proxy.node;
+	}
 }

@@ -60,11 +60,11 @@ int main(int argc, char* argv[])
 	Texture2D<fvec4> texture;
 	Sampler sampler;
 
-	auto DistributionGGX = [&](Float3 N,Float3 H,Float roughness)
+	auto DistributionGGX = [&](const Float3& N, const Float3& H,Float roughness)
 	{
 		Float a = roughness * roughness;
 		Float a2 = a * a;
-		Float NdotH = max(dot(N,H),{0.0});
+		Float NdotH = max(dot(N,H),0.0f);
 		Float NdotH2 = NdotH * NdotH;
 
 		Float nom = a2;
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 		return nom / denom;
 	};
 
-	auto GeometrySchlickGGX = [&](Float NdotV,Float roughness)
+	auto GeometrySchlickGGX = [&](Float NdotV, const Float& roughness)
 	{
 		Float r = (roughness + 1.0f);
 		Float k = (r * r) / 8.0f;
@@ -85,22 +85,22 @@ int main(int argc, char* argv[])
 		return nom / denom;
 	};
 
-	auto GeometrySmith = [&](Float3 N, Float3 V, Float3 L, Float roughness)
+	auto GeometrySmith = [&](const Float3& N, const Float3& V, const Float3& L, const Float& roughness)
 	{
-		Float NdotV = max(dot(N, V), {0.0f});
-		Float NdotL = max(dot(N, L), {0.0f});
+		Float NdotV = max(dot(N, V), 0.0f);
+		Float NdotL = max(dot(N, L), 0.0f);
 		Float ggx2 = GeometrySchlickGGX(NdotV, roughness);
 		Float ggx1 = GeometrySchlickGGX(NdotL, roughness);
 
 		return ggx1 * ggx2;
 	};
 
-	auto fresnelSchlick = [&](Float cosTheta, Float3 F0)
+	auto fresnelSchlick = [&](const Float& cosTheta, const Float3& F0)
 	{
 		return F0 + (fvec3(1) - F0) * pow(clamp(1.0f - cosTheta, {0.0}, {1.0}), {5.0});
 	};
 
-	auto calculateColor = [&](Float3 WorldPos,Float3 Normal,Float3 albedo,Float metallic, Float roughness)
+	auto calculateColor = [&](const Float3& WorldPos,const Float3& Normal,const Float3& albedo,const Float& metallic, const Float& roughness)
 	{
 		auto N = normalize(Normal);
 		auto V = normalize(viewPos - WorldPos);
@@ -116,17 +116,17 @@ int main(int argc, char* argv[])
 
 		Float NDF = DistributionGGX(N,H,roughness);
 		Float G = GeometrySmith(N,V,L,roughness);
-		Float3 F = fresnelSchlick(clamp(dot(H,V),{0},{1}),F0);
+		Float3 F = fresnelSchlick(clamp(dot(H,V),0.f,1.f),F0);
 
 		Float3 numerator = NDF * G * F;
-		Float denominator = 4.0f * max(dot(N, V), {0.0}) * max(dot(N, L), {0.0}) + 0.0001;
+		Float denominator = 4.0f * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.0001;
 		Float3 specular = numerator / denominator;
 
 		auto kS = F;
 		auto kD = fvec3(1.f) - kS;
 		kD *= 1.f - metallic;
 
-		Float NdotL = max(dot(N, L), {0.0f});
+		Float NdotL = max(dot(N, L), 0.0f);
 		Lo += (kD * albedo / Float{3.14159265359f} + specular) * radiance * NdotL;
 
 		Float3 ambient = fvec3(0.03) * albedo;
@@ -150,6 +150,6 @@ int main(int argc, char* argv[])
 	puts(pipeline.vertexGeneration.c_str());
 	puts(pipeline.fragmentGeneration.c_str());
 
-    ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
+	ShaderCodeCompiler vertxShader(pipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
     ShaderCodeCompiler fragShader(pipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
 }

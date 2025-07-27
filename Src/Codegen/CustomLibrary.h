@@ -7,131 +7,131 @@
 namespace EmbeddedShader
 {
 	template<typename Type>
-	VariateProxy<Type> abs(const VariateProxy<Type>& a)
+	VariateProxy<base_type_t<Type>> abs(Type&& a)
 	{
-		a.node->access(Ast::AccessPermissions::ReadOnly);
-		return {Ast::AST::callFunc("abs", Ast::AST::createType<Type>(),{a.node})};
+		proxy_wrap(std::forward<Type>(a))->access(Ast::AccessPermissions::ReadOnly);
+		return {Ast::AST::callFunc("abs", Ast::AST::createType<base_type_t<Type>>(),{proxy_wrap(std::forward<Type>(a))})};
 	}
 
 	template<typename Type>
-	VariateProxy<Type> pow(const VariateProxy<Type>& x,const VariateProxy<Type>& y)
+	VariateProxy<base_type_t<Type>> pow(Type&& x, proxy_wrapper<Type> auto&& y)
 	{
-		return {Ast::AST::callFunc("pow", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node,y.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("pow", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(x)),proxy_wrap(std::forward<Type>(y))},Ast::AccessPermissions::ReadOnly))};
 	}
 
 	template<typename Type>
-	VariateProxy<Type> clamp(const VariateProxy<Type>& x, const VariateProxy<Type>& min,const VariateProxy<Type>& max)
+	VariateProxy<base_type_t<Type>> clamp(Type&& x, proxy_wrapper<Type> auto&& min,proxy_wrapper<Type> auto& max)
 	{
-		return {Ast::AST::callFunc("clamp", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node, min.node,max.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("clamp", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(x)), proxy_wrap(std::forward<Type>(min)),proxy_wrap(std::forward<Type>(max))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type> requires ktm::is_vector_v<Type>
-	VariateProxy<Type> normalize(const VariateProxy<Type>& x)
+	template<typename Type> requires ktm::is_vector_v<base_type_t<Type>>
+	VariateProxy<base_type_t<Type>> normalize(Type&& x)
 	{
-		return VariateProxy<Type>{Ast::AST::callFunc("normalize", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node},Ast::AccessPermissions::ReadOnly))};
-	}
-
-	template<typename Type>
-	VariateProxy<Type> max(const VariateProxy<Type>& a, const VariateProxy<Type>& b)
-	{
-		return {Ast::AST::callFunc("max", Ast::AST::createType<Type>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
+		return VariateProxy<base_type_t<Type>>{Ast::AST::callFunc("normalize", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(x))},Ast::AccessPermissions::ReadOnly))};
 	}
 
 	template<typename Type>
-	VariateProxy<Type> min(const VariateProxy<Type>& a, const VariateProxy<Type>& b)
+	VariateProxy<base_type_t<Type>> max(Type&& a, proxy_wrapper<Type> auto&& b)
 	{
-		return {Ast::AST::callFunc("min", Ast::AST::createType<Type>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
-	}
-
-	template<typename Type,size_t N>
-	VariateProxy<Type> dot(const VariateProxy<ktm::vec<N,Type>>& a, const VariateProxy<ktm::vec<N,Type>>& b)
-	{
-		return {Ast::AST::callFunc("dot", Ast::AST::createType<Type>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("max", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(a)), proxy_wrap(std::forward<Type>(b))},Ast::AccessPermissions::ReadOnly))};
 	}
 
 	template<typename Type>
-	VariateProxy<Type> lerp(const VariateProxy<Type>& x, const VariateProxy<Type>& y,const VariateProxy<Type>& s)
+	VariateProxy<base_type_t<Type>> min(Type&& a, proxy_wrapper<Type> auto&& b)
 	{
-		return {Ast::AST::callFunc("lerp", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node, y.node,s.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("min", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(a)), proxy_wrap(std::forward<Type>(b))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<size_t N,typename Type>
-	VariateProxy<ktm::vec<N,Type>> lerp(const VariateProxy<ktm::vec<N,Type>>& x, const VariateProxy<ktm::vec<N,Type>>& y,const VariateProxy<Type>& s)
+	template<typename Type> requires ktm::is_vector_v<base_type_t<Type>>
+	VariateProxy<ktm::vec_traits_base_t<base_type_t<Type>>> dot(Type&& a, proxy_wrapper<Type> auto&& b)
 	{
-		return VariateProxy<ktm::vec<N,Type>>{Ast::AST::callFunc("lerp", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node, y.node,s.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("dot", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(a)), proxy_wrap(std::forward<Type>(b))},Ast::AccessPermissions::ReadOnly))};
 	}
 
 	template<typename Type>
-	VariateProxy<Type> mix(const VariateProxy<Type>& x, const VariateProxy<Type>& y,const VariateProxy<Type>& s)
+	VariateProxy<base_type_t<Type>> lerp(Type&& x, proxy_wrapper<Type> auto&& y,proxy_wrapper<Type> auto&& s)
+	{
+		return {Ast::AST::callFunc("lerp", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(x)), proxy_wrap(std::forward<Type>(y)),proxy_wrap(std::forward<Type>(s))},Ast::AccessPermissions::ReadOnly))};
+	}
+
+	template<typename Type> requires ktm::is_vector_v<base_type_t<Type>>
+	VariateProxy<base_type_t<Type>> lerp(Type&& x, proxy_wrapper<Type> auto&& y,proxy_wrapper<ktm::vec_traits_base_t<base_type_t<Type>>> auto&& s)
+	{
+		return VariateProxy<base_type_t<Type>>{Ast::AST::callFunc("lerp", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(x)), proxy_wrap(std::forward<Type>(y)),proxy_wrap(std::forward<Type>(s))},Ast::AccessPermissions::ReadOnly))};
+	}
+
+	template<typename Type>
+	VariateProxy<base_type_t<Type>> mix(Type&& x, proxy_wrapper<Type> auto&& y,proxy_wrapper<Type> auto&& s)
 	{
 		return lerp(x,y,s);
 	}
 
-	template<size_t N,typename Type>
-	VariateProxy<ktm::vec<N,Type>> mix(const VariateProxy<ktm::vec<N,Type>>& x, const VariateProxy<ktm::vec<N,Type>>& y,const VariateProxy<Type>& s)
+	template<typename Type> requires ktm::is_vector_v<base_type_t<Type>>
+	VariateProxy<base_type_t<Type>> mix(Type&& x, proxy_wrapper<Type> auto&& y,proxy_wrapper<ktm::vec_traits_base_t<base_type_t<Type>>> auto&& s)
 	{
 		return lerp(x,y,s);
 	}
 
-	template<typename Type,size_t Rows,size_t Columns>
-	VariateProxy<ktm::mat<Columns,Rows,Type>> transpose(const VariateProxy<ktm::mat<Rows,Columns,Type>>& x)
+	template<typename Type> requires ktm::is_matrix_v<base_type_t<Type>>
+	VariateProxy<ktm::mat<ktm::mat_traits_col_v<base_type_t<Type>>,ktm::mat_traits_row_v<base_type_t<Type>>,ktm::mat_traits_base_t<base_type_t<Type>>>> transpose(Type&& x)
 	{
-		x.node->access(Ast::AccessPermissions::ReadOnly);
-		return {Ast::AST::callFunc("transpose", Ast::AST::createType<ktm::mat<Columns,Rows,Type>>(),{x.node})};
+		proxy_wrap(std::forward<Type>(x))->access(Ast::AccessPermissions::ReadOnly);
+		return {Ast::AST::callFunc("transpose", Ast::AST::createType<base_type_t<Type>>(),{proxy_wrap(std::forward<Type>(x))})};
 	}
 
 	// template<typename Type> requires ktm::is_matrix_v<Type>
 	// VariateProxy<Type> inverse(const VariateProxy<Type>& x)
 	// {
-	// 	return {Ast::AST::callFunc("inverse", Ast::AST::createType<Type>(),{x.node})};
+	// 	return {Ast::AST::callFunc("inverse", Ast::AST::createType<base_type_t<Type>>(),{x.node})};
 	// }
 
-	template<typename Type> requires std::is_arithmetic_v<Type>
-	VariateProxy<Type> mul(const VariateProxy<Type>& x, const VariateProxy<Type>& y)
+	template<typename Type> requires std::is_arithmetic_v<base_type_t<Type>>
+	VariateProxy<base_type_t<Type>> mul(Type&& x, proxy_wrapper<Type> auto&& y)
 	{
-		return {Ast::AST::callFunc("mul", Ast::AST::createType<Type>(),Ast::Node::accessAll({x.node, y.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("mul", Ast::AST::createType<base_type_t<Type>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(x)), proxy_wrap(std::forward<Type>(y))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type1, typename Type2> requires (std::is_arithmetic_v<Type1> && (ktm::is_vector_v<Type2> || ktm::is_matrix_v<Type2>))
-	VariateProxy<Type2> mul(const VariateProxy<Type1>& x, const VariateProxy<Type2>& y)
+	template<typename Type1, typename Type2> requires (std::is_arithmetic_v<base_type_t<Type1>> && (ktm::is_vector_v<base_type_t<Type2>> || ktm::is_matrix_v<base_type_t<Type2>>))
+	VariateProxy<base_type_t<Type2>> mul(Type1&& x, Type2&& y)
 	{
-		return {Ast::AST::callFunc("mul", Ast::AST::createType<Type2>(),Ast::Node::accessAll({x.node, y.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("mul", Ast::AST::createType<base_type_t<Type2>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type1>(x)), proxy_wrap(std::forward<Type2>(y))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type1, typename Type2> requires (ktm::is_vector_v<Type1> && std::is_arithmetic_v<Type2>)
-	VariateProxy<Type1> mul(const VariateProxy<Type1>& x, const VariateProxy<Type2>& y)
+	template<typename Type1, typename Type2> requires (ktm::is_vector_v<base_type_t<Type1>> && std::is_arithmetic_v<base_type_t<Type2>>)
+	VariateProxy<base_type_t<Type1>> mul(Type1&& x, Type2&& y)
 	{
-		return {Ast::AST::callFunc("mul", Ast::AST::createType<Type1>(),Ast::Node::accessAll({x.node, y.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("mul", Ast::AST::createType<base_type_t<Type1>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type1>(x)), proxy_wrap(std::forward<Type2>(y))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type,size_t N>
-	VariateProxy<Type> mul(const VariateProxy<ktm::vec<N,Type>>& a, const VariateProxy<ktm::vec<N,Type>>& b)
+	template<typename Type>
+	VariateProxy<ktm::vec_traits_base_t<base_type_t<Type>>> mul(Type&& a, proxy_wrapper<Type> auto&& b)
 	{
-		return {Ast::AST::callFunc("mul", Ast::AST::createType<Type>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("mul", Ast::AST::createType<ktm::vec_traits_base_t<base_type_t<Type>>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type>(a)), proxy_wrap(std::forward<Type>(b))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type,size_t N,size_t Columns>
-	VariateProxy<ktm::vec<N,Type>> mul(const VariateProxy<ktm::vec<N,Type>>& a, const VariateProxy<ktm::mat<N,Columns,Type>>& b)
+	template<typename Type1, typename Type2> requires (ktm::is_vector_v<base_type_t<Type1>> && ktm::is_matrix_v<base_type_t<Type2>> && std::same_as<ktm::vec_traits_base_t<base_type_t<Type1>>,ktm::mat_traits_base_t<base_type_t<Type2>>> && ktm::mat_traits_row_v<base_type_t<Type2>> == ktm::vec_traits_len<base_type_t<Type1>>)
+	VariateProxy<base_type_t<Type1>> mul(Type1&& a, Type2&& b)
 	{
-		return {Ast::AST::callFunc("mul", Ast::AST::createType<ktm::vec<N,Type>>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("mul", Ast::AST::createType<base_type_t<Type1>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type1>(a)), proxy_wrap(std::forward<Type2>(a))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type1, typename Type2> requires (ktm::is_matrix_v<Type1> && std::is_arithmetic_v<Type2>)
-	VariateProxy<Type1> mul(const VariateProxy<Type1>& x, const VariateProxy<Type2>& y)
+	template<typename Type1, typename Type2> requires (ktm::is_matrix_v<base_type_t<Type1>> && std::is_arithmetic_v<base_type_t<Type2>>)
+	VariateProxy<base_type_t<Type1>> mul(Type1&& x, Type2&& y)
 	{
-		return {Ast::AST::callFunc("mul", Ast::AST::createType<Type1>(),Ast::Node::accessAll({x.node, y.node},Ast::AccessPermissions::ReadOnly))};
+		return {Ast::AST::callFunc("mul", Ast::AST::createType<base_type_t<Type1>>(),Ast::Node::accessAll({proxy_wrap(std::forward<Type1>(x)), proxy_wrap(std::forward<Type2>(y))},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type,size_t Rows,size_t Columns>
-	VariateProxy<ktm::vec<Rows,Type>> mul(const VariateProxy<ktm::mat<Rows,Columns,Type>>& a, const VariateProxy<ktm::vec<Columns,Type>>& b)
+	template<typename Type1,typename Type2> requires (ktm::is_matrix_v<base_type_t<Type1>> && ktm::is_vector_v<base_type_t<Type2>> && std::same_as<ktm::mat_traits_base_t<base_type_t<Type1>>,ktm::vec_traits_base_t<base_type_t<Type2>>> && ktm::mat_traits_col_v<base_type_t<Type1>> == ktm::vec_traits_len<base_type_t<Type2>>)
+	VariateProxy<ktm::vec<ktm::mat_traits_row_v<base_type_t<Type1>>,ktm::vec_traits_base_t<base_type_t<Type1>>>> mul(Type1&& a,Type2&& b)//const VariateProxy<ktm::mat<Rows,Columns,Type>>& a, const VariateProxy<ktm::vec<Columns,Type>>& b)
 	{
-		auto func = Ast::AST::callFunc("mul", Ast::AST::createType<ktm::vec<Rows,Type>>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly));
-		return VariateProxy<ktm::vec<Rows,Type>>{func};
+		return {Ast::AST::callFunc("mul", Ast::AST::createType<ktm::vec<ktm::mat_traits_row_v<base_type_t<Type1>>,ktm::vec_traits_base_t<base_type_t<Type1>>>>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
 	}
 
-	template<typename Type,size_t Rows,size_t Columns,size_t ColumnsB>
-	VariateProxy<ktm::mat<Rows,ColumnsB,Type>> mul(const VariateProxy<ktm::mat<Rows,Columns,Type>>& a, const VariateProxy<ktm::mat<Columns,ColumnsB,Type>>& b)
-	{
-		return {Ast::AST::callFunc("mul", Ast::AST::createType<ktm::mat<Rows,ColumnsB,Type>>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
-	}
+	//暂时禁掉，之后来补
+	// template<typename Type,size_t Rows,size_t Columns,size_t ColumnsB>
+	// VariateProxy<ktm::mat<Rows,ColumnsB,Type>> mul(const VariateProxy<ktm::mat<Rows,Columns,Type>>& a, const VariateProxy<ktm::mat<Columns,ColumnsB,Type>>& b)
+	// {
+	// 	return {Ast::AST::callFunc("mul", Ast::AST::createType<ktm::mat<Rows,ColumnsB,Type>>(),Ast::Node::accessAll({a.node, b.node},Ast::AccessPermissions::ReadOnly))};
+	// }
 }
