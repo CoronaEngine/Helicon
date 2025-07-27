@@ -5,6 +5,11 @@
 #include <Codegen/ParseHelper.h>
 #include <boost/pfr/core_name.hpp>
 
+namespace EmbeddedShader
+{
+	inline void numthreads(ktm::uvec3 xyz);
+}
+
 namespace EmbeddedShader::Generator
 {
 	//后续把BaseShaderGenerator移除
@@ -13,6 +18,7 @@ namespace EmbeddedShader::Generator
 	{
 		template<typename T>
 		static constexpr std::string variateBasicTypeNameMap = "unknown";
+		friend void EmbeddedShader::numthreads(ktm::uvec3 xyz);
 	public:
 #define DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(type, name) \
 template<> constexpr std::string variateBasicTypeNameMap<type> = #name
@@ -106,6 +112,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 		static bool bindless();
 		static thread_local inline std::string uboMembers;
 		static thread_local inline std::string pushConstantMembers;
+		static thread_local inline ktm::uvec3 numthreads = ktm::uvec3(1);
 		static thread_local inline Ast::ShaderStage currentStage;
 
 		static thread_local inline size_t nestHierarchy = 1;

@@ -54,6 +54,11 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 	}
 
 	std::string entrypoint = "[shader(\"" + stageType + "\")]\n";
+	if (structure.stage == Ast::ShaderStage::Compute)
+	{
+		entrypoint += "[numthreads(" + std::to_string(numthreads.x) + "," + std::to_string(numthreads.y) + "," + std::to_string(numthreads.z) + ")]\n";
+		numthreads = ktm::uvec3(1);
+	}
 	entrypoint += outputStructName + " main(";
 	if (!structure.inputStatements.empty())
 		entrypoint += inputStructName + " input";
