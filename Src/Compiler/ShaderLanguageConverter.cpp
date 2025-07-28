@@ -380,7 +380,7 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
 		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
 
-		result.uniformBuffers.push_back(bindInfo);
+		result.uniformBuffers.insert(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
 	}
 
 	for (auto& item : res.sampled_images)
@@ -393,7 +393,8 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 		bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
 		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
 		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
-		result.sampledImages.push_back(bindInfo);
+
+        result.sampledImages.insert(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
 	}
 
 	for (auto& item : res.stage_inputs)
@@ -424,7 +425,8 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 		bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
 		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
 		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
-		result.stageInputs.push_back(bindInfo);
+
+        result.stageInputs.insert(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
 	}
 
 	for (auto& item : res.stage_outputs)
@@ -455,7 +457,8 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 		bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
 		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
 		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
-		result.stageOutputs.push_back(bindInfo);
+
+        result.stageOutputs.insert(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
 	}
 
 	for (auto& item : res.push_constant_buffers)
@@ -472,9 +475,7 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 			bindInfo.byteOffset = (uint32_t)range.offset;
 			bindInfo.variateName = compiler->get_member_name(item.base_type_id, range.index);
 
-			//printf("\nAccessing member #  % u, offset % u, size % u", range.index, range.offset, range.range);
-
-			result.pushConstantMembers.push_back(bindInfo);
+			result.pushConstantMembers.insert(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(result.pushConstantName + "." + bindInfo.variateName, bindInfo));
 		}
 	}
 

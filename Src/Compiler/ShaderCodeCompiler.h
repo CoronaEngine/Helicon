@@ -5,6 +5,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <unordered_map>
 
 
 enum class ShaderLanguage : uint16_t
@@ -46,71 +47,77 @@ struct ShaderCodeModule
 
         uint32_t pushConstantSize = 0;
         std::string pushConstantName;
-        std::vector<ShaderBindInfo> pushConstantMembers;
+        std::unordered_map<std::string,ShaderBindInfo> pushConstantMembers;
 
-        std::vector<ShaderBindInfo> stageInputs;
-        std::vector<ShaderBindInfo> stageOutputs;
-        std::vector<ShaderBindInfo> uniformBuffers;
-        std::vector<ShaderBindInfo> sampledImages;
+        std::unordered_map<std::string, ShaderBindInfo> stageInputs;
+        std::unordered_map<std::string, ShaderBindInfo> stageOutputs;
+        std::unordered_map<std::string, ShaderBindInfo> uniformBuffers;
+        std::unordered_map<std::string, ShaderBindInfo> sampledImages;
 
-        ShaderBindInfo *findPushConstantMembers(const std::string_view resourceName)
+
+        ShaderBindInfo *findPushConstantMembers(const std::string& resourceName)
         {
-            for (auto &pushConstantMember : pushConstantMembers)
+            auto it = pushConstantMembers.find(resourceName);
+            if (it != pushConstantMembers.end())
             {
-                if (pushConstantMember.variateName == resourceName)
-                {
-                    return &pushConstantMember;
-                }
+                return &it->second;
             }
-            return nullptr;
+            else
+            {
+                return nullptr;
+            }
         }
 
-        ShaderBindInfo *findStageInputs(const std::string_view resourceName)
+        ShaderBindInfo *findStageInputs(const std::string &resourceName)
         {
-            for (auto &stageInput : stageInputs)
+            auto it = stageInputs.find(resourceName);
+            if (it != stageInputs.end())
             {
-                if (stageInput.variateName == resourceName)
-                {
-                    return &stageInput;
-                }
+                return &it->second;
             }
-            return nullptr;
+            else
+            {
+                return nullptr;
+            }
         }
 
-        ShaderBindInfo *findStageOutputs(const std::string_view resourceName)
+        ShaderBindInfo *findStageOutputs(const std::string &resourceName)
         {
-            for (auto &stageOutput : stageOutputs)
+            auto it = stageOutputs.find(resourceName);
+            if (it != stageOutputs.end())
             {
-                if (stageOutput.variateName == resourceName)
-                {
-                    return &stageOutput;
-                }
+                return &it->second;
             }
-            return nullptr;
+            else
+            {
+                return nullptr;
+            }
         }
 
-        ShaderBindInfo *findUniformBuffers(const std::string_view resourceName)
+        ShaderBindInfo *findUniformBuffers(const std::string &resourceName)
         {
-            for (auto &uniformBuffer : uniformBuffers)
+            auto it = uniformBuffers.find(resourceName);
+            if (it != uniformBuffers.end())
             {
-                if (uniformBuffer.variateName == resourceName)
-                {
-                    return &uniformBuffer;
-                }
+                return &it->second;
             }
-            return nullptr;
+            else
+            {
+                return nullptr;
+            }
         }
 
-        ShaderBindInfo *findSampledImages(const std::string_view resourceName)
+        ShaderBindInfo *findSampledImages(const std::string &resourceName)
         {
-            for (auto &sampledImage : sampledImages)
+            auto it = sampledImages.find(resourceName);
+            if (it != sampledImages.end())
             {
-                if (sampledImage.variateName == resourceName)
-                {
-                    return &sampledImage;
-                }
+                return &it->second;
             }
-            return nullptr;
+            else
+            {
+                return nullptr;
+            }
         }
     } shaderResources;
 
