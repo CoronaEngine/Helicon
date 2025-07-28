@@ -1,5 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_186_32",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_185_32",
 ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_7;
 struct aggregate_type_0 {
 	float3 inPosition;
@@ -44,7 +44,7 @@ vertex_output main(vertex_input input) {
 	return output;
 }
  )")
-},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_187_34",
+},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_186_34",
 ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_7;
 struct aggregate_type_0 {
 	float3 inPosition;
@@ -121,7 +121,7 @@ fragment_output main(fragment_input input) {
 	return output;
 }
  )")
-},{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_188_34",
+},{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_187_34",
 ShaderCodeModule(R"(uniform RWTexture2D<float4>.Handle global_var_7;
 struct compute_input {
 	uint3 dispatch_thread_id_input : SV_DispatchThreadID;

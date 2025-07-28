@@ -169,7 +169,6 @@ int main(int argc, char* argv[])
 		return ((a - b) / c);
 	};
 
-	numthreads(8,8,1);
 	auto compute = [&]
 	{
 		Float4 color = texture[dispatchThreadID()->xy()];
@@ -180,7 +179,7 @@ int main(int argc, char* argv[])
 	auto rasterizedPipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(rasterizedPipeline.vertexGeneration.c_str());
 	puts(rasterizedPipeline.fragmentGeneration.c_str());
-	auto computePipeline = ComputePipelineObject::parse(compute);
+	auto computePipeline = ComputePipelineObject::parse(compute,uvec3(8,8,1));
 	puts(computePipeline.computeGeneration.c_str());
 
 	ShaderCodeCompiler vertxShader(rasterizedPipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);

@@ -7,7 +7,7 @@
 
 namespace EmbeddedShader
 {
-	inline void numthreads(ktm::uvec3 xyz);
+	class ComputePipelineObject;
 }
 
 namespace EmbeddedShader::Generator
@@ -16,9 +16,9 @@ namespace EmbeddedShader::Generator
 
 	class SlangGenerator final
 	{
+		friend class ComputePipelineObject;
 		template<typename T>
 		static constexpr std::string variateBasicTypeNameMap = "unknown";
-		friend void EmbeddedShader::numthreads(ktm::uvec3 xyz);
 	public:
 #define DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(type, name) \
 template<> constexpr std::string variateBasicTypeNameMap<type> = #name

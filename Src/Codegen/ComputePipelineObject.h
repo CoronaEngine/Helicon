@@ -11,11 +11,12 @@ namespace EmbeddedShader
 	{
 	public:
 		std::string computeGeneration;
-		static ComputePipelineObject parse(auto computeShaderCode);
+		static ComputePipelineObject parse(auto computeShaderCode, ktm::uvec3 numthreads = ktm::uvec3(1));
 	};
 
-	ComputePipelineObject ComputePipelineObject::parse(auto computeShaderCode)
+	ComputePipelineObject ComputePipelineObject::parse(auto computeShaderCode, ktm::uvec3 numthreads)
 	{
+		Generator::SlangGenerator::numthreads = numthreads;
 		auto csFunc = std::function(computeShaderCode);
 
 		Ast::Parser::beginShaderParse(Ast::ShaderStage::Compute);
