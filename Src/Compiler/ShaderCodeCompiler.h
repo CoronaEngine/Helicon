@@ -32,6 +32,14 @@ struct ShaderCodeModule
 {
     struct ShaderResources
     {
+        enum BindType
+        {
+            pushConstantMembers = 0,
+            stageInputs = 1,
+            stageOutputs = 2,
+            uniformBuffers = 3,
+            sampledImages = 4,
+        };
         struct ShaderBindInfo
         {
             uint32_t set = 0;
@@ -43,74 +51,19 @@ struct ShaderCodeModule
             uint64_t elementCount = 0;
             uint32_t typeSize = 0;
             uint64_t byteOffset = 0;
+
+            BindType bindType;
         };
 
         uint32_t pushConstantSize = 0;
         std::string pushConstantName;
-        std::unordered_map<std::string,ShaderBindInfo> pushConstantMembers;
 
-        std::unordered_map<std::string, ShaderBindInfo> stageInputs;
-        std::unordered_map<std::string, ShaderBindInfo> stageOutputs;
-        std::unordered_map<std::string, ShaderBindInfo> uniformBuffers;
-        std::unordered_map<std::string, ShaderBindInfo> sampledImages;
+        std::unordered_map<std::string, ShaderBindInfo> bindInfoPool;
 
-
-        ShaderBindInfo *findPushConstantMembers(const std::string& resourceName)
+        ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
         {
-            auto it = pushConstantMembers.find(resourceName);
-            if (it != pushConstantMembers.end())
-            {
-                return &it->second;
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-
-        ShaderBindInfo *findStageInputs(const std::string &resourceName)
-        {
-            auto it = stageInputs.find(resourceName);
-            if (it != stageInputs.end())
-            {
-                return &it->second;
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-
-        ShaderBindInfo *findStageOutputs(const std::string &resourceName)
-        {
-            auto it = stageOutputs.find(resourceName);
-            if (it != stageOutputs.end())
-            {
-                return &it->second;
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-
-        ShaderBindInfo *findUniformBuffers(const std::string &resourceName)
-        {
-            auto it = uniformBuffers.find(resourceName);
-            if (it != uniformBuffers.end())
-            {
-                return &it->second;
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-
-        ShaderBindInfo *findSampledImages(const std::string &resourceName)
-        {
-            auto it = sampledImages.find(resourceName);
-            if (it != sampledImages.end())
+            auto it = bindInfoPool.find(resourceName);
+            if (it != bindInfoPool.end())
             {
                 return &it->second;
             }
