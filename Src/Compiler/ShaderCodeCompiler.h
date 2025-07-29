@@ -58,11 +58,12 @@ struct ShaderCodeModule
         uint32_t pushConstantSize = 0;
         std::string pushConstantName;
 
-        std::unordered_map<std::string, ShaderBindInfo> bindInfoPool;
+        std::vector<std::pair<std::string, ShaderBindInfo>> bindInfoPool;
 
         ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
         {
-            auto it = bindInfoPool.find(resourceName);
+            auto it = std::find_if(bindInfoPool.begin(), bindInfoPool.end(),
+                                   [&](const auto &pair) { return pair.first == resourceName; });
             if (it != bindInfoPool.end())
             {
                 return &it->second;
