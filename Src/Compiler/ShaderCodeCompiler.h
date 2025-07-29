@@ -57,16 +57,25 @@ struct ShaderCodeModule
         uint32_t pushConstantSize = 0;
         std::string pushConstantName;
 
-        std::vector<ShaderBindInfo> bindInfoPool;
+        //std::vector<ShaderBindInfo> bindInfoPool;
 
         struct TireNode
         {
-            ShaderBindInfo *pData;
+            ShaderBindInfo pData;
             TireNode *next[256];
+            bool isLeaf = false;
 
             TireNode()
             {
-                pData = nullptr;
+                for (int idx = 0; idx < 256; ++idx)
+                {
+                    next[idx] = nullptr;
+                }
+            }
+            TireNode(const ShaderBindInfo &pData)
+                : pData(pData)
+            {
+                //pData = nullptr;
                 for (int idx = 0; idx < 256; ++idx)
                 {
                     next[idx] = nullptr;
@@ -84,7 +93,7 @@ struct ShaderCodeModule
                 pRoot = nullptr;
             }
 
-            void addShaderBindInfo(std::string &name, ShaderBindInfo *pShaderBindInfo)
+            void addShaderBindInfo(std::string &name, ShaderBindInfo pShaderBindInfo)
             {
                 pRoot = pRoot == nullptr ? new TireNode() : pRoot;
                 TireNode *tempRoot = pRoot;
@@ -98,6 +107,7 @@ struct ShaderCodeModule
                     tempRoot = tempRoot->next[idx];
                 }
                 tempRoot->pData = pShaderBindInfo;
+                tempRoot->isLeaf = true;
             }
 
             ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
@@ -112,7 +122,7 @@ struct ShaderCodeModule
                     }
                     tempRoot = tempRoot->next[idx];
                 }
-                return tempRoot->pData;
+                return &tempRoot->pData;
             }
 
             void releaseTireNode(TireNode *root)
