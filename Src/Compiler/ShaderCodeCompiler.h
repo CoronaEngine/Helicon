@@ -57,8 +57,6 @@ struct ShaderCodeModule
         uint32_t pushConstantSize = 0;
         std::string pushConstantName;
 
-        //std::vector<ShaderBindInfo> bindInfoPool;
-
         struct TireNode
         {
             ShaderBindInfo pData;
@@ -88,6 +86,8 @@ struct ShaderCodeModule
         {
             TireNode *pRoot;
 
+            std::vector<ShaderBindInfo> bindInfoPool;
+
             TireTree()
             {
                 pRoot = nullptr;
@@ -95,6 +95,8 @@ struct ShaderCodeModule
 
             void addShaderBindInfo(std::string &name, ShaderBindInfo pShaderBindInfo)
             {
+                bindInfoPool.push_back(pShaderBindInfo);
+
                 pRoot = pRoot == nullptr ? new TireNode() : pRoot;
                 TireNode *tempRoot = pRoot;
                 for (char c : name)
