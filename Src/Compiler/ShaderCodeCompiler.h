@@ -102,7 +102,7 @@ struct ShaderCodeModule
                 tempRoot->data = shaderBindInfo;
             }
 
-            void travelTireTree(TireNode *root, std::vector<ShaderBindInfo> shaderBindInfoList)
+            void travelTireTree(TireNode *root, std::vector<ShaderBindInfo> &shaderBindInfoList)
             {
                 for (int nextIdx : root->nextIdxList)
                 {
@@ -142,11 +142,15 @@ struct ShaderCodeModule
 
             void releaseTireNode(TireNode *root)
             {
-                for (TireNode *pNext : root->next)
+                if (root == nullptr)
+                    return; // ∑¿”˘–‘ºÏ≤È
+
+                for (int nextIdx : root->nextIdxList)
                 {
-                    if (pNext != nullptr)
+                    if (root->next[nextIdx] != nullptr)
                     {
-                        releaseTireNode(pNext);
+                        releaseTireNode(root->next[nextIdx]);
+                        root->next[nextIdx] = nullptr; //  Õ∑≈∫Û÷√ø’£¨±‹√‚–¸ø’÷∏’Î
                     }
                 }
                 delete root;
@@ -154,18 +158,20 @@ struct ShaderCodeModule
 
             ~TireTree()
             {
-                if (pRoot == nullptr)
-                {
-                    return;
-                }
-                releaseTireNode(pRoot);
+                // if (pRoot == nullptr)
+                //{
+                //     return;
+                // }
+                // releaseTireNode(pRoot);
+                // pRoot = nullptr;
             }
-        }tireTree;
 
-        ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
-        {
-            return tireTree.findShaderBindInfo(resourceName);
-        }
+        } tireTree;
+
+        // ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
+        //{
+        //     return tireTree.findShaderBindInfo(resourceName);
+        // }
     } shaderResources;
 
     ShaderCodeModule() = default;
