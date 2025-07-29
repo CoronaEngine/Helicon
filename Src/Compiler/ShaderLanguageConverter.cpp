@@ -1,147 +1,150 @@
 #include <iostream>
 
-#include <glslang/Public/ShaderLang.h>
-#include <glslang/Public/ResourceLimits.h>
 #include <SPIRV/GlslangToSpv.h>
-//#include <glslang/Include/ResourceLimits.h>
+#include <glslang/Public/ResourceLimits.h>
+#include <glslang/Public/ShaderLang.h>
+// #include <glslang/Include/ResourceLimits.h>
 
 #include <spirv_cross.hpp>
-#include <spirv_parser.hpp>
 #include <spirv_glsl.hpp>
 #include <spirv_hlsl.hpp>
 #include <spirv_msl.hpp>
+#include <spirv_parser.hpp>
 
-#include <slang.h>
-#include <slang-com-ptr.h>
 #include <slang-com-helper.h>
+#include <slang-com-ptr.h>
+#include <slang.h>
 
-#include"ShaderLanguageConverter.h"
+#include "ShaderLanguageConverter.h"
 
 #include <array>
 #include <utility>
 
-
 std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage)
 {
-	// GLSL version is default by 460
-	// Higher versions are compatible with lower versions
-	// Version in HLSL is disabled
+    // GLSL version is default by 460
+    // Higher versions are compatible with lower versions
+    // Version in HLSL is disabled
 
-	std::vector<uint32_t> resultSpirvCode;
+    std::vector<uint32_t> resultSpirvCode;
 
-	glslang::EShSource shaderLang;
-	switch (inputLanguage)
-	{
-	case ShaderLanguage::GLSL:
-		shaderLang = glslang::EShSourceGlsl;
-		break;
-	case ShaderLanguage::HLSL:
-		shaderLang = glslang::EShSourceHlsl;
-		break;
-	default:
-		return resultSpirvCode;
-	}
-
-	EShLanguage stage = EShLangVertex;
-	switch (inputStage)
-	{
-	case ShaderStage::VertexShader: stage = EShLangVertex; break;
-	case ShaderStage::FragmentShader: stage = EShLangFragment; break;
-	case ShaderStage::ComputeShader: stage = EShLangCompute; break;
-	default:return resultSpirvCode;
-	}
-
-	std::vector<const char*> shaderSources;
-	shaderSources.push_back(shaderCode.c_str());
-
-	glslang::InitializeProcess();
-
-	glslang::TShader shader(stage);
-	shader.setStrings(shaderSources.data(), 1);
-	shader.setEnvInput(shaderLang, stage, glslang::EShClientVulkan, 460);
-	shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_3);
-	shader.setEnvTarget(glslang::EShTargetSpv, glslang::EShTargetSpv_1_6);
-	shader.setEntryPoint("main");
-
-	if (!shader.parse(GetDefaultResources(), 460, false, EShMsgDefault))
-	{
-		std::cerr << shader.getInfoLog();
-		return resultSpirvCode;
-	}
-
-	glslang::TProgram program;
-	program.addShader(&shader);
-	if (!program.link(EShMsgVulkanRules))
-	{
-		std::cerr << program.getInfoLog();
-		return resultSpirvCode;
-	}
-
-
-	if (!program.buildReflection(EShReflectionAllBlockVariables | EShReflectionIntermediateIO))
+    glslang::EShSource shaderLang;
+    switch (inputLanguage)
     {
-        //std::cout << "build Reflection Error" << std::endl;
+    case ShaderLanguage::GLSL:
+        shaderLang = glslang::EShSourceGlsl;
+        break;
+    case ShaderLanguage::HLSL:
+        shaderLang = glslang::EShSourceHlsl;
+        break;
+    default:
+        return resultSpirvCode;
+    }
+
+    EShLanguage stage = EShLangVertex;
+    switch (inputStage)
+    {
+    case ShaderStage::VertexShader:
+        stage = EShLangVertex;
+        break;
+    case ShaderStage::FragmentShader:
+        stage = EShLangFragment;
+        break;
+    case ShaderStage::ComputeShader:
+        stage = EShLangCompute;
+        break;
+    default:
+        return resultSpirvCode;
+    }
+
+    std::vector<const char *> shaderSources;
+    shaderSources.push_back(shaderCode.c_str());
+
+    glslang::InitializeProcess();
+
+    glslang::TShader shader(stage);
+    shader.setStrings(shaderSources.data(), 1);
+    shader.setEnvInput(shaderLang, stage, glslang::EShClientVulkan, 460);
+    shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_3);
+    shader.setEnvTarget(glslang::EShTargetSpv, glslang::EShTargetSpv_1_6);
+    shader.setEntryPoint("main");
+
+    if (!shader.parse(GetDefaultResources(), 460, false, EShMsgDefault))
+    {
+        std::cerr << shader.getInfoLog();
+        return resultSpirvCode;
+    }
+
+    glslang::TProgram program;
+    program.addShader(&shader);
+    if (!program.link(EShMsgVulkanRules))
+    {
+        std::cerr << program.getInfoLog();
+        return resultSpirvCode;
+    }
+
+    if (!program.buildReflection(EShReflectionAllBlockVariables | EShReflectionIntermediateIO))
+    {
+        // std::cout << "build Reflection Error" << std::endl;
     }
     else
     {
-        //std::cout << program.getNumLiveUniformBlocks() << std::endl;
-        //program.dumpReflection();
-    }  
+        // std::cout << program.getNumLiveUniformBlocks() << std::endl;
+        // program.dumpReflection();
+    }
 
-	const auto intermediate = program.getIntermediate(stage);
+    const auto intermediate = program.getIntermediate(stage);
 
-	glslang::GlslangToSpv(*intermediate, resultSpirvCode);
+    glslang::GlslangToSpv(*intermediate, resultSpirvCode);
 
-	glslang::FinalizeProcess();
+    glslang::FinalizeProcess();
 
-	return resultSpirvCode;
+    return resultSpirvCode;
 }
-
 
 std::string ShaderLanguageConverter::spirvCrossConverter(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion)
 {
-	std::string resultCode = "";
+    std::string resultCode = "";
 
-	try
-	{
-		switch (targetLanguage)
-		{
-		case ShaderLanguage::GLSL:
-		//case ShaderLanguage::ESSL:
-		{
-			spirv_cross::CompilerGLSL compiler(spirv_file);
+    try
+    {
+        switch (targetLanguage)
+        {
+        case ShaderLanguage::GLSL:
+            // case ShaderLanguage::ESSL:
+            {
+                spirv_cross::CompilerGLSL compiler(spirv_file);
 
-			spirv_cross::CompilerGLSL::Options opts = compiler.get_common_options();
-			opts.enable_420pack_extension = false;
-			opts.version = 460;
-			opts.vulkan_semantics = true;
-			opts.es = false;
-			compiler.set_common_options(opts);
+                spirv_cross::CompilerGLSL::Options opts = compiler.get_common_options();
+                opts.enable_420pack_extension = false;
+                opts.version = 460;
+                opts.vulkan_semantics = true;
+                opts.es = false;
+                compiler.set_common_options(opts);
 
-			resultCode = compiler.compile();
-			break;
-		}
-		case ShaderLanguage::HLSL:
-		{
-			spirv_cross::CompilerHLSL compiler(spirv_file);
+                resultCode = compiler.compile();
+                break;
+            }
+        case ShaderLanguage::HLSL: {
+            spirv_cross::CompilerHLSL compiler(spirv_file);
 
-			spirv_cross::CompilerHLSL::Options opts = compiler.get_hlsl_options();
-		    opts.shader_model = 67;
-			compiler.set_hlsl_options(opts);
+            spirv_cross::CompilerHLSL::Options opts = compiler.get_hlsl_options();
+            opts.shader_model = 67;
+            compiler.set_hlsl_options(opts);
 
-			resultCode = compiler.compile();
-			break;
-		}
-		default:
-			break;
-		}
-	}
-	catch (const spirv_cross::CompilerError& error)
-	{
-		std::cout << error.what();
-	}
+            resultCode = compiler.compile();
+            break;
+        }
+        default:
+            break;
+        }
+    }
+    catch (const spirv_cross::CompilerError &error)
+    {
+        std::cout << error.what();
+    }
 
-	return resultCode;
+    return resultCode;
 }
 
 std::string ShaderLanguageConverter::slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage)
@@ -187,8 +190,8 @@ std::string ShaderLanguageConverter::slangCompiler(std::string shaderCode, Shade
     slang::IModule *slangModule = nullptr;
     {
         Slang::ComPtr<slang::IBlob> diagnosticBlob;
-        //slangModule = session->loadModule(shaderCode.c_str(), diagnosticBlob.writeRef());
-    	slangModule = session->loadModuleFromSourceString(std::to_string(std::hash<std::string>()(shaderCode)).c_str(),"",shaderCode.c_str(),diagnosticBlob.writeRef());
+        // slangModule = session->loadModule(shaderCode.c_str(), diagnosticBlob.writeRef());
+        slangModule = session->loadModuleFromSourceString(std::to_string(std::hash<std::string>()(shaderCode)).c_str(), "", shaderCode.c_str(), diagnosticBlob.writeRef());
     }
     Slang::ComPtr<slang::IEntryPoint> entryPoint;
     slangModule->findEntryPointByName("main", entryPoint.writeRef());
@@ -211,18 +214,18 @@ std::string ShaderLanguageConverter::slangCompiler(std::string shaderCode, Shade
     return result;
 }
 
-void diagnoseIfNeeded(slang::IBlob* diagnosticsBlob)
+void diagnoseIfNeeded(slang::IBlob *diagnosticsBlob)
 {
-	if (diagnosticsBlob != nullptr)
-	{
-		std::cout << static_cast<const char*>(diagnosticsBlob->getBufferPointer()) << std::endl;
-	}
+    if (diagnosticsBlob != nullptr)
+    {
+        std::cout << static_cast<const char *>(diagnosticsBlob->getBufferPointer()) << std::endl;
+    }
 }
 
-std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string& shaderCode)
+std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string &shaderCode)
 {
-	std::vector<uint32_t> result;
-	// 1. Create Global Session
+    std::vector<uint32_t> result;
+    // 1. Create Global Session
     Slang::ComPtr<slang::IGlobalSession> globalSession;
     createGlobalSession(globalSession.writeRef());
 
@@ -230,24 +233,21 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
     slang::SessionDesc sessionDesc = {};
     slang::TargetDesc targetDesc = {};
     targetDesc.format = SLANG_SPIRV;
-    //targetDesc.profile = globalSession->findProfile("spirv_1_6");
-	targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+    // targetDesc.profile = globalSession->findProfile("spirv_1_6");
+    targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
 
-	sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
-	sessionDesc.targets = &targetDesc;
-	sessionDesc.targetCount = 1;
+    sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
+    sessionDesc.targets = &targetDesc;
+    sessionDesc.targetCount = 1;
 
     std::array options =
         {
-	        slang::CompilerOptionEntry{
+            slang::CompilerOptionEntry{
                 slang::CompilerOptionName::EmitSpirvDirectly,
-                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}
-            },
-    		slang::CompilerOptionEntry{
-    			slang::CompilerOptionName::BindlessSpaceIndex,
-			   {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}
-    		}
-        };
+                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}},
+            slang::CompilerOptionEntry{
+                slang::CompilerOptionName::BindlessSpaceIndex,
+                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}}};
     sessionDesc.compilerOptionEntries = options.data();
     sessionDesc.compilerOptionEntryCount = options.size();
 
@@ -257,9 +257,9 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
     // 3. Load module
     Slang::ComPtr<slang::IModule> slangModule;
     {
-		auto hashStr = std::to_string(std::hash<std::string>()(shaderCode));
+        auto hashStr = std::to_string(std::hash<std::string>()(shaderCode));
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        slangModule = session->loadModuleFromSourceString(hashStr.c_str(),(hashStr + ".slang").c_str(),shaderCode.c_str(),diagnosticsBlob.writeRef()); // Optional diagnostic container
+        slangModule = session->loadModuleFromSourceString(hashStr.c_str(), (hashStr + ".slang").c_str(), shaderCode.c_str(), diagnosticsBlob.writeRef()); // Optional diagnostic container
         diagnoseIfNeeded(diagnosticsBlob);
         if (!slangModule)
         {
@@ -280,11 +280,10 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
     }
 
     // 5. Compose Modules + Entry Points
-    std::array<slang::IComponentType*, 2> componentTypes =
+    std::array<slang::IComponentType *, 2> componentTypes =
         {
             slangModule,
-            entryPoint
-        };
+            entryPoint};
 
     Slang::ComPtr<slang::IComponentType> composedProgram;
     {
@@ -295,8 +294,8 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
             composedProgram.writeRef(),
             diagnosticsBlob.writeRef());
         diagnoseIfNeeded(diagnosticsBlob);
-		if (SLANG_FAILED(result))
-			return {};
+        if (SLANG_FAILED(result))
+            return {};
     }
 
     // 6. Link
@@ -307,8 +306,8 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
             linkedProgram.writeRef(),
             diagnosticsBlob.writeRef());
         diagnoseIfNeeded(diagnosticsBlob);
-		if (SLANG_FAILED(result))
-			return {};
+        if (SLANG_FAILED(result))
+            return {};
     }
 
     // 7. Get Target Kernel Code
@@ -321,178 +320,179 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
             spirvCode.writeRef(),
             diagnosticsBlob.writeRef());
         diagnoseIfNeeded(diagnosticsBlob);
-		if (SLANG_FAILED(result))
-			return {};
+        if (SLANG_FAILED(result))
+            return {};
     }
     result.resize(spirvCode->getBufferSize() / sizeof(uint32_t));
     memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
     return result;
 }
 
-//get Reflected Bind Info
+// get Reflected Bind Info
 ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBindInfo(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion)
 {
-	ShaderCodeModule::ShaderResources result = {};
+    ShaderCodeModule::ShaderResources result = {};
     spirv_cross::ShaderResources res{};
 
-    spirv_cross::CompilerGLSL* compiler{};
+    spirv_cross::CompilerGLSL *compiler{};
     switch (targetLanguage)
     {
-        case ShaderLanguage::GLSL: {
-            compiler = new spirv_cross::CompilerGLSL(std::move(spirv_file));
+    case ShaderLanguage::GLSL: {
+        compiler = new spirv_cross::CompilerGLSL(std::move(spirv_file));
 
-            spirv_cross::CompilerGLSL::Options opts = compiler->get_common_options();
-            opts.enable_420pack_extension = false;
-            if (targetVersion > 0)
-            {
-                opts.version = targetVersion;
-            }
-            //opts.es = (targetLanguage == ShaderLanguage::ESSL);
-            opts.es = false;
-            compiler->set_common_options(opts);
-            res = compiler->get_shader_resources();
-            break;
+        spirv_cross::CompilerGLSL::Options opts = compiler->get_common_options();
+        opts.enable_420pack_extension = false;
+        if (targetVersion > 0)
+        {
+            opts.version = targetVersion;
         }
-        case ShaderLanguage::HLSL: {
-            auto hlsl_compiler = new spirv_cross::CompilerHLSL{std::move(spirv_file)};
-            compiler = hlsl_compiler;
-            auto hlsl_options = hlsl_compiler->get_hlsl_options();
-            hlsl_options.shader_model = 67;
-            hlsl_compiler->set_hlsl_options(hlsl_options);
+        // opts.es = (targetLanguage == ShaderLanguage::ESSL);
+        opts.es = false;
+        compiler->set_common_options(opts);
+        res = compiler->get_shader_resources();
+        break;
+    }
+    case ShaderLanguage::HLSL: {
+        auto hlsl_compiler = new spirv_cross::CompilerHLSL{std::move(spirv_file)};
+        compiler = hlsl_compiler;
+        auto hlsl_options = hlsl_compiler->get_hlsl_options();
+        hlsl_options.shader_model = 67;
+        hlsl_compiler->set_hlsl_options(hlsl_options);
 
-            res = compiler->get_shader_resources();
-            break;
-        }
-        default: throw std::runtime_error("unsupported shader language");
+        res = compiler->get_shader_resources();
+        break;
+    }
+    default:
+        throw std::runtime_error("unsupported shader language");
     }
 
+    for (auto &item : res.uniform_buffers)
+    {
+        ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
 
-	for (auto& item : res.uniform_buffers)
-	{
-		ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
+        bindInfo.variateName = item.name;
+        bindInfo.typeName = "uniform";
+        bindInfo.elementCount = compiler->get_type((uint64_t)item.base_type_id).member_types.size();
+        bindInfo.typeSize = (uint32_t)compiler->get_declared_struct_size(compiler->get_type(item.base_type_id));
 
-		bindInfo.variateName = item.name;
-		bindInfo.typeName = "uniform";
-		bindInfo.elementCount = compiler->get_type((uint64_t)item.base_type_id).member_types.size();
-		bindInfo.typeSize = (uint32_t)compiler->get_declared_struct_size(compiler->get_type(item.base_type_id));
+        bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
+        bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
+        bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
 
-		bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
-		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
-		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
-
-		bindInfo.bindType = ShaderCodeModule::ShaderResources ::uniformBuffers;
-        //result.bindInfoPool.push_back(bindInfo);
+        bindInfo.bindType = ShaderCodeModule::ShaderResources ::uniformBuffers;
+        // result.bindInfoPool.push_back(bindInfo);
         result.tireTree.addShaderBindInfo(bindInfo.variateName, bindInfo);
-	}
+    }
 
-	for (auto& item : res.sampled_images)
-	{
-		ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
+    for (auto &item : res.sampled_images)
+    {
+        ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
 
-		bindInfo.typeName = "sampler2D";
-		bindInfo.variateName = item.name;
+        bindInfo.typeName = "sampler2D";
+        bindInfo.variateName = item.name;
 
-		bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
-		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
-		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
+        bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
+        bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
+        bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
 
         bindInfo.bindType = ShaderCodeModule::ShaderResources ::sampledImages;
 
-        //result.bindInfoPool.push_back(bindInfo);
+        // result.bindInfoPool.push_back(bindInfo);
         result.tireTree.addShaderBindInfo(bindInfo.variateName, bindInfo);
-	}
+    }
 
-	for (auto& item : res.stage_inputs)
-	{
-		ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
+    for (auto &item : res.stage_inputs)
+    {
+        ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
 
-		bindInfo.variateName = item.name;
+        bindInfo.variateName = item.name;
 
-		const spirv_cross::SPIRType& base_type = compiler->get_type(item.base_type_id);
-		bindInfo.elementCount = base_type.vecsize * base_type.columns;
-		bindInfo.typeSize = 4 * base_type.vecsize * base_type.columns;
+        const spirv_cross::SPIRType &base_type = compiler->get_type(item.base_type_id);
+        bindInfo.elementCount = base_type.vecsize * base_type.columns;
+        bindInfo.typeSize = 4 * base_type.vecsize * base_type.columns;
 
-		switch (base_type.basetype)
-		{
-		case spirv_cross::SPIRType::Float:
-			bindInfo.typeName = "float";
-			break;
-		case spirv_cross::SPIRType::UInt:
-			bindInfo.typeName = "uint";
-			break;
-		case spirv_cross::SPIRType::Int:
-			bindInfo.typeName = "int";
-			break;
-		default:
-			break;
-		}
+        switch (base_type.basetype)
+        {
+        case spirv_cross::SPIRType::Float:
+            bindInfo.typeName = "float";
+            break;
+        case spirv_cross::SPIRType::UInt:
+            bindInfo.typeName = "uint";
+            break;
+        case spirv_cross::SPIRType::Int:
+            bindInfo.typeName = "int";
+            break;
+        default:
+            break;
+        }
 
-		bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
-		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
-		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
+        bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
+        bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
+        bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
 
         bindInfo.bindType = ShaderCodeModule::ShaderResources ::stageInputs;
 
-        //result.bindInfoPool.push_back(bindInfo);
+        // result.bindInfoPool.push_back(bindInfo);
         result.tireTree.addShaderBindInfo(bindInfo.variateName, bindInfo);
-	}
+    }
 
-	for (auto& item : res.stage_outputs)
-	{
-		ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
+    for (auto &item : res.stage_outputs)
+    {
+        ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
 
-		bindInfo.variateName = item.name;
+        bindInfo.variateName = item.name;
 
-		const spirv_cross::SPIRType& base_type = compiler->get_type(item.base_type_id);
-		bindInfo.elementCount = base_type.vecsize * base_type.columns;
-		bindInfo.typeSize = 4 * base_type.vecsize * base_type.columns;
+        const spirv_cross::SPIRType &base_type = compiler->get_type(item.base_type_id);
+        bindInfo.elementCount = base_type.vecsize * base_type.columns;
+        bindInfo.typeSize = 4 * base_type.vecsize * base_type.columns;
 
-		switch (base_type.basetype)
-		{
-		case spirv_cross::SPIRType::Float:
-			bindInfo.typeName = "float";
-			break;
-		case spirv_cross::SPIRType::UInt:
-			bindInfo.typeName = "uint";
-			break;
-		case spirv_cross::SPIRType::Int:
-			bindInfo.typeName = "int";
-			break;
-		default:
-			break;
-		}
+        switch (base_type.basetype)
+        {
+        case spirv_cross::SPIRType::Float:
+            bindInfo.typeName = "float";
+            break;
+        case spirv_cross::SPIRType::UInt:
+            bindInfo.typeName = "uint";
+            break;
+        case spirv_cross::SPIRType::Int:
+            bindInfo.typeName = "int";
+            break;
+        default:
+            break;
+        }
 
-		bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
-		bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
-		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
+        bindInfo.set = compiler->get_decoration(item.id, spv::DecorationDescriptorSet);
+        bindInfo.binding = compiler->get_decoration(item.id, spv::DecorationBinding);
+        bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
 
         bindInfo.bindType = ShaderCodeModule::ShaderResources ::stageOutputs;
 
-        //result.bindInfoPool.push_back(bindInfo);
+        // result.bindInfoPool.push_back(bindInfo);
         result.tireTree.addShaderBindInfo(bindInfo.variateName, bindInfo);
-	}
+    }
 
-	for (auto& item : res.push_constant_buffers)
-	{
-		result.pushConstantName = item.name;
-		result.pushConstantSize = (uint32_t)compiler->get_declared_struct_size(compiler->get_type((uint64_t)item.base_type_id));
+    for (auto &item : res.push_constant_buffers)
+    {
+        result.pushConstantName = item.name;
+        result.pushConstantSize = (uint32_t)compiler->get_declared_struct_size(compiler->get_type((uint64_t)item.base_type_id));
 
-		//obtain all the push constant member
-		spirv_cross::SmallVector<spirv_cross::BufferRange> ranges = compiler->get_active_buffer_ranges(item.id);
-		for (auto& range : ranges)
-		{
-			ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
-			bindInfo.typeSize = (uint32_t)range.range;
-			bindInfo.byteOffset = (uint32_t)range.offset;
-			bindInfo.variateName = compiler->get_member_name(item.base_type_id, range.index);
+        // obtain all the push constant member
+        spirv_cross::SmallVector<spirv_cross::BufferRange> ranges = compiler->get_active_buffer_ranges(item.id);
+        for (auto &range : ranges)
+        {
+            ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo = {};
+            bindInfo.typeSize = (uint32_t)range.range;
+            bindInfo.byteOffset = (uint32_t)range.offset;
+            bindInfo.variateName = compiler->get_member_name(item.base_type_id, range.index);
 
             bindInfo.bindType = ShaderCodeModule::ShaderResources ::pushConstantMembers;
 
-			//result.bindInfoPool.push_back(bindInfo);
-            result.tireTree.addShaderBindInfo(bindInfo.variateName, bindInfo);
-		}
-	}
+            // result.bindInfoPool.push_back(bindInfo);
+            std::string bindInfoName = result.pushConstantName + "." + bindInfo.variateName;
+            result.tireTree.addShaderBindInfo(bindInfoName, bindInfo);
+        }
+    }
 
     delete compiler;
-	return result;
+    return result;
 }
