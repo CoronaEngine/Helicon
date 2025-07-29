@@ -60,19 +60,47 @@ struct ShaderCodeModule
 
         std::vector<std::pair<std::string, ShaderBindInfo>> bindInfoPool;
 
+
         ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
         {
-            auto it = std::lower_bound(bindInfoPool.begin(), bindInfoPool.end(), resourceName,
-                                       [](const std::pair<std::string, ShaderBindInfo> &element, const std::string &value) {
-                                           return element.first < value;
-                                       });
-            if (it != bindInfoPool.end() && it->first == resourceName)
+            if (bindInfoPool.empty())
             {
-                return &it->second;
+                return nullptr;
             }
             else
             {
-                return nullptr;
+                uint16_t charIndex = 0;
+
+                uint16_t left = 0;
+                uint16_t right = bindInfoPool.size() - 1;
+
+                while (left <= right)
+                {
+                    if (left == right)
+                    {
+                        return (bindInfoPool[left].first[charIndex] == resourceName[charIndex]) ? &(bindInfoPool[left].second) : nullptr;
+                    }
+                    if (bindInfoPool[left].first[charIndex] == resourceName[charIndex] &&
+                        bindInfoPool[right].first[charIndex] == resourceName[charIndex])
+                    {
+                        charIndex++;
+                    }
+
+                    if (resourceName[charIndex] > bindInfoPool[left].first[charIndex])
+                    {
+                        left++;
+                    }
+                    if (resourceName[charIndex] < bindInfoPool[right].first[charIndex])
+                    {
+                        right--;
+                    }
+
+                    if (resourceName[charIndex] < bindInfoPool[left].first[charIndex] ||
+                        resourceName[charIndex] > bindInfoPool[right].first[charIndex])
+                    {
+                        return nullptr;
+                    }
+                }
             }
         }
     } shaderResources;
