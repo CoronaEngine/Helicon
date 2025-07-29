@@ -3,10 +3,9 @@
 #include <cstdint>
 #include <source_location>
 #include <string>
+#include <unordered_map>
 #include <variant>
 #include <vector>
-#include <unordered_map>
-
 
 enum class ShaderLanguage : uint16_t
 {
@@ -60,7 +59,7 @@ struct ShaderCodeModule
 
         std::vector<ShaderBindInfo> bindInfoPool;
 
-struct TireNode
+        struct TireNode
         {
             ShaderBindInfo *pData;
             TireNode *next[256];
@@ -130,17 +129,16 @@ struct TireNode
 
             ~TireTree()
             {
-                if (pRoot != nullptr)
-                {
-                    releaseTireNode(pRoot);
-                }
+                // if (pRoot != nullptr)
+                //{
+                //     releaseTireNode(pRoot);
+                // }
             }
-        }tireTree;
-
+        } tireTree;
 
         ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
         {
-            tireTree.findShaderBindInfo(resourceName);
+            return tireTree.findShaderBindInfo(resourceName);
         }
     } shaderResources;
 
