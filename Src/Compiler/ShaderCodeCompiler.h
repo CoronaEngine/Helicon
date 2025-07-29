@@ -62,9 +62,11 @@ struct ShaderCodeModule
 
         ShaderBindInfo *findShaderBindInfo(const std::string &resourceName)
         {
-            auto it = std::find_if(bindInfoPool.begin(), bindInfoPool.end(),
-                                   [&](const auto &pair) { return pair.first == resourceName; });
-            if (it != bindInfoPool.end())
+            auto it = std::lower_bound(bindInfoPool.begin(), bindInfoPool.end(), resourceName,
+                                       [](const std::pair<std::string, ShaderBindInfo> &element, const std::string &value) {
+                                           return element.first < value;
+                                       });
+            if (it != bindInfoPool.end() && it->first == resourceName)
             {
                 return &it->second;
             }
