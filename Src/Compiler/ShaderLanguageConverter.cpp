@@ -381,7 +381,8 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 		bindInfo.location = compiler->get_decoration(item.id, spv::DecorationLocation);
 
 		bindInfo.bindType = ShaderCodeModule::ShaderResources ::uniformBuffers;
-        result.bindInfoPool.push_back(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
+        result.bindInfoPool.push_back(bindInfo);
+        result.tireTree.addShaderBindInfo(bindInfo.variateName, &bindInfo);
 	}
 
 	for (auto& item : res.sampled_images)
@@ -397,7 +398,8 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 
         bindInfo.bindType = ShaderCodeModule::ShaderResources ::sampledImages;
 
-        result.bindInfoPool.push_back(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
+        result.bindInfoPool.push_back(bindInfo);
+        result.tireTree.addShaderBindInfo(bindInfo.variateName, &bindInfo);
 	}
 
 	for (auto& item : res.stage_inputs)
@@ -431,7 +433,8 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 
         bindInfo.bindType = ShaderCodeModule::ShaderResources ::stageInputs;
 
-        result.bindInfoPool.push_back(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
+        result.bindInfoPool.push_back(bindInfo);
+        result.tireTree.addShaderBindInfo(bindInfo.variateName, &bindInfo);
 	}
 
 	for (auto& item : res.stage_outputs)
@@ -465,7 +468,8 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 
         bindInfo.bindType = ShaderCodeModule::ShaderResources ::stageOutputs;
 
-        result.bindInfoPool.push_back(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(bindInfo.variateName, bindInfo));
+        result.bindInfoPool.push_back(bindInfo);
+        result.tireTree.addShaderBindInfo(bindInfo.variateName, &bindInfo);
 	}
 
 	for (auto& item : res.push_constant_buffers)
@@ -484,13 +488,10 @@ ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBi
 
             bindInfo.bindType = ShaderCodeModule::ShaderResources ::pushConstantMembers;
 
-			result.bindInfoPool.push_back(std::pair<std::string, ShaderCodeModule::ShaderResources::ShaderBindInfo>(result.pushConstantName + "." + bindInfo.variateName, bindInfo));
+			result.bindInfoPool.push_back(bindInfo);
+            result.tireTree.addShaderBindInfo(bindInfo.variateName, &bindInfo);
 		}
 	}
-
-	std::sort(result.bindInfoPool.begin(), result.bindInfoPool.end(), [](const auto &a, const auto &b) {
-        return a.first < b.first;
-    });
 
     delete compiler;
 	return result;
