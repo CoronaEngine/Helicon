@@ -9,6 +9,9 @@
   - （开发中）支持跨语言include
 - 支持运行时编译JIT、支持Shader反射
   - 支持spirv-cross的JIT和反射
+  - （开发中）支持Slang的JIT和反射
+  - （开发中）支持glslang的JIT和反射
+  - （开发中）支持DXC的JIT和反射
 - 支持Shader硬编码至c艹
   - 支持Slang、HLSL、GLSL、SPIRV、DXIL、DXBC硬编码
   - （开发中）支持Shader反射信息硬编码
