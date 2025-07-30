@@ -1,4 +1,4 @@
-## 框架设计
+## 功能介绍
 - 支持Embedded DSL（native C艹，CUDA-like）编写Shader：
   - Embedded DSL生成Slang（Slang自带兼容各种奇怪的平台）
 - 支持Slang、HLSL、GLSL、SPIRV语言的Shader输入，支持HLSL、GLSL、SPIRV三者转译
