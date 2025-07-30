@@ -21,3 +21,4 @@
 - 支持Slang、glslang、DXC的JIT和反射
 - 支持Shader反射信息硬编码
 - 支持跨语言include
+- EDSL：for和if中调用函数
