@@ -14,6 +14,6 @@
 
 ## TODO LIST
 - SPIRV转译后的HLSL，通过DXC编译成DXIL、DXBC
-- 支持Slang、DXIL、DXBC的Shader硬编码
+- 支持DXIL、DXBC的Shader硬编码
 - 支持Shader反射信息硬编码
 - 支持跨语言include
