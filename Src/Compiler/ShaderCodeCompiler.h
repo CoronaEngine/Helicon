@@ -114,5 +114,5 @@ struct ShaderCodeCompiler
     [[nodiscard]] ShaderCodeModule getShaderCode(ShaderLanguage language) const;
 
   private:
-    std::string hardcodeVariableName;
+    std::string itemName;
 };

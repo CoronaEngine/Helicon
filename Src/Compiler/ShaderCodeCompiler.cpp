@@ -37,7 +37,7 @@ std::string enumToString(ShaderStage stage)
 
 ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language, const std::source_location &sourceLocation)
 {
-    hardcodeVariableName = ShaderHardcodeManager::getHardcodeVariableName(sourceLocation, inputStage);
+    itemName = ShaderHardcodeManager::getItemName(sourceLocation, inputStage);
 
 #if CABBAGE_ENGINE_DEBUG
     std::vector<uint32_t> codeSpirV = {};
@@ -79,11 +79,10 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     // ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
     // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
 
-    auto itemName = enumToString(inputStage);
-    ShaderHardcodeManager::addTarget(codeSpirV, "SpirV", itemName, sourceLocation);
-    ShaderHardcodeManager::addTarget(codeGLSL, "GLSL", itemName, sourceLocation);
-    ShaderHardcodeManager::addTarget(codeHLSL, "HLSL", itemName, sourceLocation);
-    ShaderHardcodeManager::addTarget(codeSlang, "Slang", itemName, sourceLocation);
+    ShaderHardcodeManager::addTarget(codeSpirV, "SpirV", itemName);
+    ShaderHardcodeManager::addTarget(codeGLSL, "GLSL", itemName);
+    ShaderHardcodeManager::addTarget(codeHLSL, "HLSL", itemName);
+    ShaderHardcodeManager::addTarget(codeSlang, "Slang", itemName);
 #endif
 }
 

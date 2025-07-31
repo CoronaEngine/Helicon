@@ -8,8 +8,6 @@
 
 bool ShaderHardcodeManager::hardcodeFileOpened = false;
 
-const std::string ShaderHardcodeManager::hardcodeShaderPath = (std::filesystem::path(HELICON_ROOT_PATH) / "Src" / "Compiler" / "HardcodeShaders").string();
-
 
 std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_location& sourceLocation, ShaderStage inputStage)
 {
@@ -50,58 +48,15 @@ std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_loc
 	return fileName + "_" + std::to_string(sourceLocation.line()) + "_" + std::to_string(sourceLocation.column());
 }
 
-bool ShaderHardcodeManager::generateHardcodeFiles()
+std::string ShaderHardcodeManager::getItemName(const std::source_location& sourceLocation, ShaderStage inputStage)
 {
-	{
-        std::fstream fileStream(hardcodeShaderPath + "/HardcodeShaders.h", std::ios::out);
-
-		fileStream << "#pragma once" << std::endl;
-        fileStream << "#include <unordered_map>" << std::endl;
-		fileStream << "#include\"../ShaderCodeCompiler.h\"" << std::endl;
-		fileStream << "class HardcodeShaders" << std::endl;
-		fileStream << "{" << std::endl;
-		fileStream << "	friend struct ShaderHardcodeManager;" << std::endl;
-		fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersSpirV;" << std::endl;
-		//fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersDXIL;" << std::endl;
-		fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersHLSL;" << std::endl;
-		fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersGLSL;" << std::endl;
-		fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersSlang;" << std::endl;
-		//fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersESSL;" << std::endl;
-		//fileStream << "	static std::unordered_map<std::string, ShaderCodeModule> hardcodeShadersMSL;" << std::endl;
-		fileStream << "};" << std::endl;
-
-		fileStream.close();
-	}
-
-	auto createCodeFile = [&](const std::string &lang)->void
-		{
-			std::fstream fileStream(hardcodeShaderPath + "/HardcodeShaders" + lang + ".cpp", std::ios::out);
-
-			fileStream << "#include\"HardcodeShaders.h\"" << std::endl;
-			fileStream << "std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShaders" + lang + " = {" << std::endl;
-			fileStream << "};";
-
-			fileStream.close();
-		};
-
-	createCodeFile("SpirV");
-	//createCodeFile("DXIL");
-	createCodeFile("HLSL");
-	createCodeFile("GLSL");
-	createCodeFile("Slang");
-	//createCodeFile("ESSL");
-	//createCodeFile("MSL");
-
-	hardcodeFileOpened = true;
-
-	return true;
+	return enumToString(inputStage) + "_" + getSourceLocationString(sourceLocation);
 }
 
 void ShaderHardcodeManager::addTarget(
 	const std::string& shaderCode,
 	const std::string& targetName,
-	const std::string& itemName,
-	const std::source_location& sourceLocation)
+	const std::string& itemName)
 {
 	createHeader(targetName);
 
@@ -110,12 +65,11 @@ void ShaderHardcodeManager::addTarget(
 
 	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
 	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-	hardcodeShaderFile << "{\"" + itemName + "_" + getSourceLocationString(sourceLocation) + "\", ShaderCodeModule(R\"(" + shaderCode + ")\"),}," << std::endl;
+	hardcodeShaderFile << "{\"" + itemName + "\", ShaderCodeModule(R\"(" + shaderCode + ")\"),}," << std::endl;
 	hardcodeShaderFile << "};";
 }
 
-void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const std::string& targetName,
-	const std::string& itemName, const std::source_location& sourceLocation)
+void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const std::string& targetName, const std::string& itemName)
 {
 	createHeader(targetName);
 
@@ -124,36 +78,13 @@ void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, c
 
 	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
 	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-	hardcodeShaderFile << "{\"" + itemName + "_" + getSourceLocationString(sourceLocation) + "\", ShaderCodeModule(std::vector<uint32_t>{";
+	hardcodeShaderFile << "{\"" + itemName + "\", ShaderCodeModule(std::vector<uint32_t>{";
 	for (uint32_t code : shaderCode)
 	{
 		hardcodeShaderFile << code << ",";
 	}
 	hardcodeShaderFile << "}),}," << std::endl;
 	hardcodeShaderFile << "};";
-}
-
-std::string ShaderHardcodeManager::ShaderLanguageFlagToString(ShaderLanguage language)
-{
-	switch (language)
-	{
-	case ShaderLanguage::GLSL:
-		return "GLSL";
-	case ShaderLanguage::HLSL:
-		return "HLSL";
-	case ShaderLanguage::SpirV:
-		return "SpirV";
-	case ShaderLanguage::Slang:
-		return "Slang";
-	//case ShaderLanguage::ESSL:
-	//	return "ESSL";
-	//case ShaderLanguage::MSL:
-	//	return "MSL";
-	//case ShaderLanguage::DXIL:
-	//	return "DXIL";
-	default:
-		return " ";
-	}
 }
 
 void ShaderHardcodeManager::createHeader(const std::string& targetName)
