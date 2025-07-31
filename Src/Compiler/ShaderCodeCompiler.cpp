@@ -4,6 +4,36 @@
 #include "ShaderHardcodeManager.h"
 #include "ShaderLanguageConverter.h"
 
+std::string enumToString(ShaderLanguage language) {
+    switch (language)
+    {
+        case ShaderLanguage::GLSL:
+            return "GLSL";
+        case ShaderLanguage::HLSL:
+            return "HLSL";
+        case ShaderLanguage::SpirV:
+            return "SpirV";
+        case ShaderLanguage::Slang:
+            return "Slang";
+        default:break;
+    }
+    return "Unknown";
+}
+
+std::string enumToString(ShaderStage stage)
+{
+    switch (stage)
+    {
+        case ShaderStage::VertexShader:
+            return "VertexShader";
+        case ShaderStage::FragmentShader:
+            return "FragmentShader";
+        case ShaderStage::ComputeShader:
+            return "ComputeShader";
+        default:break;
+    }
+    return "Unknown";
+}
 
 ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language, const std::source_location &sourceLocation)
 {
@@ -44,16 +74,23 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
         break;
     }
 
-    ShaderHardcodeManager::hardcodeShaderCode(codeSpirV, ShaderLanguage::SpirV, inputStage, sourceLocation);
-    ShaderHardcodeManager::hardcodeShaderCode(codeGLSL, ShaderLanguage::GLSL, inputStage, sourceLocation);
-    ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
-    ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
+    // ShaderHardcodeManager::hardcodeShaderCode(codeSpirV, ShaderLanguage::SpirV, inputStage, sourceLocation);
+    // ShaderHardcodeManager::hardcodeShaderCode(codeGLSL, ShaderLanguage::GLSL, inputStage, sourceLocation);
+    // ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
+    // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
+
+    auto itemName = enumToString(inputStage);
+    ShaderHardcodeManager::addTarget(codeSpirV, "SpirV", itemName, sourceLocation);
+    ShaderHardcodeManager::addTarget(codeGLSL, "GLSL", itemName, sourceLocation);
+    ShaderHardcodeManager::addTarget(codeHLSL, "HLSL", itemName, sourceLocation);
+    ShaderHardcodeManager::addTarget(codeSlang, "Slang", itemName, sourceLocation);
 #endif
 }
 
 ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language) const
 {
-    ShaderCodeModule result = ShaderHardcodeManager::getHardcodeShader(hardcodeVariableName, language);
-    result.shaderResources = ShaderLanguageConverter::spirvCrossReflectedBindInfo(ShaderHardcodeManager::getHardcodeShader(hardcodeVariableName, ShaderLanguage::SpirV), ShaderLanguage::HLSL);
-    return result;
+    // ShaderCodeModule result = ShaderHardcodeManager::getHardcodeShader(hardcodeVariableName, language);
+    // result.shaderResources = ShaderLanguageConverter::spirvCrossReflectedBindInfo(ShaderHardcodeManager::getHardcodeShader(hardcodeVariableName, ShaderLanguage::SpirV), ShaderLanguage::HLSL);
+    // return result;
+    return {};
 }

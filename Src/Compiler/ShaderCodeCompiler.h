@@ -15,6 +15,8 @@ enum class ShaderLanguage : uint16_t
     Slang,
 };
 
+std::string enumToString(ShaderLanguage language);
+
 enum class ShaderStage : uint16_t
 {
     VertexShader = 0,
@@ -26,6 +28,8 @@ enum class ShaderStage : uint16_t
     // ClosestHitShader = 6,
     // MissShader = 7,
 };
+
+std::string enumToString(ShaderStage stage);
 
 struct ShaderCodeModule
 {

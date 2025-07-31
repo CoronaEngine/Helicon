@@ -1,6 +1,48 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_186_34",
-ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_7;
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersSlang = {{"VertexShader_D__Files_Code_Projects_Helicon_Examples_main_cpp", ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_7;
+struct aggregate_type_0 {
+	float3 inPosition;
+	float3 inNormal;
+	float2 inTexCoord;
+	float3 inColor;
+}
+struct aggregate_type_1 {
+	float3 fragPos;
+	float3 fragNormal;
+	float2 fragTexCoord;
+	float3 fragColor;
+}
+struct global_ubo_struct {
+	float4x4 global_var_0;
+	float3x3 global_var_1;
+	float4x4 global_var_2;
+	float4x4 global_var_3;
+	float3 global_var_4;
+	float3 global_var_5;
+	float3 global_var_6;
+	SamplerState.Handle global_var_9;
+}
+uniform ConstantBuffer<global_ubo_struct>.Handle global_ubo;
+struct vertex_input {
+	aggregate_type_0 var_0 : LOCATION0;
+}
+struct vertex_output {
+	float4 position_output : SV_POSITION;
+	aggregate_type_1 var_6 : LOCATION0;
+}
+[shader("vertex")]
+vertex_output main(vertex_input input) {
+	vertex_output output;
+	aggregate_type_1 var_1 = {};
+	output.position_output = mul(mul(mul((*global_ubo).global_var_3,(*global_ubo).global_var_2),(*global_ubo).global_var_0),float4(input.var_0.inPosition,1.000000));
+	float3 var_2 = mul((*global_ubo).global_var_0,float4(input.var_0.inPosition,1.000000)).xyz;
+	float3 var_3 = normalize(mul((*global_ubo).global_var_1,input.var_0.inNormal));
+	float3 var_4 = input.var_0.inColor;
+	float2 var_5 = input.var_0.inTexCoord;
+	output.var_6 = var_1;
+	return output;
+}
+)"),},{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp", ShaderCodeModule(R"(uniform Texture2D<float4>.Handle global_var_7;
 struct aggregate_type_0 {
 	float3 inPosition;
 	float3 inNormal;
@@ -75,9 +117,7 @@ fragment_output main(fragment_input input) {
 	output.var_32 = float4(((var_31 * var_1) + var_5),1.000000);
 	return output;
 }
- )")
-},{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_187_34",
-ShaderCodeModule(R"(uniform RWTexture2D<float4>.Handle global_var_7;
+)"),},{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp", ShaderCodeModule(R"(uniform RWTexture2D<float4>.Handle global_var_7;
 struct compute_input {
 	uint3 dispatch_thread_id_input : SV_DispatchThreadID;
 }
@@ -97,6 +137,5 @@ void main(compute_input input) {
 	float var_9 = 0.140000;
 	global_var_7[input.dispatch_thread_id_input.xy] = float4(clamp(((global_var_7[input.dispatch_thread_id_input.xy].xyz * (var_6 + (var_5 * global_var_7[input.dispatch_thread_id_input.xy].xyz))) / (var_9 + (global_var_7[input.dispatch_thread_id_input.xy].xyz * (var_8 + (var_7 * global_var_7[input.dispatch_thread_id_input.xy].xyz))))),float3(0.000000, 0.000000, 0.000000),float3(1.000000, 1.000000, 1.000000)),1.000000);
 }
- )")
-},
+)"),},
 };

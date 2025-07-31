@@ -1,10 +1,9 @@
 #include <regex>
 #include <fstream>
+#include <sstream>
 #include <filesystem>
 
 #include"ShaderHardcodeManager.h"
-
-#include"HardcodeShaders/HardcodeShaders.h"
 
 
 bool ShaderHardcodeManager::hardcodeFileOpened = false;
@@ -50,151 +49,6 @@ std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_loc
 
 	return fileName + "_" + std::to_string(sourceLocation.line()) + "_" + std::to_string(sourceLocation.column());
 }
-
-
-bool ShaderHardcodeManager::hardcodeShaderCode(const std::string& shaderCode, ShaderLanguage language, ShaderStage inputStage, const std::source_location& sourceLocation)
-{
-#if CABBAGE_ENGINE_DEBUG
-	if (!hardcodeFileOpened)
-	{
-		generateHardcodeFiles();
-		hardcodeFileOpened = true;
-	}
-
-    std::string shaderLanguage = ShaderLanguageFlagToString(language);
-    std::string hardcodeVariableName = getHardcodeVariableName(sourceLocation, inputStage);
-
-    bool hardcodeExists = false;
-
-    switch (language)
-    {
-    case ShaderLanguage::GLSL:
-        if (HardcodeShaders::hardcodeShadersGLSL.contains(hardcodeVariableName))
-        {
-            hardcodeExists = true;
-        }
-        else
-        {
-            hardcodeExists = false;
-            HardcodeShaders::hardcodeShadersGLSL.insert(std::pair(hardcodeVariableName, shaderCode));
-        }
-        break;
-    case ShaderLanguage::HLSL:
-        if (HardcodeShaders::hardcodeShadersHLSL.contains(hardcodeVariableName))
-        {
-            hardcodeExists = true;
-        }
-        else
-        {
-            hardcodeExists = false;
-            HardcodeShaders::hardcodeShadersHLSL.insert(std::pair(hardcodeVariableName, shaderCode));
-        }
-        break;
-    case ShaderLanguage::Slang:
-        if (HardcodeShaders::hardcodeShadersSlang.contains(hardcodeVariableName))
-        {
-            hardcodeExists = true;
-        }
-        else
-        {
-            hardcodeExists = false;
-            HardcodeShaders::hardcodeShadersSlang.insert(std::pair(hardcodeVariableName, shaderCode));
-        }
-        break;
-    default:
-        return false;
-    }
-
-    if (!hardcodeExists)
-    {
-        std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
-
-        if (sourceFileStream.is_open())
-        {
-            sourceFileStream.seekg(-int(sizeof("};")), std::ios::end);
-
-            sourceFileStream << "{\"" + hardcodeVariableName + "\"," << std::endl;
-            sourceFileStream << "ShaderCodeModule(R\"(" << shaderCode << " )\")" << std::endl;
-
-            sourceFileStream << "}," << std::endl;
-            sourceFileStream << "};";
-
-            sourceFileStream.close();
-        }
-        else
-        {
-            throw std::runtime_error("Failed to open source path.");
-            return false;
-        }
-    }
-#endif
-
-	return true;
-}
-
-
-bool ShaderHardcodeManager::hardcodeShaderCode(const std::vector<uint32_t> &shaderCode, ShaderLanguage language, ShaderStage inputStage, const std::source_location &sourceLocation)
-{
-#if CABBAGE_ENGINE_DEBUG
-    if (!hardcodeFileOpened)
-    {
-        generateHardcodeFiles();
-        hardcodeFileOpened = true;
-    }
-
-    std::string shaderLanguage = ShaderLanguageFlagToString(language);
-    std::string hardcodeVariableName = getHardcodeVariableName(sourceLocation, inputStage);
-
-    bool hardcodeExists = false;
-
-    switch (language)
-    {
-    case ShaderLanguage::SpirV:
-        if (HardcodeShaders::hardcodeShadersSpirV.contains(hardcodeVariableName))
-        {
-            hardcodeExists = true;
-        }
-        else
-        {
-            hardcodeExists = false;
-            HardcodeShaders::hardcodeShadersSpirV.insert(std::pair<std::string, std::vector<uint32_t>>(hardcodeVariableName, shaderCode));
-        }
-        break;
-    default:
-        return false;
-    }
-
-    if (!hardcodeExists)
-    {
-        std::fstream sourceFileStream(hardcodeShaderPath + "/HardcodeShaders" + shaderLanguage + ".cpp", std::ios::in | std::ios::out);
-
-        if (sourceFileStream.is_open())
-        {
-            sourceFileStream.seekg(-int(sizeof("};")), std::ios::end);
-
-            sourceFileStream << "{\"" + hardcodeVariableName + "\",";
-            sourceFileStream << "ShaderCodeModule(std::vector<uint32_t>({";
-            for (size_t index = 0; index < shaderCode.size(); index++)
-            {
-                sourceFileStream << shaderCode[index] << ",";
-            }
-
-            sourceFileStream << "}))}," << std::endl;
-            sourceFileStream << "};";
-
-            sourceFileStream.close();
-        }
-        else
-        {
-            throw std::runtime_error("Failed to open source path.");
-            return false;
-        }
-    }
-#endif
-
-    return true;
-}
-
 
 bool ShaderHardcodeManager::generateHardcodeFiles()
 {
@@ -243,57 +97,40 @@ bool ShaderHardcodeManager::generateHardcodeFiles()
 	return true;
 }
 
-
-ShaderCodeModule ShaderHardcodeManager::getHardcodeShader(const std::string &hardcodeVariableName, ShaderLanguage language)
+void ShaderHardcodeManager::addTarget(
+	const std::string& shaderCode,
+	const std::string& targetName,
+	const std::string& itemName,
+	const std::source_location& sourceLocation)
 {
-	switch (language)
+	createHeader(targetName);
+
+	//Definition
+	createTarget(targetName);
+
+	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
+	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
+	hardcodeShaderFile << "{\"" + itemName + "_" + getSourceLocationString(sourceLocation) + "\", ShaderCodeModule(R\"(" + shaderCode + ")\"),}," << std::endl;
+	hardcodeShaderFile << "};";
+}
+
+void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const std::string& targetName,
+	const std::string& itemName, const std::source_location& sourceLocation)
+{
+	createHeader(targetName);
+
+	//Definition
+	createTarget(targetName);
+
+	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
+	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
+	hardcodeShaderFile << "{\"" + itemName + "_" + getSourceLocationString(sourceLocation) + "\", ShaderCodeModule(std::vector<uint32_t>{";
+	for (uint32_t code : shaderCode)
 	{
-	case ShaderLanguage::GLSL:
-	{
-		if (const auto it = HardcodeShaders::hardcodeShadersGLSL.find(hardcodeVariableName); it != HardcodeShaders::hardcodeShadersGLSL.end())
-			return it->second;
-		break;
+		hardcodeShaderFile << code << ",";
 	}
-	case ShaderLanguage::HLSL:
-	{
-	    if (const auto it = HardcodeShaders::hardcodeShadersHLSL.find(hardcodeVariableName); it != HardcodeShaders::hardcodeShadersHLSL.end())
-	        return it->second;
-		break;
-	}
-	case ShaderLanguage::SpirV:
-	{
-	    if (const auto it = HardcodeShaders::hardcodeShadersSpirV.find(hardcodeVariableName); it != HardcodeShaders::hardcodeShadersSpirV.end())
-	        return it->second;
-		break;
-	}
-	//case ShaderLanguage::ESSL:
-	//{
-	//	if (HardcodeShaders::hardcodeShadersESSL.find(hardcodeVariableName) != HardcodeShaders::hardcodeShadersESSL.end())
-	//	{
-	//		return HardcodeShaders::hardcodeShadersESSL[hardcodeVariableName];
-	//	}
-	//	break;
-	//}
-	//case ShaderLanguage::MSL:
-	//{
-	//	if (HardcodeShaders::hardcodeShadersMSL.find(hardcodeVariableName) != HardcodeShaders::hardcodeShadersMSL.end())
-	//	{
-	//		return HardcodeShaders::hardcodeShadersMSL[hardcodeVariableName];
-	//	}
-	//	break;
-	//}
-	//case ShaderLanguage::DXIL:
-	//{
-	//	if (HardcodeShaders::hardcodeShadersDXIL.find(hardcodeVariableName) != HardcodeShaders::hardcodeShadersDXIL.end())
-	//	{
-	//		return HardcodeShaders::hardcodeShadersDXIL[hardcodeVariableName];
-	//	}
-	//	break;
-	//}
-	default:
-		break;
-	}
-	return {};
+	hardcodeShaderFile << "}),}," << std::endl;
+	hardcodeShaderFile << "};";
 }
 
 std::string ShaderHardcodeManager::ShaderLanguageFlagToString(ShaderLanguage language)
@@ -317,4 +154,72 @@ std::string ShaderHardcodeManager::ShaderLanguageFlagToString(ShaderLanguage lan
 	default:
 		return " ";
 	}
+}
+
+void ShaderHardcodeManager::createHeader(const std::string& targetName)
+{
+	// 检查文件是否存在
+	std::fstream hardcodeShaderFile;
+	if (!hardcodeFileOpened)
+	{
+		// 如果不存在，则创建文件
+		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.h", std::ios::out | std::ios::trunc);
+		hardcodeShaderFile << R"(#pragma once
+#include <unordered_map>
+#include "../ShaderCodeCompiler.h"
+class HardcodeShaders
+{
+};)";
+		hardcodeFileOpened = true;
+		hardcodeShaderFile.close();
+	}
+
+	//Declare
+	hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.h", std::ios::in | std::ios::out);
+	if (auto& ti = targetInfos[targetName]; !ti.isExistTargetItem)
+	{
+		// 如果没有声明，添加声明
+		hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
+		hardcodeShaderFile << "\t""static std::unordered_map<std::string, ShaderCodeModule> hardcodeShaders" + targetName + ";" << std::endl;
+		hardcodeShaderFile << "};";
+		ti.isExistTargetItem = true;
+	}
+	hardcodeShaderFile.close();
+}
+
+void ShaderHardcodeManager::createTarget(const std::string& name)
+{
+	auto& exist = targetInfos[name];
+	if (exist.isExistTargetFile)
+		return;
+
+	std::fstream hardcodeShaderFile (hardcodePath / ("HardcodeShaders" + name + ".cpp"), std::ios::out | std::ios::trunc);
+	hardcodeShaderFile << R"(#include"HardcodeShaders.h"
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShaders)" + name + R"( = {
+};)";
+	exist.isExistTargetFile = true;
+}
+
+std::string ShaderHardcodeManager::getSourceLocationString(const std::source_location& sourceLocation)
+{
+	std::string fileName = sourceLocation.file_name();
+	std::regex pattern(R"(CabbageEngine(.*))");
+	std::smatch matches;
+	if (std::regex_search(fileName, matches, pattern))
+	{
+		if (matches.size() > 1)
+		{
+			fileName = matches[1].str();
+		}
+		else
+		{
+			throw std::runtime_error("Failed to resolve source path.");
+		}
+	}
+	std::ranges::replace(fileName, '\\', '_');
+	std::ranges::replace(fileName, '/', '_');
+	std::ranges::replace(fileName, '.', '_');
+	std::ranges::replace(fileName, ':', '_');
+
+	return fileName;
 }
