@@ -1,166 +1,5 @@
 #include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"VertexShader_C__Users_47226_Documents_Gtihub_Helicon_Examples_main_cpp_185_21",
-ShaderCodeModule(R"(#version 450
-layout(row_major) uniform;
-layout(row_major) buffer;
-
-#line 561 0
-struct _MatrixStorage_float4x4_ColMajorstd140_0
-{
-    vec4  data_0[4];
-};
-
-
-#line 2 1
-struct _MatrixStorage_float3x3_ColMajorstd140_0
-{
-    vec3  data_1[3];
-};
-
-
-#line 14
-struct global_ubo_struct_std140_0
-{
-    _MatrixStorage_float4x4_ColMajorstd140_0 global_var_0_0;
-    _MatrixStorage_float3x3_ColMajorstd140_0 global_var_1_0;
-    _MatrixStorage_float4x4_ColMajorstd140_0 global_var_2_0;
-    _MatrixStorage_float4x4_ColMajorstd140_0 global_var_3_0;
-    vec3 global_var_4_0;
-    vec3 global_var_5_0;
-    vec3 global_var_6_0;
-    uvec2 global_var_9_0;
-};
-
-
-#line 22921 0
-layout(binding = 2, set = 1)
-layout(std140) uniform block_global_ubo_struct_std140_0
-{
-    _MatrixStorage_float4x4_ColMajorstd140_0 global_var_0_0;
-    _MatrixStorage_float3x3_ColMajorstd140_0 global_var_1_0;
-    _MatrixStorage_float4x4_ColMajorstd140_0 global_var_2_0;
-    _MatrixStorage_float4x4_ColMajorstd140_0 global_var_3_0;
-    vec3 global_var_4_0;
-    vec3 global_var_5_0;
-    vec3 global_var_6_0;
-    uvec2 global_var_9_0;
-}_slang_resource_heap_0[];
-
-#line 22879
-struct GlobalParams_std140_0
-{
-    uvec2 global_var_7_0;
-    uvec2 global_ubo_0;
-};
-
-
-#line 22879
-layout(binding = 0)
-layout(std140) uniform block_GlobalParams_std140_0
-{
-    uvec2 global_var_7_0;
-    uvec2 global_ubo_0;
-}globalParams_0;
-
-#line 8 1
-struct aggregate_type_1_0
-{
-    vec3 fragPos_0;
-    vec3 fragNormal_0;
-    vec2 fragTexCoord_0;
-    vec3 fragColor_0;
-};
-
-
-#line 8
-aggregate_type_1_0 aggregate_type_1_x24init_0(vec3 fragPos_1, vec3 fragNormal_1, vec2 fragTexCoord_1, vec3 fragColor_1)
-{
-
-#line 8
-    aggregate_type_1_0 _S1;
-    _S1.fragPos_0 = fragPos_1;
-    _S1.fragNormal_0 = fragNormal_1;
-    _S1.fragTexCoord_0 = fragTexCoord_1;
-    _S1.fragColor_0 = fragColor_1;
-
-#line 8
-    return _S1;
-}
-
-
-#line 12144 0
-layout(location = 0)
-out vec3 entryPointParam_main_var_6_fragPos_0;
-
-
-#line 12144
-layout(location = 1)
-out vec3 entryPointParam_main_var_6_fragNormal_0;
-
-
-#line 12144
-layout(location = 2)
-out vec2 entryPointParam_main_var_6_fragTexCoord_0;
-
-
-#line 12144
-layout(location = 3)
-out vec3 entryPointParam_main_var_6_fragColor_0;
-
-
-#line 12144
-layout(location = 0)
-in vec3 input_var_0_inPosition_0;
-
-
-#line 28 1
-struct vertex_output_0
-{
-    vec4 position_output_0;
-    aggregate_type_1_0 var_6_0;
-};
-
-
-#line 33
-void main()
-{
-
-#line 9
-    const vec3 _S2 = vec3(0.0, 0.0, 0.0);
-
-#line 35
-    aggregate_type_1_0 var_1_0 = aggregate_type_1_x24init_0(_S2, _S2, vec2(0.0, 0.0), _S2);
-
-#line 34
-    vertex_output_0 output_0;
-
-    output_0.position_output_0 = (((vec4(input_var_0_inPosition_0, 1.0)) * ((((mat4x4(_slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][3])) * ((((mat4x4(_slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][3])) * (mat4x4(_slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][0], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][1], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][2], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][3], _slang_resource_heap_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][3]))))))))));
-
-#line 41
-    output_0.var_6_0 = var_1_0;
-    vertex_output_0 _S3 = output_0;
-
-#line 42
-    gl_Position = output_0.position_output_0;
-
-#line 42
-    entryPointParam_main_var_6_fragPos_0 = _S3.var_6_0.fragPos_0;
-
-#line 42
-    entryPointParam_main_var_6_fragNormal_0 = _S3.var_6_0.fragNormal_0;
-
-#line 42
-    entryPointParam_main_var_6_fragTexCoord_0 = _S3.var_6_0.fragTexCoord_0;
-
-#line 42
-    entryPointParam_main_var_6_fragColor_0 = _S3.var_6_0.fragColor_0;
-
-#line 42
-    return;
-}
-
- )")
-},{"FragmentShader_C__Users_47226_Documents_Gtihub_Helicon_Examples_main_cpp_186_24",
+std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShadersGLSL = {{"FragmentShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_186_34",
 ShaderCodeModule(R"(#version 450
 #extension GL_EXT_nonuniform_qualifier : require
 layout(row_major) uniform;
@@ -326,7 +165,7 @@ void main()
 }
 
  )")
-},{"ComputeShader_C__Users_47226_Documents_Gtihub_Helicon_Examples_main_cpp_187_24",
+},{"ComputeShader_D__Files_Code_Projects_Helicon_Examples_main_cpp_187_34",
 ShaderCodeModule(R"(#version 450
 #extension GL_EXT_nonuniform_qualifier : require
 layout(row_major) uniform;

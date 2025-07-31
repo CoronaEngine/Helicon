@@ -29,9 +29,19 @@ target_include_directories(Helicon PUBLIC
 
 # --- 1. 架构检测 ---
 if(MSVC)
-    set(TARGET_ARCH ${CMAKE_VS_PLATFORM_NAME})
+    message(STATUS "MSVC detected")
+    if(DEFINED CMAKE_VS_PLATFORM_NAME)
+        set(TARGET_ARCH ${CMAKE_VS_PLATFORM_NAME})
+    else()
+        # 如果VS平台名称未定义，使用指针大小判断
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(TARGET_ARCH "x64")
+        else()
+            set(TARGET_ARCH "x86")
+        endif()
+    endif()
 
-    if(${TARGET_ARCH} STREQUAL "Win32")
+    if(TARGET_ARCH STREQUAL "Win32")
         set(TARGET_ARCH "x86")
     endif()
 else()
