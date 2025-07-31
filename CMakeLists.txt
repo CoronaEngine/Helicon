@@ -22,6 +22,8 @@ add_compile_definitions(
     
     $<$<CONFIG:Debug>:CABBAGE_ENGINE_DEBUG>
     $<$<CONFIG:RelWithDebInfo>:CABBAGE_ENGINE_DEBUG>
+    $<$<CONFIG:Release>:CABBAGE_ENGINE_RELEASE>
+    $<$<CONFIG:MinSizeRel>:CABBAGE_ENGINE_RELEASE>
 )
 
 set(BUILD_SHARED_LIBS OFF)
