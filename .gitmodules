@@ -18,3 +18,6 @@
 	path = Env/glslang
 	url = https://github.com/KhronosGroup/glslang.git
 	ignore = all
+[submodule "Env/DXC"]
+	path = Env/DXC
+	url = https://github.com/microsoft/DirectXShaderCompiler.git
