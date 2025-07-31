@@ -88,8 +88,7 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
 
 ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language) const
 {
-    // ShaderCodeModule result = ShaderHardcodeManager::getHardcodeShader(hardcodeVariableName, language);
-    // result.shaderResources = ShaderLanguageConverter::spirvCrossReflectedBindInfo(ShaderHardcodeManager::getHardcodeShader(hardcodeVariableName, ShaderLanguage::SpirV), ShaderLanguage::HLSL);
-    // return result;
-    return {};
+    ShaderCodeModule result = ShaderHardcodeManager::getHardcodeShader(enumToString(language), itemName);
+    result.shaderResources = ShaderLanguageConverter::spirvCrossReflectedBindInfo(ShaderHardcodeManager::getHardcodeShader("SpirV", itemName), ShaderLanguage::HLSL);
+    return result;
 }

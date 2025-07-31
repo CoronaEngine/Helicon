@@ -87,6 +87,15 @@ void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, c
 	hardcodeShaderFile << "};";
 }
 
+ShaderCodeModule ShaderHardcodeManager::getHardcodeShader(const std::string& targetName, const std::string& itemName)
+{
+#ifdef CABBAGE_ENGINE_DEBUG
+#else
+
+#endif
+	return {};
+}
+
 void ShaderHardcodeManager::createHeader(const std::string& targetName)
 {
 	// 检查文件是否存在
