@@ -42,7 +42,7 @@ void ShaderHardcodeManager::addTarget(
 
 	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
 	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-	hardcodeShaderFile << "{\"" + itemName + "\", ShaderCodeModule(R\"(" + shaderCode + ")\"),}," << std::endl;
+	hardcodeShaderFile << "{\"" + itemName + "\", ShaderCodeModule(R\"(" + shaderCode + ")\"," + getShaderResourceOutput(shaderResource) + "),}," << std::endl;
 	hardcodeShaderFile << "};";
 
 	ShaderCodeModule result;
@@ -65,7 +65,7 @@ void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, c
 	{
 		hardcodeShaderFile << code << ",";
 	}
-	hardcodeShaderFile << "}),}," << std::endl;
+	hardcodeShaderFile << "}," + getShaderResourceOutput(shaderResource) + "),}," << std::endl;
 	hardcodeShaderFile << "};";
 
 	ShaderCodeModule result;
@@ -164,6 +164,36 @@ void ShaderHardcodeManager::createTarget(const std::string& name)
 std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShaders)" + name + R"( = {
 };)";
 	exist.isExistTargetFile = true;
+}
+
+std::string ShaderHardcodeManager::getShaderResourceOutput(const ShaderCodeModule::ShaderResources& shaderResources)
+{
+	std::stringstream result;
+	result << "{";
+	result << shaderResources.pushConstantSize << ",";
+	result << "\"" << shaderResources.pushConstantName << "\",";
+	result << "{";
+	for (const auto& [key, bindInfo]: shaderResources.bindInfoPool)
+	{
+		result << "{";
+		result << "\"" << key << "\",";
+		result << "{";
+		result << bindInfo.set << ",";
+		result << bindInfo.binding << ",";
+		result << bindInfo.location << ",";
+		result << "\"" << bindInfo.variateName << "\",";
+		result << "\"" << bindInfo.typeName << "\",";
+		result << bindInfo.elementCount << ",";
+		result << bindInfo.typeSize << ",";
+		result << bindInfo.byteOffset << ",";
+		result << "static_cast<ShaderCodeModule::ShaderResources::BindType>(" << bindInfo.bindType << ")";
+		result << "}";
+		result << "},";
+	}
+	result << "}";
+
+	result << "}";
+	return result.str();
 }
 
 std::string ShaderHardcodeManager::getSourceLocationString(const std::source_location& sourceLocation)
