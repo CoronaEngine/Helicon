@@ -43,6 +43,7 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     stage = enumToString(inputStage);
 #if CABBAGE_ENGINE_DEBUG
     std::vector<uint32_t> codeSpirV = {};
+    std::vector<uint32_t> codeDXIL = {};
     std::string codeGLSL;
     std::string codeHLSL;
     std::string codeSlang;
@@ -54,18 +55,21 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
         codeSpirV = ShaderLanguageConverter::slangSpirvCompiler(codeSlang);
         codeGLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::GLSL);
         codeHLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::HLSL);
+        codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
         break;
     case ShaderLanguage::GLSL:
         codeGLSL = shaderCode;
         codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeGLSL, language, inputStage);
         codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
         codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
+        codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
         break;
     case ShaderLanguage::HLSL:
         codeHLSL = shaderCode;
         codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeHLSL, language, inputStage);
         codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
         codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
+        codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
         break;
     //case ShaderLanguage::SpirV:
     //    codeSpirV = shaderCode;
@@ -86,6 +90,7 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     ShaderHardcodeManager::addTarget(codeGLSL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL"));
     ShaderHardcodeManager::addTarget(codeHLSL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL"));
     ShaderHardcodeManager::addTarget(codeSlang, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
+    ShaderHardcodeManager::addTarget(codeDXIL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL"));
 #endif
 }
 
