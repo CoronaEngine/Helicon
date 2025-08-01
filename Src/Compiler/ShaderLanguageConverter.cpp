@@ -20,6 +20,9 @@
 #include <array>
 #include <utility>
 
+#include <atlbase.h>
+#include <dxcapi.h>
+
 std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage)
 {
     // GLSL version is default by 460
@@ -325,6 +328,88 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
     }
     result.resize(spirvCode->getBufferSize() / sizeof(uint32_t));
     memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
+    return result;
+}
+
+std::vector<uint32_t> ShaderLanguageConverter::dxilCompiler(const std::string& hlslShader, ShaderStage stage)
+{
+    CComPtr<IDxcUtils> pUtils;
+    CComPtr<IDxcCompiler3> pCompiler;
+    DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&pUtils));
+    DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&pCompiler));
+
+    std::wstring_view targetName;
+    switch (stage)
+    {
+        case ShaderStage::VertexShader:
+            targetName = L"vs_6_6";
+            break;
+        case ShaderStage::FragmentShader:
+            targetName = L"ps_6_6";
+            break;
+        case ShaderStage::ComputeShader:
+            targetName = L"cs_6_6";
+            break;
+        default:
+            throw std::runtime_error("Unknown shader stage");
+    }
+    LPCWSTR args[] =
+    {
+        L"helicon",                  // Optional shader source file name for error reporting
+                                     // and for PIX shader source view.
+        L"-E", L"main",              // Entry point.
+        L"-T", targetName.data(),    // Target.
+#ifdef CABBAGE_ENGINE_DEBUG
+        L"-Zs",                      // Enable debug information (slim format)
+#endif
+    };
+
+    //
+    // Open source file.
+    //
+    CComPtr<IDxcBlobEncoding> pSource = nullptr;
+    pUtils->CreateBlob(hlslShader.data(), hlslShader.size() * sizeof(char), DXC_CP_ACP, &pSource);
+    DxcBuffer Source;
+    Source.Ptr = pSource->GetBufferPointer();
+    Source.Size = pSource->GetBufferSize();
+    Source.Encoding = DXC_CP_ACP; // Assume BOM says UTF8 or UTF16 or this is ANSI text.
+
+    //
+    // Compile it with specified arguments.
+    //
+    CComPtr<IDxcResult> pResults;
+    pCompiler->Compile(
+        &Source,                                   // Source buffer.
+        args,                                      // Array of pointers to arguments.
+        std::size(args),                           // Number of arguments.
+        nullptr,                                   // User-provided interface to handle #include directives (optional).
+        IID_PPV_ARGS(&pResults)                    // Compiler output status, buffer, and errors.
+    );
+
+    //
+    // Print errors if present.
+    //
+    CComPtr<IDxcBlobUtf8> pErrors = nullptr;
+    pResults->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&pErrors), nullptr);
+    // Note that d3dcompiler would return null if no errors or warnings are present.
+    // IDxcCompiler3::Compile will always return an error buffer, but its length
+    // will be zero if there are no warnings or errors.
+    if (pErrors != nullptr && pErrors->GetStringLength() != 0)
+        wprintf(L"DXC Warnings and Errors:\n%S\n", pErrors->GetStringPointer());
+
+    HRESULT hrStatus;
+    pResults->GetStatus(&hrStatus);
+    if (FAILED(hrStatus))
+        throw std::runtime_error("Dxc Compilation Failed");
+
+    CComPtr<IDxcBlob> pShader = nullptr;
+    CComPtr<IDxcBlobUtf16> pShaderName = nullptr;
+    pResults->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&pShader), &pShaderName);
+    if (!pShader)
+        throw std::runtime_error("Dxc Compilation Failed");
+
+    std::vector<uint32_t> result(pShader->GetBufferSize() / sizeof(uint32_t));
+    memcpy(result.data(), pShader->GetBufferPointer(), pShader->GetBufferSize());
     return result;
 }
 
