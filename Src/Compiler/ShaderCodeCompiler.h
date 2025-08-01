@@ -86,6 +86,16 @@ struct ShaderCodeModule
     {
     }
 
+    ShaderCodeModule(std::string shaderCode,ShaderResources shaderResources)
+        : shaderResources(std::move(shaderResources)),shaderCode(std::move(shaderCode))
+    {
+    }
+
+    ShaderCodeModule(std::vector<uint32_t> shaderCode,ShaderResources shaderResources)
+        : shaderResources(std::move(shaderResources)),shaderCode(std::move(shaderCode))
+    {
+    }
+
     operator std::string()
     {
         return std::get<std::string>(shaderCode);

@@ -32,8 +32,8 @@ std::string ShaderHardcodeManager::getItemName(const std::string& sourceLocation
 
 void ShaderHardcodeManager::addTarget(
 	const std::string& shaderCode,
-	const std::string& targetName,
-	const std::string& itemName)
+	const ShaderCodeModule::ShaderResources& shaderResource,
+	const std::string& targetName, const std::string& itemName)
 {
 	createHeader(targetName);
 
@@ -47,10 +47,11 @@ void ShaderHardcodeManager::addTarget(
 
 	ShaderCodeModule result;
 	result.shaderCode = shaderCode;
+	result.shaderResources = shaderResource;
 	debugHardcodeShaders[targetName][itemName] = result;
 }
 
-void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const std::string& targetName, const std::string& itemName)
+void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const ShaderCodeModule::ShaderResources& shaderResource, const std::string& targetName, const std::string& itemName)
 {
 	createHeader(targetName);
 
@@ -69,6 +70,7 @@ void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, c
 
 	ShaderCodeModule result;
 	result.shaderCode = shaderCode;
+	result.shaderResources = shaderResource;
 	debugHardcodeShaders[targetName][itemName] = result;
 }
 #endif

@@ -81,17 +81,15 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     // ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
     // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
 
-    ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV"));
-    ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL"));
-    ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL"));
-    ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
+    auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+    ShaderHardcodeManager::addTarget(codeSpirV, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV"));
+    ShaderHardcodeManager::addTarget(codeGLSL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL"));
+    ShaderHardcodeManager::addTarget(codeHLSL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL"));
+    ShaderHardcodeManager::addTarget(codeSlang, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
 #endif
 }
 
 ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language) const
 {
-    auto itemName = ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language));
-    ShaderCodeModule result = ShaderHardcodeManager::getHardcodeShader(stage, itemName);
-    result.shaderResources = ShaderLanguageConverter::spirvCrossReflectedBindInfo(ShaderHardcodeManager::getHardcodeShader("SpirV", itemName), ShaderLanguage::HLSL);
-    return result;
+    return ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language)));
 }
