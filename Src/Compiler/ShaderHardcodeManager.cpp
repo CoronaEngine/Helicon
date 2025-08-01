@@ -8,46 +8,6 @@
 
 bool ShaderHardcodeManager::hardcodeFileOpened = false;
 
-
-std::string ShaderHardcodeManager::getHardcodeVariableName(const std::source_location& sourceLocation, ShaderStage inputStage)
-{
-	std::string fileName = sourceLocation.file_name();
-    std::regex pattern(R"(CabbageEngine(.*))");
-    std::smatch matches;
-    if (std::regex_search(fileName, matches, pattern))
-    {
-        if (matches.size() > 1)
-        {
-            fileName = matches[1].str();
-        }
-        else
-        {
-            throw std::runtime_error("Failed to resolve source path.");
-        }
-    }
-    std::replace(fileName.begin(), fileName.end(), '\\', '_');
-    std::replace(fileName.begin(), fileName.end(), '/', '_');
-    std::replace(fileName.begin(), fileName.end(), '.', '_');
-    std::replace(fileName.begin(), fileName.end(), ':', '_');
-
-	switch (inputStage)
-	{
-	case ShaderStage::VertexShader:
-		fileName = "VertexShader_" + fileName;
-		break;
-	case ShaderStage::FragmentShader:
-		fileName = "FragmentShader_" + fileName;
-		break;
-	case ShaderStage::ComputeShader:
-		fileName = "ComputeShader_" + fileName;
-		break;
-	default:
-		break;
-	}
-
-	return fileName + "_" + std::to_string(sourceLocation.line()) + "_" + std::to_string(sourceLocation.column());
-}
-
 std::string ShaderHardcodeManager::getItemName(const std::source_location& sourceLocation, ShaderStage inputStage)
 {
 	return enumToString(inputStage) + "_" + getSourceLocationString(sourceLocation);
@@ -109,22 +69,35 @@ void ShaderHardcodeManager::createHeader(const std::string& targetName)
 #include "../ShaderCodeCompiler.h"
 class HardcodeShaders
 {
+	static std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>*> hardcodeShaders;
 };)";
-		hardcodeFileOpened = true;
 		hardcodeShaderFile.close();
+
+		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.cpp", std::ios::out | std::ios::trunc);
+		hardcodeShaderFile << R"(#include"HardcodeShaders.h"
+std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>*> HardcodeShaders::hardcodeShaders = {
+};)";
+		hardcodeShaderFile.close();
+		hardcodeFileOpened = true;
 	}
 
 	//Declare
-	hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.h", std::ios::in | std::ios::out);
 	if (auto& ti = targetInfos[targetName]; !ti.isExistTargetItem)
 	{
 		// 如果没有声明，添加声明
+		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.h", std::ios::in | std::ios::out);
 		hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
 		hardcodeShaderFile << "\t""static std::unordered_map<std::string, ShaderCodeModule> hardcodeShaders" + targetName + ";" << std::endl;
 		hardcodeShaderFile << "};";
+		hardcodeShaderFile.close();
+
+		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.cpp", std::ios::in | std::ios::out);
+		hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
+		hardcodeShaderFile << "{\"" + targetName + "\",&hardcodeShaders" + targetName + "}," << std::endl;
+		hardcodeShaderFile << "};";
+
 		ti.isExistTargetItem = true;
 	}
-	hardcodeShaderFile.close();
 }
 
 void ShaderHardcodeManager::createTarget(const std::string& name)

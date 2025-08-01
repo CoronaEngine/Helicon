@@ -6,7 +6,6 @@
 
 struct ShaderHardcodeManager
 {
-	static std::string getHardcodeVariableName(const std::source_location& sourceLocation, ShaderStage inputStage);
 	static std::string getItemName(const std::source_location& sourceLocation, ShaderStage inputStage);
 	static void addTarget(const std::string& shaderCode, const std::string& targetName, const std::string& itemName);
 	static void addTarget(const std::vector<uint32_t>& shaderCode, const std::string& targetName, const std::string& itemName);
