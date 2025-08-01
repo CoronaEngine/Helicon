@@ -37,8 +37,10 @@ std::string enumToString(ShaderStage stage)
 
 ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language, const std::source_location &sourceLocation)
 {
-    itemName = ShaderHardcodeManager::getItemName(sourceLocation, inputStage);
+    //itemName = ShaderHardcodeManager::getItemName(sourceLocation, language);
 
+    sourceLocationStr = ShaderHardcodeManager::getSourceLocationString(sourceLocation);
+    stage = enumToString(inputStage);
 #if CABBAGE_ENGINE_DEBUG
     std::vector<uint32_t> codeSpirV = {};
     std::string codeGLSL;
@@ -79,16 +81,17 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     // ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
     // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
 
-    ShaderHardcodeManager::addTarget(codeSpirV, "SpirV", itemName);
-    ShaderHardcodeManager::addTarget(codeGLSL, "GLSL", itemName);
-    ShaderHardcodeManager::addTarget(codeHLSL, "HLSL", itemName);
-    ShaderHardcodeManager::addTarget(codeSlang, "Slang", itemName);
+    ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV"));
+    ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL"));
+    ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL"));
+    ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
 #endif
 }
 
 ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language) const
 {
-    ShaderCodeModule result = ShaderHardcodeManager::getHardcodeShader(enumToString(language), itemName);
+    auto itemName = ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language));
+    ShaderCodeModule result = ShaderHardcodeManager::getHardcodeShader(stage, itemName);
     result.shaderResources = ShaderLanguageConverter::spirvCrossReflectedBindInfo(ShaderHardcodeManager::getHardcodeShader("SpirV", itemName), ShaderLanguage::HLSL);
     return result;
 }

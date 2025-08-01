@@ -10,7 +10,17 @@ bool ShaderHardcodeManager::hardcodeFileOpened = false;
 
 std::string ShaderHardcodeManager::getItemName(const std::source_location& sourceLocation, ShaderStage inputStage)
 {
-	return enumToString(inputStage) + "_" + getSourceLocationString(sourceLocation);
+	return getItemName(getSourceLocationString(sourceLocation),enumToString(inputStage));
+}
+
+std::string ShaderHardcodeManager::getItemName(const std::source_location& sourceLocation, ShaderLanguage language)
+{
+	return getItemName(getSourceLocationString(sourceLocation),enumToString(language));
+}
+
+std::string ShaderHardcodeManager::getItemName(const std::string& sourceLocationFormatString, const std::string& prefix)
+{
+	return prefix + "_" + sourceLocationFormatString;
 }
 
 void ShaderHardcodeManager::addTarget(

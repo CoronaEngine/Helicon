@@ -70,10 +70,7 @@ struct ShaderCodeModule
             {
                 return &it->second;
             }
-            else
-            {
-                return nullptr;
-            }
+            return nullptr;
         }
     } shaderResources;
 
@@ -114,5 +111,6 @@ struct ShaderCodeCompiler
     [[nodiscard]] ShaderCodeModule getShaderCode(ShaderLanguage language) const;
 
   private:
-    std::string itemName;
+    std::string sourceLocationStr;
+    std::string stage;
 };
