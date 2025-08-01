@@ -5,6 +5,11 @@
 
 #include"ShaderHardcodeManager.h"
 
+#ifndef CABBAGE_ENGINE_DEBUG
+#include "HardcodeShaders/HardcodeShaders.h"
+#endif
+
+
 
 bool ShaderHardcodeManager::hardcodeFileOpened = false;
 
@@ -23,6 +28,8 @@ std::string ShaderHardcodeManager::getItemName(const std::string& sourceLocation
 	return prefix + "_" + sourceLocationFormatString;
 }
 
+#ifdef CABBAGE_ENGINE_DEBUG
+
 void ShaderHardcodeManager::addTarget(
 	const std::string& shaderCode,
 	const std::string& targetName,
@@ -37,6 +44,10 @@ void ShaderHardcodeManager::addTarget(
 	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
 	hardcodeShaderFile << "{\"" + itemName + "\", ShaderCodeModule(R\"(" + shaderCode + ")\"),}," << std::endl;
 	hardcodeShaderFile << "};";
+
+	ShaderCodeModule result;
+	result.shaderCode = shaderCode;
+	debugHardcodeShaders[targetName][itemName] = result;
 }
 
 void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const std::string& targetName, const std::string& itemName)
@@ -55,15 +66,44 @@ void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, c
 	}
 	hardcodeShaderFile << "}),}," << std::endl;
 	hardcodeShaderFile << "};";
+
+	ShaderCodeModule result;
+	result.shaderCode = shaderCode;
+	debugHardcodeShaders[targetName][itemName] = result;
 }
+#endif
 
 ShaderCodeModule ShaderHardcodeManager::getHardcodeShader(const std::string& targetName, const std::string& itemName)
 {
 #ifdef CABBAGE_ENGINE_DEBUG
-#else
+	auto target = debugHardcodeShaders.find(targetName);
+	if (target == debugHardcodeShaders.end())
+	{
+		throw std::runtime_error("Target " + targetName + " not found in hardcoded shaders.");
+	}
 
+	auto item = target->second.find(itemName);
+	if (item == target->second.end())
+	{
+		throw std::runtime_error("Item " + itemName + " not found in hardcoded shaders for target " + targetName + ".");
+	}
+
+	return item->second;
+#else
+	auto target = HardcodeShaders::hardcodeShaders.find(targetName);
+	if (target == HardcodeShaders::hardcodeShaders.end())
+	{
+		throw std::runtime_error("Target " + targetName + " not found in hardcoded shaders.");
+	}
+
+	auto item = target->second->find(itemName);
+	if (item == target->second->end())
+	{
+		throw std::runtime_error("Item " + itemName + " not found in hardcoded shaders for target " + targetName + ".");
+	}
+
+	return item->second;
 #endif
-	return {};
 }
 
 void ShaderHardcodeManager::createHeader(const std::string& targetName)
@@ -79,6 +119,7 @@ void ShaderHardcodeManager::createHeader(const std::string& targetName)
 #include "../ShaderCodeCompiler.h"
 class HardcodeShaders
 {
+	friend class ShaderHardcodeManager;
 	static std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>*> hardcodeShaders;
 };)";
 		hardcodeShaderFile.close();
