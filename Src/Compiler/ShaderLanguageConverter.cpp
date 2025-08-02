@@ -20,8 +20,10 @@
 #include <array>
 #include <utility>
 
+#ifdef WIN32
 #include <atlbase.h>
 #include <dxcapi.h>
+#endif
 
 std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage)
 {
@@ -330,7 +332,7 @@ std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::str
     memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
     return result;
 }
-
+#ifdef WIN32
 std::vector<uint32_t> ShaderLanguageConverter::dxilCompiler(const std::string& hlslShader, ShaderStage stage)
 {
     CComPtr<IDxcUtils> pUtils;
@@ -412,6 +414,7 @@ std::vector<uint32_t> ShaderLanguageConverter::dxilCompiler(const std::string& h
     memcpy(result.data(), pShader->GetBufferPointer(), pShader->GetBufferSize());
     return result;
 }
+#endif
 
 // get Reflected Bind Info
 ShaderCodeModule::ShaderResources ShaderLanguageConverter::spirvCrossReflectedBindInfo(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion)
