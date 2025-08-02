@@ -3,10 +3,10 @@
 #include <sstream>
 #include <filesystem>
 
-#include"ShaderHardcodeManager.h"
+#include <Compiler/ShaderHardcodeManager.h>
 
 #ifndef CABBAGE_ENGINE_DEBUG
-#include "HardcodeShaders/HardcodeShaders.h"
+#include <Compiler/HardcodeShaders/HardcodeShaders.h>
 #endif
 
 
