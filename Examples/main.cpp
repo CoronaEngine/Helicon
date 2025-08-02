@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 		texture[dispatchThreadID()->xy()] = Float4(acesFilmicToneMapCurve(color->xyz()),1.f);
 	};
 
-	Parser::setBindless(false);
+	Parser::setBindless(true);
 	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment);
 	puts(std::get<1>(rasterizedPipeline.getVertexShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 	puts(std::get<1>(rasterizedPipeline.getFragmentShaderCode(ShaderLanguage::Slang).shaderCode).c_str());

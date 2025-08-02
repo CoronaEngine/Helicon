@@ -1,6 +1,8 @@
 
 #include "ShaderCodeCompiler.h"
 
+#include <Codegen/AST/Parser.hpp>
+
 #include "ShaderHardcodeManager.h"
 #include "ShaderLanguageConverter.h"
 
@@ -45,6 +47,7 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     std::vector<uint32_t> codeSpirV = {};
 #ifdef WIN32
     std::vector<uint32_t> codeDXIL = {};
+    bool bindless = EmbeddedShader::Ast::Parser::getBindless();
     std::vector<uint32_t> codeDXBC = {};
 #endif
     std::string codeGLSL;
@@ -60,7 +63,8 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
         codeHLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::HLSL);
 #ifdef WIN32
         codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
-        codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
+        if (!bindless)
+            codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
 #endif
         break;
     case ShaderLanguage::GLSL:
@@ -70,7 +74,8 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
         codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
 #ifdef WIN32
         codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
-        codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
+        if (!bindless)
+            codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
 #endif
         break;
     case ShaderLanguage::HLSL:
@@ -80,7 +85,8 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
         codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
 #ifdef WIN32
         codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
-        codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
+        if (!bindless)
+            codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
 #endif
         break;
     //case ShaderLanguage::SpirV:
@@ -105,7 +111,8 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
 #ifdef WIN32
     ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL"));
-    ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
+    if (!bindless)
+        ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
 #endif
 #endif
 }
