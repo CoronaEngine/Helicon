@@ -20,7 +20,6 @@ struct ShaderHardcodeManager
 private:
 	static bool hardcodeFileOpened;
 
-	static void createHeader(const std::string& targetName);
 	static void createTarget(const std::string& name);
 
 	static std::string getShaderResourceOutput(const ShaderCodeModule::ShaderResources& shaderResources);

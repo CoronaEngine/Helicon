@@ -35,9 +35,6 @@ void ShaderHardcodeManager::addTarget(
 	const ShaderCodeModule::ShaderResources& shaderResource,
 	const std::string& targetName, const std::string& itemName)
 {
-	createHeader(targetName);
-
-	//Definition
 	createTarget(targetName);
 
 	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
@@ -53,9 +50,6 @@ void ShaderHardcodeManager::addTarget(
 
 void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const ShaderCodeModule::ShaderResources& shaderResource, const std::string& targetName, const std::string& itemName)
 {
-	createHeader(targetName);
-
-	//Definition
 	createTarget(targetName);
 
 	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
@@ -108,7 +102,7 @@ ShaderCodeModule ShaderHardcodeManager::getHardcodeShader(const std::string& tar
 #endif
 }
 
-void ShaderHardcodeManager::createHeader(const std::string& targetName)
+void ShaderHardcodeManager::createTarget(const std::string& name)
 {
 	// 检查文件是否存在
 	std::fstream hardcodeShaderFile;
@@ -135,31 +129,29 @@ std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>
 	}
 
 	//Declare
-	if (auto& ti = targetInfos[targetName]; !ti.isExistTargetItem)
+	if (auto& ti = targetInfos[name]; !ti.isExistTargetItem)
 	{
 		// 如果没有声明，添加声明
 		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.h", std::ios::in | std::ios::out);
 		hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-		hardcodeShaderFile << "\t""static std::unordered_map<std::string, ShaderCodeModule> hardcodeShaders" + targetName + ";" << std::endl;
+		hardcodeShaderFile << "\t""static std::unordered_map<std::string, ShaderCodeModule> hardcodeShaders" + name + ";" << std::endl;
 		hardcodeShaderFile << "};";
 		hardcodeShaderFile.close();
 
 		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.cpp", std::ios::in | std::ios::out);
 		hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-		hardcodeShaderFile << "{\"" + targetName + "\",&hardcodeShaders" + targetName + "}," << std::endl;
+		hardcodeShaderFile << "{\"" + name + "\",&hardcodeShaders" + name + "}," << std::endl;
 		hardcodeShaderFile << "};";
+		hardcodeShaderFile.close();
 
 		ti.isExistTargetItem = true;
 	}
-}
 
-void ShaderHardcodeManager::createTarget(const std::string& name)
-{
 	auto& exist = targetInfos[name];
 	if (exist.isExistTargetFile)
 		return;
 
-	std::fstream hardcodeShaderFile (hardcodePath / ("HardcodeShaders" + name + ".cpp"), std::ios::out | std::ios::trunc);
+	hardcodeShaderFile.open(hardcodePath / ("HardcodeShaders" + name + ".cpp"), std::ios::out | std::ios::trunc);
 	hardcodeShaderFile << R"(#include"HardcodeShaders.h"
 std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShaders)" + name + R"( = {
 };)";
