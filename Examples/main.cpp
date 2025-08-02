@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
 		return clamp((x * (a * x + b)) / (x * (c * x + d) + e), fvec3(0.0f), fvec3(1.0f));
 	};
 
-	auto acesFilmicToneMapInverse = [&](Float3 x)
+	auto acesFilmicToneMapInverse = [&](const Float3& x)
 	{
 		Float3 a = fvec3(-0.59f) * x + fvec3(0.03f);
 		Float3 b = sqrt(fvec3(-1.0127f) * x * x + fvec3(1.3702f) * x + fvec3(0.0009));
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 		texture[dispatchThreadID()->xy()] = Float4(acesFilmicToneMapCurve(color->xyz()),1.f);
 	};
 
-	Parser::setBindless(true);
+	Parser::setBindless(false);
 	auto rasterizedPipeline = RasterizedPipelineObject::parse(vertex, fragment);
 	puts(rasterizedPipeline.vertexGeneration.c_str());
 	puts(rasterizedPipeline.fragmentGeneration.c_str());

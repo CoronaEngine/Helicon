@@ -24,6 +24,7 @@
 #include <atlbase.h>
 #include <dxcapi.h>
 #include <d3dcompiler.h>
+#pragma comment(lib, "d3dcompiler.lib")
 #endif
 
 std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage)
@@ -444,7 +445,10 @@ std::vector<uint32_t> ShaderLanguageConverter::dxbcCompiler(const std::string& h
     D3DCompile(hlslShader.data(), hlslShader.size() * sizeof(char),"Helicon",nullptr,nullptr,"main",targetName.data(),
                flags, 0, &code, &error);
     if (error && error->GetBufferSize() != 0)
-        printf("DXC Warnings and Errors:\n%s\n", static_cast<const char*>(error->GetBufferPointer()));
+    {
+        printf("D3DCompiler Warnings and Errors:\n%s\n", static_cast<const char*>(error->GetBufferPointer()));
+        throw std::runtime_error("D3DCompiler Compilation Failed");
+    }
 
     std::vector<uint32_t> result(code->GetBufferSize() / sizeof(uint32_t));
     memcpy(result.data(), code->GetBufferPointer(), code->GetBufferSize());

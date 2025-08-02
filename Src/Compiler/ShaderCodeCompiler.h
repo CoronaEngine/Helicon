@@ -12,6 +12,7 @@ enum class ShaderLanguage : uint16_t
     GLSL,
     HLSL,
     DXIL,
+    DXBC,
     SpirV,
     Slang,
 };
