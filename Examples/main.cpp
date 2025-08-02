@@ -176,13 +176,9 @@ int main(int argc, char* argv[])
 	};
 
 	Parser::setBindless(false);
-	auto rasterizedPipeline = RasterizedPipelineObject::parse(vertex, fragment);
-	puts(rasterizedPipeline.vertexGeneration.c_str());
-	puts(rasterizedPipeline.fragmentGeneration.c_str());
-	auto computePipeline = ComputePipelineObject::parse(compute,uvec3(8,8,1));
-	puts(computePipeline.computeGeneration.c_str());
-
-	ShaderCodeCompiler vertxShader(rasterizedPipeline.vertexGeneration, ::ShaderStage::VertexShader,ShaderLanguage::Slang);
-    ShaderCodeCompiler fragShader(rasterizedPipeline.fragmentGeneration, ::ShaderStage::FragmentShader,ShaderLanguage::Slang);
-    ShaderCodeCompiler compShader(computePipeline.computeGeneration, ::ShaderStage::ComputeShader,ShaderLanguage::Slang);
+	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment);
+	puts(std::get<1>(rasterizedPipeline.getVertexShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	puts(std::get<1>(rasterizedPipeline.getFragmentShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1));
+	puts(std::get<1>(computePipeline.getComputeShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 }

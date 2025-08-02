@@ -8,13 +8,27 @@ namespace EmbeddedShader
 {
 	class RasterizedPipelineObject final
 	{
+		RasterizedPipelineObject() = default;
 	public:
-		std::string vertexGeneration;
-		std::string fragmentGeneration;
-		static RasterizedPipelineObject parse(auto vertexShaderCode, auto fragmentShaderCode);
+		static RasterizedPipelineObject compile(auto vertexShaderCode, auto fragmentShaderCode, std::source_location sourceLocation = std::source_location::current());
+		[[nodiscard]] ShaderCodeModule getVertexShaderCode(ShaderLanguage language) const;
+		[[nodiscard]] ShaderCodeModule getFragmentShaderCode(ShaderLanguage language) const;
+	private:
+		std::unique_ptr<ShaderCodeCompiler> vertexCompiler;
+		std::unique_ptr<ShaderCodeCompiler> fragmentCompiler;
 	};
 
-	RasterizedPipelineObject RasterizedPipelineObject::parse(auto vertexShaderCode, auto fragmentShaderCode)
+	inline ShaderCodeModule RasterizedPipelineObject::getVertexShaderCode(ShaderLanguage language) const
+	{
+		return vertexCompiler->getShaderCode(language);
+	}
+
+	inline ShaderCodeModule RasterizedPipelineObject::getFragmentShaderCode(ShaderLanguage language) const
+	{
+		return fragmentCompiler->getShaderCode(language);
+	}
+
+	RasterizedPipelineObject RasterizedPipelineObject::compile(auto vertexShaderCode, auto fragmentShaderCode,std::source_location sourceLocation)
 	{
 		auto vsFunc = std::function(vertexShaderCode);
 		auto fsFunc = std::function(fragmentShaderCode);
@@ -64,8 +78,8 @@ namespace EmbeddedShader
 		}
 		RasterizedPipelineObject result;
 		auto outputs = Ast::Parser::endPipelineParse();
-		result.vertexGeneration = outputs[0].output;
-		result.fragmentGeneration = outputs[1].output;
+		result.vertexCompiler = std::make_unique<ShaderCodeCompiler>(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang, sourceLocation);
+		result.fragmentCompiler = std::make_unique<ShaderCodeCompiler>(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang, sourceLocation);
 		return result;
 	}
 }

@@ -10,11 +10,17 @@ namespace EmbeddedShader
 	class ComputePipelineObject
 	{
 	public:
-		std::string computeGeneration;
-		static ComputePipelineObject parse(auto computeShaderCode, ktm::uvec3 numthreads = ktm::uvec3(1));
+		static ComputePipelineObject compile(auto computeShaderCode, ktm::uvec3 numthreads = ktm::uvec3(1),std::source_location sourceLocation = std::source_location::current());
+		[[nodiscard]] ShaderCodeModule getComputeShaderCode(ShaderLanguage language) const;
+	private:
+		std::unique_ptr<ShaderCodeCompiler> computeCompiler;
 	};
 
-	ComputePipelineObject ComputePipelineObject::parse(auto computeShaderCode, ktm::uvec3 numthreads)
+	inline ShaderCodeModule ComputePipelineObject::getComputeShaderCode(ShaderLanguage language) const {
+		return computeCompiler->getShaderCode(language);
+	}
+
+	ComputePipelineObject ComputePipelineObject::compile(auto computeShaderCode, ktm::uvec3 numthreads,std::source_location sourceLocation)
 	{
 		Generator::SlangGenerator::numthreads = numthreads;
 		auto csFunc = std::function(computeShaderCode);
@@ -34,7 +40,7 @@ namespace EmbeddedShader
 
 		ComputePipelineObject result;
 		auto outputs = Ast::Parser::endPipelineParse();
-		result.computeGeneration = outputs[0].output;
+		result.computeCompiler = std::make_unique<ShaderCodeCompiler>(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,sourceLocation);
 		return result;
 	}
 }
