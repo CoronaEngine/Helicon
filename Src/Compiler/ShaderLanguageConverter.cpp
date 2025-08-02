@@ -23,6 +23,7 @@
 #ifdef WIN32
 #include <atlbase.h>
 #include <dxcapi.h>
+#include <d3dcompiler.h>
 #endif
 
 std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage)
@@ -357,7 +358,7 @@ std::vector<uint32_t> ShaderLanguageConverter::dxilCompiler(const std::string& h
     }
     LPCWSTR args[] =
     {
-        L"helicon",                  // Optional shader source file name for error reporting
+        L"Helicon",                  // Optional shader source file name for error reporting
                                      // and for PIX shader source view.
         L"-E", L"main",              // Entry point.
         L"-T", targetName.data(),    // Target.
@@ -412,6 +413,41 @@ std::vector<uint32_t> ShaderLanguageConverter::dxilCompiler(const std::string& h
 
     std::vector<uint32_t> result(pShader->GetBufferSize() / sizeof(uint32_t));
     memcpy(result.data(), pShader->GetBufferPointer(), pShader->GetBufferSize());
+    return result;
+}
+
+std::vector<uint32_t> ShaderLanguageConverter::dxbcCompiler(const std::string& hlslShader, ShaderStage stage)
+{
+    UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef CABBAGE_ENGINE_DEBUG
+    flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+    std::string_view targetName;
+    switch (stage)
+    {
+        case ShaderStage::VertexShader:
+            targetName = "vs_5_1";
+            break;
+        case ShaderStage::FragmentShader:
+            targetName = "ps_5_1";
+            break;
+        case ShaderStage::ComputeShader:
+            targetName = "cs_5_1";
+            break;
+        default:
+            throw std::runtime_error("Unknown shader stage");
+    }
+
+    CComPtr<ID3DBlob> code;
+    CComPtr<ID3DBlob> error;
+    D3DCompile(hlslShader.data(), hlslShader.size() * sizeof(char),"Helicon",nullptr,nullptr,"main",targetName.data(),
+               flags, 0, &code, &error);
+    if (error && error->GetBufferSize() != 0)
+        printf("DXC Warnings and Errors:\n%s\n", static_cast<const char*>(error->GetBufferPointer()));
+
+    std::vector<uint32_t> result(code->GetBufferSize() / sizeof(uint32_t));
+    memcpy(result.data(), code->GetBufferPointer(), code->GetBufferSize());
     return result;
 }
 #endif

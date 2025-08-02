@@ -17,6 +17,7 @@ struct ShaderLanguageConverter
     static std::vector<uint32_t> slangSpirvCompiler(const std::string& shaderCode);
 #ifdef WIN32
     static std::vector<uint32_t> dxilCompiler(const std::string& hlslShader, ShaderStage stage);
+    static std::vector<uint32_t> dxbcCompiler(const std::string& hlslShader, ShaderStage stage);
 #endif
 
 	//get Reflected Bind Info
