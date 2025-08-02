@@ -94,17 +94,21 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
 
     auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
-    ShaderHardcodeManager::addTarget(codeSpirV, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV"));
-    ShaderHardcodeManager::addTarget(codeGLSL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL"));
-    ShaderHardcodeManager::addTarget(codeHLSL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL"));
-    ShaderHardcodeManager::addTarget(codeSlang, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
+    ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection"));
+    ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV"));
+    ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL"));
+    ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL"));
+    ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
 #ifdef WIN32
-    ShaderHardcodeManager::addTarget(codeDXIL, shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL"));
+    ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL"));
 #endif
 #endif
 }
 
 ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language) const
 {
-    return ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language)));
+    ShaderCodeModule result;
+    result.shaderCode = std::get<1>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language))));
+    result.shaderResources = std::get<0>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection")));
+    return result;
 }

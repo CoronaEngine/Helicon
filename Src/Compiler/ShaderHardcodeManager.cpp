@@ -32,44 +32,50 @@ std::string ShaderHardcodeManager::getItemName(const std::string& sourceLocation
 
 void ShaderHardcodeManager::addTarget(
 	const std::string& shaderCode,
-	const ShaderCodeModule::ShaderResources& shaderResource,
 	const std::string& targetName, const std::string& itemName)
 {
 	createTarget(targetName);
 
 	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
 	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-	hardcodeShaderFile << "{\"" + itemName + "\", ShaderCodeModule(R\"(" + shaderCode + ")\"," + getShaderResourceOutput(shaderResource) + "),}," << std::endl;
+	hardcodeShaderFile << "{\"" + itemName + "\", R\"(" + shaderCode + ")\"}," << std::endl;
 	hardcodeShaderFile << "};";
 
-	ShaderCodeModule result;
-	result.shaderCode = shaderCode;
-	result.shaderResources = shaderResource;
-	debugHardcodeShaders[targetName][itemName] = result;
+	debugHardcodeShaders[targetName][itemName] = shaderCode;
 }
 
-void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const ShaderCodeModule::ShaderResources& shaderResource, const std::string& targetName, const std::string& itemName)
+void ShaderHardcodeManager::addTarget(const std::vector<uint32_t>& shaderCode, const std::string& targetName, const std::string& itemName)
 {
 	createTarget(targetName);
 
 	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
 	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-	hardcodeShaderFile << "{\"" + itemName + "\", ShaderCodeModule(std::vector<uint32_t>{";
+	hardcodeShaderFile << "{\"" + itemName + "\", std::vector<uint32_t>{";
 	for (uint32_t code : shaderCode)
 	{
 		hardcodeShaderFile << code << ",";
 	}
-	hardcodeShaderFile << "}," + getShaderResourceOutput(shaderResource) + "),}," << std::endl;
+	hardcodeShaderFile << "}}," << std::endl;
 	hardcodeShaderFile << "};";
 
-	ShaderCodeModule result;
-	result.shaderCode = shaderCode;
-	result.shaderResources = shaderResource;
-	debugHardcodeShaders[targetName][itemName] = result;
+	debugHardcodeShaders[targetName][itemName] = shaderCode;
+}
+
+void ShaderHardcodeManager::addTarget(const ShaderCodeModule::ShaderResources& shaderResource,
+	const std::string& targetName, const std::string& itemName)
+{
+	createTarget(targetName);
+
+	std::fstream hardcodeShaderFile(hardcodePath / ("HardcodeShaders" + targetName + ".cpp"), std::ios::out | std::ios::in);
+	hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
+	hardcodeShaderFile << "{\"" + itemName + "\", " + getShaderResourceOutput(shaderResource) + "}," << std::endl;
+	hardcodeShaderFile << "};";
+
+	debugHardcodeShaders[targetName][itemName] = shaderResource;
 }
 #endif
 
-ShaderCodeModule ShaderHardcodeManager::getHardcodeShader(const std::string& targetName, const std::string& itemName)
+std::variant<ShaderCodeModule::ShaderResources,std::variant<std::vector<uint32_t>,std::string>> ShaderHardcodeManager::getHardcodeShader(const std::string& targetName, const std::string& itemName)
 {
 #ifdef CABBAGE_ENGINE_DEBUG
 	auto target = debugHardcodeShaders.find(targetName);
@@ -116,13 +122,13 @@ void ShaderHardcodeManager::createTarget(const std::string& name)
 class HardcodeShaders
 {
 	friend class ShaderHardcodeManager;
-	static std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>*> hardcodeShaders;
+	static std::unordered_map<std::string,std::unordered_map<std::string, std::variant<ShaderCodeModule::ShaderResources,std::variant<std::vector<uint32_t>,std::string>>>*> hardcodeShaders;
 };)";
 		hardcodeShaderFile.close();
 
 		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.cpp", std::ios::out | std::ios::trunc);
 		hardcodeShaderFile << R"(#include"HardcodeShaders.h"
-std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>*> HardcodeShaders::hardcodeShaders = {
+std::unordered_map<std::string,std::unordered_map<std::string, std::variant<ShaderCodeModule::ShaderResources,std::variant<std::vector<uint32_t>,std::string>>>*> HardcodeShaders::hardcodeShaders = {
 };)";
 		hardcodeShaderFile.close();
 		hardcodeFileOpened = true;
@@ -134,7 +140,7 @@ std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>
 		// 如果没有声明，添加声明
 		hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.h", std::ios::in | std::ios::out);
 		hardcodeShaderFile.seekg(-static_cast<int>(sizeof("};")), std::ios::end);
-		hardcodeShaderFile << "\t""static std::unordered_map<std::string, ShaderCodeModule> hardcodeShaders" + name + ";" << std::endl;
+		hardcodeShaderFile << "\t""static std::unordered_map<std::string, std::variant<ShaderCodeModule::ShaderResources,std::variant<std::vector<uint32_t>,std::string>>> hardcodeShaders" + name + ";" << std::endl;
 		hardcodeShaderFile << "};";
 		hardcodeShaderFile.close();
 
@@ -153,7 +159,7 @@ std::unordered_map<std::string,std::unordered_map<std::string, ShaderCodeModule>
 
 	hardcodeShaderFile.open(hardcodePath / ("HardcodeShaders" + name + ".cpp"), std::ios::out | std::ios::trunc);
 	hardcodeShaderFile << R"(#include"HardcodeShaders.h"
-std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShaders)" + name + R"( = {
+std::unordered_map<std::string, std::variant<ShaderCodeModule::ShaderResources,std::variant<std::vector<uint32_t>,std::string>>> HardcodeShaders::hardcodeShaders)" + name + R"( = {
 };)";
 	exist.isExistTargetFile = true;
 }
@@ -161,7 +167,7 @@ std::unordered_map<std::string, ShaderCodeModule> HardcodeShaders::hardcodeShade
 std::string ShaderHardcodeManager::getShaderResourceOutput(const ShaderCodeModule::ShaderResources& shaderResources)
 {
 	std::stringstream result;
-	result << "{";
+	result << "ShaderCodeModule::ShaderResources{";
 	result << shaderResources.pushConstantSize << ",";
 	result << "\"" << shaderResources.pushConstantName << "\",";
 	result << "{";
