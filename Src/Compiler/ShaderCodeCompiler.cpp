@@ -39,11 +39,24 @@ std::string enumToString(ShaderStage stage)
 
 ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language, const std::source_location &sourceLocation)
 {
-    //itemName = ShaderHardcodeManager::getItemName(sourceLocation, language);
-
     sourceLocationStr = ShaderHardcodeManager::getSourceLocationString(sourceLocation);
     stage = enumToString(inputStage);
+    compile(shaderCode,inputStage,language);
+}
+
+ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language, bool bindless) const
+{
+    std::string bindlessStr = bindless ? "_Bindless" : "";
+    ShaderCodeModule result;
+    result.shaderCode = std::get<1>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language) + bindlessStr)));
+    result.shaderResources = std::get<0>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr)));
+    return result;
+}
+
+void ShaderCodeCompiler::compile(const std::string& shaderCode, ShaderStage inputStage, ShaderLanguage language) const
+{
 #if CABBAGE_ENGINE_DEBUG
+    std::string bindlessStr = EmbeddedShader::Ast::Parser::getBindless() ? "_Bindless" : "";
     std::vector<uint32_t> codeSpirV = {};
 #ifdef WIN32
     std::vector<uint32_t> codeDXIL = {};
@@ -104,23 +117,15 @@ ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStag
     // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
 
     auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
-    ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection"));
-    ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV"));
-    ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL"));
-    ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL"));
-    ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang"));
+    ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr));
+    ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV" + bindlessStr));
+    ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL" + bindlessStr));
+    ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL" + bindlessStr));
+    ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang" + bindlessStr));
 #ifdef WIN32
-    ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL"));
+    ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL" + bindlessStr));
     if (!bindless)
         ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
 #endif
 #endif
-}
-
-ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language) const
-{
-    ShaderCodeModule result;
-    result.shaderCode = std::get<1>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language))));
-    result.shaderResources = std::get<0>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection")));
-    return result;
 }

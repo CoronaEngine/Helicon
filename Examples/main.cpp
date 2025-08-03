@@ -177,8 +177,8 @@ int main(int argc, char* argv[])
 
 	Parser::setBindless(true);
 	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment);
-	puts(std::get<1>(rasterizedPipeline.getVertexShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
-	puts(std::get<1>(rasterizedPipeline.getFragmentShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
+	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1));
-	puts(std::get<1>(computePipeline.getComputeShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 }
