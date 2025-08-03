@@ -284,14 +284,7 @@ namespace EmbeddedShader::Ast
 		if (it != map.end())
 		{
 			auto aggregateType = it->second;
-			if (!aggregateType->isUsed)
-			{
-				auto defineNode = std::make_shared<DefineAggregateType>();
-				defineNode->aggregate = aggregateType;
-				addGlobalStatement(defineNode);
-				aggregateType->isUsed = true;
-			}
-
+			aggregateType->isUsed = true;
 			return aggregateType;
 		}
 

@@ -656,7 +656,6 @@ namespace EmbeddedShader
 			auto type = std::make_shared<Ast::SamplerType>();
 			type->name = std::move(name);
 			node = Ast::AST::defineUniformVariate(std::move(type));
-			node->access(Ast::AccessPermissions::ReadOnly);
 		}
 		std::shared_ptr<Ast::Value> node;
 	};
@@ -713,6 +712,7 @@ namespace EmbeddedShader
 		VariateProxy<Type> sample(SamplerProxy& sampler,const VariateProxy<ktm::fvec2>& location)
 		{
 			sampler.init("SamplerState");
+			sampler.node->access(Ast::AccessPermissions::ReadOnly);
 			auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{sampler.node,location.node});
 			return {Ast::AST::access(node,func->parse(), func->type)};
 		}

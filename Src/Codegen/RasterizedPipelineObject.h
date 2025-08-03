@@ -19,11 +19,17 @@ namespace EmbeddedShader
 
 	RasterizedPipelineObject RasterizedPipelineObject::compile(auto&& vertexShaderCode, auto&& fragmentShaderCode,std::source_location sourceLocation)
 	{
-		auto outputs = parse(std::forward<decltype(vertexShaderCode)>(vertexShaderCode),
-			std::forward<decltype(fragmentShaderCode)>(fragmentShaderCode));
+		Ast::Parser::setBindless(false);
+		auto outputs = parse(vertexShaderCode,fragmentShaderCode);
 		RasterizedPipelineObject result;
 		result.vertex = std::make_unique<ShaderCodeCompiler>(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang, sourceLocation);
 		result.fragment = std::make_unique<ShaderCodeCompiler>(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang, sourceLocation);
+
+		Ast::Parser::setBindless(true);
+		outputs = parse(std::forward<decltype(vertexShaderCode)>(vertexShaderCode),
+			std::forward<decltype(fragmentShaderCode)>(fragmentShaderCode));
+		result.vertex->compile(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang);
+		result.fragment->compile(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang);
 		return result;
 	}
 

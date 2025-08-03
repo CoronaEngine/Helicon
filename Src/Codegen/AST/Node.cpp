@@ -140,7 +140,7 @@ std::string EmbeddedShader::Ast::UniformVariate::parse()
 void EmbeddedShader::Ast::UniformVariate::access(AccessPermissions permissions)
 {
 	Value::access(permissions);
-	this->permissions = permissions;
+	this->permissions = this->permissions | permissions;
 }
 
 std::string EmbeddedShader::Ast::DefineUniformVariate::parse()

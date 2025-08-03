@@ -19,9 +19,13 @@ namespace EmbeddedShader
 	ComputePipelineObject ComputePipelineObject::compile(auto&& computeShaderCode, ktm::uvec3 numthreads,std::source_location sourceLocation)
 	{
 		Generator::SlangGenerator::numthreads = numthreads;
-		auto outputs = parse(std::forward<decltype(computeShaderCode)>(computeShaderCode));
+		Ast::Parser::setBindless(false);
+		auto outputs = parse(computeShaderCode);
 		ComputePipelineObject result;
 		result.compute = std::make_unique<ShaderCodeCompiler>(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,sourceLocation);
+		Ast::Parser::setBindless(true);
+		outputs = parse(std::forward<decltype(computeShaderCode)>(computeShaderCode));
+		result.compute->compile(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang);
 		return result;
 	}
 
