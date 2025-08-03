@@ -86,7 +86,7 @@ void EmbeddedShader::Ast::Parser::reset()
 	structure.outputStatements.clear();
 	currentVariateIndex = 0;
 	positionOutput.reset();
-
+	dispatchThreadIDInput.reset();
 }
 
 std::string EmbeddedShader::Ast::Parser::getUniqueVariateName()
