@@ -220,4 +220,9 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 
 		return fileName;
 	}
+
+	void ShaderHardcodeManager::setHardcodePath(std::filesystem::path path)
+	{
+		hardcodePath = std::move(path);
+	}
 }

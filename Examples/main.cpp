@@ -16,6 +16,7 @@
 #include <Codegen/BuiltinVariate.h>
 #include <Codegen/ComputePipelineObject.h>
 #include <Codegen/TypeAlias.h>
+#include <Compiler/ShaderHardcodeManager.h>
 
 using namespace EmbeddedShader;
 
@@ -39,6 +40,8 @@ int main(int argc, char* argv[])
 {
 	using namespace EmbeddedShader::Ast;
 	using namespace ktm;
+
+	ShaderHardcodeManager::setHardcodePath(std::filesystem::path(HELICON_ROOT_PATH) / "Src" / "Compiler" / "HardcodeShaders");
 
 	Float4x4 model;
 	Float3x3 modelInverse;
