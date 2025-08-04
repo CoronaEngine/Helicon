@@ -18,10 +18,10 @@ namespace EmbeddedShader::Generator
 	{
 		friend class ComputePipelineObject;
 		template<typename T>
-		static constexpr std::string variateBasicTypeNameMap = "unknown";
+		static constexpr std::string_view variateBasicTypeNameMap = "unknown";
 	public:
 #define DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(type, name) \
-template<> constexpr std::string variateBasicTypeNameMap<type> = #name
+template<> constexpr std::string_view variateBasicTypeNameMap<type> = #name
 	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int8_t, int8_t);
 	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int16_t, int16_t);
 	    DEFINE_VARIATE_BASIC_TYPE_NAME_MAP(int, int);
@@ -42,7 +42,7 @@ template<> constexpr std::string variateBasicTypeNameMap<type> = #name
 		template<typename T>
 		static std::string getVariateTypeName() {return "unknown";}
 		template<typename T> requires std::is_arithmetic_v<T>
-		static std::string getVariateTypeName() {return variateBasicTypeNameMap<T>;}
+		static std::string getVariateTypeName() {return std::string(variateBasicTypeNameMap<T>);}
 		template<typename T> requires ktm::is_vector_v<T>
 		static std::string getVariateTypeName();
 		template<typename T> requires ktm::is_matrix_v<T>
