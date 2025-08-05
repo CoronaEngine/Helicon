@@ -87,9 +87,9 @@ namespace EmbeddedShader
                 codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
                 codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
 #ifdef WIN32
-                codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
-                if (!bindless)
-                    codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
+                //codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
+                //if (!bindless)
+                //    codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
 #endif
                 break;
             case ShaderLanguage::HLSL:
