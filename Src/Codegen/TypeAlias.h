@@ -1,7 +1,7 @@
 #pragma once
 #include <Codegen/VariateProxy.h>
 
-namespace EmbeddedShader
+namespace EmbeddedShader::TypeAlias
 {
 	using Int8_t = VariateProxy<int8_t>;
 	using Int16_t = VariateProxy<int16_t>;
@@ -181,4 +181,9 @@ namespace EmbeddedShader
 	using Array = ArrayProxy<ElementType>;
 	template<typename AggregateStruct> requires std::is_aggregate_v<AggregateStruct>
 	using Aggregate = VariateProxy<AggregateStruct>;
+}
+
+namespace EmbeddedShader
+{
+	using namespace TypeAlias;
 }
