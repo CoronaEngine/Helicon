@@ -88,7 +88,7 @@ if(SLANG_DLLS)
         TARGET Helicon POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${SLANG_DLLS} # 源文件列表
-        ${EXECUTABLE_OUTPUT_PATH} #${CMAKE_BINARY_DIR}/bin/$<CONFIG> # 目标目录
+        ${HELICON_BINARY_DIR}/bin/$<CONFIG> # 目标目录
         COMMENT "Copying Slang DLLs to the output directory"
         VERBATIM
     )
@@ -101,7 +101,7 @@ if(DXC_DLLS)
         TARGET Helicon POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DXC_DLLS} # 源文件列表
-        ${EXECUTABLE_OUTPUT_PATH} #${CMAKE_BINARY_DIR}/bin/$<CONFIG> # 目标目录
+        ${HELICON_BINARY_DIR}/bin/$<CONFIG> # 目标目录
         COMMENT "Copying DXC DLLs to the output directory"
         VERBATIM
     )
