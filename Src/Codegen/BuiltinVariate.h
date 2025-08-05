@@ -2,7 +2,7 @@
 #include <Codegen/VariateProxy.h>
 #include <Codegen/Generator/SlangGenerator.hpp>
 
-namespace EmbeddedShader
+namespace EmbeddedShader::BuiltinVariate
 {
     inline VariateProxy<ktm::fvec4> position()
     {
@@ -13,4 +13,9 @@ namespace EmbeddedShader
     {
         return VariateProxy<ktm::uvec3>{Ast::AST::getDispatchThreadIDInput()};
     }
+}
+
+namespace EmbeddedShader
+{
+    using namespace BuiltinVariate;
 }
