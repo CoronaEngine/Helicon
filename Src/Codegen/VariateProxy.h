@@ -65,7 +65,7 @@ namespace EmbeddedShader
 			}
 		};
 
-		template<typename T> requires ktm::is_vector_v<T>
+		template<typename T>
 		struct VecArgProcessor<VariateProxy<T>>
 		{
 			static std::shared_ptr<Ast::Value> valueOrNode(const VariateProxy<T>& proxy)
