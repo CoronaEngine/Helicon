@@ -81,6 +81,12 @@ target_link_libraries(Helicon PUBLIC
 file(GLOB SLANG_DLLS "${PROJECT_SOURCE_DIR}/Env/slang/bin/*.dll")
 file(GLOB DXC_DLLS "${PROJECT_SOURCE_DIR}/Env/dxc/bin/${TARGET_ARCH}/*.dll")
 
+if (DEFINED ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    set(HELICON_DLL_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+else ()
+    set(HELICON_DLL_OUTPUT_DIR ${CMAKE_BINARY_DIR})
+endif ()
+
 if(SLANG_DLLS)
     message(STATUS "Found Slang DLLs: ${SLANG_DLLS}")
 
@@ -88,7 +94,7 @@ if(SLANG_DLLS)
         TARGET Helicon POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${SLANG_DLLS} # 源文件列表
-        ${HELICON_BINARY_DIR}/bin/$<CONFIG> # 目标目录
+        ${HELICON_DLL_OUTPUT_DIR}
         COMMENT "Copying Slang DLLs to the output directory"
         VERBATIM
     )
@@ -101,7 +107,7 @@ if(DXC_DLLS)
         TARGET Helicon POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DXC_DLLS} # 源文件列表
-        ${HELICON_BINARY_DIR}/bin/$<CONFIG> # 目标目录
+        ${HELICON_DLL_OUTPUT_DIR}
         COMMENT "Copying DXC DLLs to the output directory"
         VERBATIM
     )
