@@ -1,8 +1,9 @@
 #pragma once
-#include <string>
 #include <Codegen/ParseHelper.h>
 #include <Codegen/AST/AST.hpp>
 #include <Codegen/AST/Parser.hpp>
+#include <source_location>
+#include <Compiler/ShaderCodeCompiler.h>
 
 namespace EmbeddedShader
 {
