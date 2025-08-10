@@ -731,7 +731,8 @@ namespace EmbeddedShader
 
 		VariateProxy<Type> sample(SamplerProxy& sampler,const VariateProxy<ktm::fvec2>& location)
 		{
-			assert(!isHybrid,"Cannot sample texture with sampler in hybrid mode, use sample(location) instead.");
+			//Cannot sample texture with sampler in hybrid mode, use sample(location) instead.
+			assert(!isHybrid);
 			sampler.init("SamplerState");
 			sampler.node->access(Ast::AccessPermissions::ReadOnly);
 			auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{sampler.node,location.node});
@@ -740,7 +741,8 @@ namespace EmbeddedShader
 
 		VariateProxy<Type> sample(const VariateProxy<ktm::fvec2>& location)
 		{
-			assert(isHybrid,"Cannot sample texture without sampler in non-hybrid mode, use sample(sampler, location) instead.");
+			//Cannot sample texture without sampler in non-hybrid mode, use sample(sampler, location) instead.
+			assert(isHybrid);
 			auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{location.node});
 			return {Ast::AST::access(node,func->parse(), func->type)};
 		}
