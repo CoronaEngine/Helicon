@@ -36,6 +36,11 @@ struct VertexOutput
 	Float3 fragColor;
 };
 
+struct TextureStruct
+{
+	Texture2D<ktm::fvec4> texture = Sampler{};
+};
+
 int main(int argc, char* argv[])
 {
 	using namespace EmbeddedShader::Ast;
@@ -61,7 +66,7 @@ int main(int argc, char* argv[])
 		return output;
 	};
 
-	Texture2D<fvec4> texture = Sampler{};
+	Aggregate<TextureStruct> textureStruct;
 
 	auto DistributionGGX = [&](const Float3& N, const Float3& H,Float roughness)
 	{
@@ -138,7 +143,7 @@ int main(int argc, char* argv[])
 
 	auto fragment = [&](Aggregate<VertexOutput> input)
 	{
-		Float4 color = texture.sample(input->fragTexCoord);
+		Float4 color = textureStruct->texture.sample(input->fragTexCoord);
 		Float3 albedo;
 		$IF(color->w > 0.01)
 			albedo = color->xyz();

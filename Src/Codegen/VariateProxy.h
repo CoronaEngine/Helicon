@@ -735,6 +735,7 @@ namespace EmbeddedShader
 			assert(!isHybrid);
 			sampler.init("SamplerState");
 			sampler.node->access(Ast::AccessPermissions::ReadOnly);
+			node->access(Ast::AccessPermissions::ReadOnly);
 			auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{sampler.node,location.node});
 			return {Ast::AST::access(node,func->parse(), func->type)};
 		}
@@ -743,6 +744,7 @@ namespace EmbeddedShader
 		{
 			//Cannot sample texture without sampler in non-hybrid mode, use sample(sampler, location) instead.
 			assert(isHybrid);
+			node->access(Ast::AccessPermissions::ReadOnly);
 			auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{location.node});
 			return {Ast::AST::access(node,func->parse(), func->type)};
 		}

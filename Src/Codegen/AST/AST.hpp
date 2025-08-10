@@ -284,12 +284,10 @@ namespace EmbeddedShader::Ast
 		if (it != map.end())
 		{
 			auto aggregateType = it->second;
-			aggregateType->isUsed = true;
 			return aggregateType;
 		}
 
 		auto aggregateType = std::make_shared<AggregateType>();
-		aggregateType->isUsed = true;
 		aggregateType->name = Parser::getUniqueAggregateTypeName();
 		auto reflect = [&](std::string_view name, auto&& structMember, std::size_t i)
 		{

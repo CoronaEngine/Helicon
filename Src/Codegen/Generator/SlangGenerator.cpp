@@ -231,7 +231,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineAggregateType* node)
 {
-	if (!node->aggregate->isUsed)
+	if (node->aggregate->permissions == Ast::AccessPermissions::None)
 		return "";
 	auto result = "struct " + node->aggregate->name + " {\n";
 	if ((node->aggregate->permissions & Ast::AccessPermissions::WriteOnly) == Ast::AccessPermissions::None)

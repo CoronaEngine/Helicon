@@ -71,7 +71,6 @@ namespace EmbeddedShader::Ast
 	struct Statement : Node
 	{
 		virtual void resetAccessPermissions() {}
-		virtual void resetUsedFlag() {}
 	};
 
 	struct DefineLocalVariate : Statement
@@ -188,7 +187,6 @@ namespace EmbeddedShader::Ast
 	struct AggregateType : NameType
 	{
 		AccessPermissions permissions = AccessPermissions::None;
-		bool isUsed = false;
 		std::vector<std::shared_ptr<Variate>> members;
 		static thread_local inline std::unordered_map<std::string,std::shared_ptr<AggregateType>> aggregateTypeMap;
 		void access(AccessPermissions permissions) override;
@@ -197,7 +195,6 @@ namespace EmbeddedShader::Ast
 	struct DefineAggregateType : Statement
 	{
 		std::shared_ptr<AggregateType> aggregate;
-		void resetUsedFlag() override;
 		std::string parse() override;
 		void resetAccessPermissions() override;
 	};

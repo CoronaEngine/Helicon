@@ -51,7 +51,6 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPi
 	for (const auto& global: currentParser->structure.globalStatements)
 	{
         global->resetAccessPermissions();
-	    global->resetUsedFlag();
 	}
 
     std::vector<ParseOutput> result;

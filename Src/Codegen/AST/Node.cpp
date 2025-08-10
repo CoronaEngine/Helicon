@@ -230,8 +230,3 @@ void EmbeddedShader::Ast::AggregateType::access(AccessPermissions permissions)
 	NameType::access(permissions);
 	this->permissions = this->permissions | permissions;
 }
-
-void EmbeddedShader::Ast::DefineAggregateType::resetUsedFlag()
-{
-	aggregate->isUsed = false;
-}
