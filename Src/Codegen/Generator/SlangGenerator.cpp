@@ -289,7 +289,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::Texture2DType* node)
 {
-	return "Texture2D<" + node->texelType->parse() + ">" + (bindless() ?  ".Handle" : "");
+	return node->name + "<" + node->texelType->parse() + ">" + (bindless() ?  ".Handle" : "");
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::CallFunc* node)
