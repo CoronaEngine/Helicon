@@ -156,7 +156,15 @@ namespace EmbeddedShader
         return resultCode;
     }
 
-    std::string ShaderLanguageConverter::slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage)
+    void diagnoseIfNeeded(slang::IBlob *diagnosticsBlob)
+    {
+        if (diagnosticsBlob != nullptr)
+        {
+            std::cout << static_cast<const char *>(diagnosticsBlob->getBufferPointer()) << std::endl;
+        }
+    }
+
+    std::string ShaderLanguageConverter::slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage, Slang::ComPtr<slang::IComponentType>& program)
     {
         std::string result;
         Slang::ComPtr<slang::IGlobalSession> slangGlobalSession;
@@ -213,25 +221,194 @@ namespace EmbeddedShader
             SlangResult result = session->createCompositeComponentType(
                 componentTypes.data(), componentTypes.size(), composedProgram.writeRef(), diagnosticsBlob.writeRef());
         }
+        Slang::ComPtr<slang::IComponentType> linkedProgram;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult result = composedProgram->link(
+                linkedProgram.writeRef(),
+                diagnosticsBlob.writeRef());
+            if (SLANG_FAILED(result))
+                return {};
+        }
         Slang::ComPtr<slang::IBlob> spirvCode;
         {
             Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-            SlangResult result = composedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
+            SlangResult result = linkedProgram->getEntryPointCode(0, 0, spirvCode.writeRef(), diagnosticsBlob.writeRef());
+            if (SLANG_FAILED(result))
+                return {};
         }
         result.resize(spirvCode->getBufferSize() / sizeof(char));
         memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
+        program = linkedProgram;
         return result;
     }
 
-    void diagnoseIfNeeded(slang::IBlob *diagnosticsBlob)
+    Slang::ComPtr<slang::IComponentType> ShaderLanguageConverter::slangCompiler(const std::string& shaderCode,
+        bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage,
+        std::vector<uint32_t>& spirvCode, std::vector<std::string>& targetsOutput)
     {
-        if (diagnosticsBlob != nullptr)
+        if (!isEnabledSpirvTarget && targetLanguage.empty())
         {
-            std::cout << static_cast<const char *>(diagnosticsBlob->getBufferPointer()) << std::endl;
+            throw std::logic_error("No target language specified for Slang compilation.");
         }
+        Slang::ComPtr<slang::IGlobalSession> globalSession;
+        createGlobalSession(globalSession.writeRef());
+
+        slang::SessionDesc sessionDesc = {};
+
+        size_t spirvCount = isEnabledSpirvTarget ? 1 : 0;
+        std::vector<slang::TargetDesc> targets(targetLanguage.size() + spirvCount);
+        if (isEnabledSpirvTarget)
+        {
+            auto& target = targets[0];
+            target.format = SLANG_SPIRV;
+            target.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+        }
+
+        for (size_t i = 0; i < targetLanguage.size(); ++i)
+        {
+            auto& target = targets[i + spirvCount];
+            auto language = targetLanguage[i];
+            switch (language)
+            {
+                case ShaderLanguage::GLSL:
+                    // case ShaderLanguage::ESSL:
+                {
+                    target.format = SLANG_GLSL;
+                    break;
+                }
+                case ShaderLanguage::HLSL: {
+                    target.format = SLANG_HLSL;
+                    break;
+                }
+                // case ShaderLanguage::MSL:
+                //	targetDesc.format = SLANG_METAL; break;
+                //case ShaderLanguage::DXIL:
+                    //targetDesc.format = SLANG_DXIL; break;
+                default:
+                    throw std::logic_error("Unsupported target language for Slang compilation.");
+            }
+        }
+
+        sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
+        sessionDesc.targets = targets.data();
+        sessionDesc.targetCount = static_cast<SlangInt>(targets.size());
+
+        std::array options =
+            {
+            slang::CompilerOptionEntry{
+                slang::CompilerOptionName::EmitSpirvDirectly,
+                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}},
+            slang::CompilerOptionEntry{
+                slang::CompilerOptionName::BindlessSpaceIndex,
+                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}}};
+        sessionDesc.compilerOptionEntries = options.data();
+        sessionDesc.compilerOptionEntryCount = options.size();
+
+        Slang::ComPtr<slang::ISession> session;
+        globalSession->createSession(sessionDesc, session.writeRef());
+
+        // 3. Load module
+        Slang::ComPtr<slang::IModule> slangModule;
+        {
+            auto hashStr = std::to_string(std::hash<std::string>()(shaderCode));
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            slangModule = session->loadModuleFromSourceString(hashStr.c_str(), (hashStr + ".slang").c_str(), shaderCode.c_str(), diagnosticsBlob.writeRef()); // Optional diagnostic container
+            diagnoseIfNeeded(diagnosticsBlob);
+            if (!slangModule)
+            {
+                return {};
+            }
+        }
+
+        // 4. Query Entry Points
+        Slang::ComPtr<slang::IEntryPoint> entryPoint;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            slangModule->findEntryPointByName("main", entryPoint.writeRef());
+            if (!entryPoint)
+            {
+                std::cout << "Error getting entry point" << std::endl;
+                return {};
+            }
+        }
+
+        // 5. Compose Modules + Entry Points
+        std::array<slang::IComponentType *, 2> componentTypes =
+            {
+            slangModule,
+            entryPoint};
+
+        Slang::ComPtr<slang::IComponentType> composedProgram;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult result = session->createCompositeComponentType(
+                componentTypes.data(),
+                componentTypes.size(),
+                composedProgram.writeRef(),
+                diagnosticsBlob.writeRef());
+            diagnoseIfNeeded(diagnosticsBlob);
+            if (SLANG_FAILED(result))
+                return {};
+        }
+
+        // 6. Link
+        Slang::ComPtr<slang::IComponentType> linkedProgram;
+        {
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult result = composedProgram->link(
+                linkedProgram.writeRef(),
+                diagnosticsBlob.writeRef());
+            diagnoseIfNeeded(diagnosticsBlob);
+            if (SLANG_FAILED(result))
+                return {};
+        }
+
+        if (isEnabledSpirvTarget)
+        {
+            // 7. Get Target Kernel Code
+            Slang::ComPtr<slang::IBlob> spirvCodeBlob;
+            {
+                Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+                SlangResult result = linkedProgram->getEntryPointCode(
+                    0,
+                    0,
+                    spirvCodeBlob.writeRef(),
+                    diagnosticsBlob.writeRef());
+                diagnoseIfNeeded(diagnosticsBlob);
+                if (SLANG_FAILED(result))
+                    return {};
+            }
+            if (spirvCodeBlob)
+            {
+                spirvCode = std::vector<uint32_t>(spirvCodeBlob->getBufferSize() / sizeof(uint32_t));
+                memcpy(spirvCode.data(), spirvCodeBlob->getBufferPointer(), spirvCodeBlob->getBufferSize());
+            }
+        }
+
+        targetsOutput.resize(targetLanguage.size());
+        for (size_t i = 0; i < targetsOutput.size(); ++i)
+        {
+            Slang::ComPtr<slang::IBlob> targetCodeBlob;
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult result = linkedProgram->getEntryPointCode(
+                0,
+                static_cast<SlangInt>(i + spirvCount), // Skip the first entry point if SPIR-V is enabled
+                targetCodeBlob.writeRef(),
+                diagnosticsBlob.writeRef());
+            diagnoseIfNeeded(diagnosticsBlob);
+            if (SLANG_FAILED(result))
+                return {};
+            if (targetCodeBlob)
+            {
+                targetsOutput[i].resize(targetCodeBlob->getBufferSize() / sizeof(char));
+                memcpy(targetsOutput[i].data(), targetCodeBlob->getBufferPointer(), targetCodeBlob->getBufferSize());
+            }
+        }
+        return composedProgram;
     }
 
-    std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string &shaderCode)
+    std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string &shaderCode, Slang::ComPtr<slang::IComponentType>& program)
     {
         std::vector<uint32_t> result;
         // 1. Create Global Session
@@ -334,6 +511,7 @@ namespace EmbeddedShader
         }
         result.resize(spirvCode->getBufferSize() / sizeof(uint32_t));
         memcpy(result.data(), spirvCode->getBufferPointer(), spirvCode->getBufferSize());
+        program = linkedProgram;
         return result;
     }
 #ifdef WIN32

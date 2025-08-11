@@ -1,6 +1,10 @@
 
 #include "ShaderCodeCompiler.h"
 
+#include <slang-com-helper.h>
+#include <slang-com-ptr.h>
+#include <slang.h>
+
 #include <Codegen/AST/Parser.hpp>
 
 #include "ShaderHardcodeManager.h"
@@ -67,20 +71,28 @@ namespace EmbeddedShader
         std::string codeGLSL;
         std::string codeHLSL;
         std::string codeSlang;
+        Slang::ComPtr<slang::IComponentType> program;
 
         switch (language)
         {
             case ShaderLanguage::Slang:
+            {
                 codeSlang = shaderCode;
-                codeSpirV = ShaderLanguageConverter::slangSpirvCompiler(codeSlang);
-                codeGLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::GLSL);
-                codeHLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::HLSL);
+                // codeSpirV = ShaderLanguageConverter::slangSpirvCompiler(codeSlang, program);
+                // codeGLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::GLSL,program);
+                // codeHLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::HLSL,program);
+                std::vector<std::string> outputs;
+                program = ShaderLanguageConverter::slangCompiler(codeSlang,true,{ShaderLanguage::GLSL,ShaderLanguage::HLSL},codeSpirV,outputs);
+                auto layout = program->getLayout();
+                codeGLSL = outputs[0];
+                codeHLSL = outputs[1];
 #ifdef WIN32
                 codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
                 if (!bindless)
                     codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
 #endif
                 break;
+            }
             case ShaderLanguage::GLSL:
                 codeGLSL = shaderCode;
                 codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeGLSL, language, inputStage);
