@@ -81,7 +81,7 @@ namespace EmbeddedShader
                 // codeGLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::GLSL,program);
                 // codeHLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::HLSL,program);
                 std::vector<std::string> outputs;
-                ShaderLanguageConverter::slangCompiler(codeSlang,true,{ShaderLanguage::GLSL,ShaderLanguage::HLSL},codeSpirV,outputs);
+                ShaderLanguageConverter::slangCompiler(codeSlang,true,{ShaderLanguage::GLSL,ShaderLanguage::HLSL},codeSpirV,outputs,true);
                 codeGLSL = outputs[0];
                 codeHLSL = outputs[1];
 #ifdef WIN32

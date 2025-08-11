@@ -243,9 +243,9 @@ namespace EmbeddedShader
         return result;
     }
 
-    void ShaderLanguageConverter::slangCompiler(const std::string& shaderCode,
-        bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage,
-        std::vector<uint32_t>& spirvCode, std::vector<std::string>& targetsOutput)
+    std::vector<ShaderCodeModule::ShaderResources> ShaderLanguageConverter::slangCompiler(const std::string& shaderCode,
+        bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage, std::vector<uint32_t>& spirvCode,
+        std::vector<std::string>& targetsOutput, bool isEnabledReflection)
     {
         if (!isEnabledSpirvTarget && targetLanguage.empty())
         {
@@ -321,7 +321,7 @@ namespace EmbeddedShader
             diagnoseIfNeeded(diagnosticsBlob);
             if (!slangModule)
             {
-                return;
+                throw std::runtime_error("Failed to load Slang module.");
             }
         }
 
@@ -333,7 +333,7 @@ namespace EmbeddedShader
             if (!entryPoint)
             {
                 std::cout << "Error getting entry point" << std::endl;
-                return;
+                throw std::runtime_error("Failed to find entry point 'main' in Slang module.");
             }
         }
 
@@ -353,7 +353,7 @@ namespace EmbeddedShader
                 diagnosticsBlob.writeRef());
             diagnoseIfNeeded(diagnosticsBlob);
             if (SLANG_FAILED(result))
-                return;
+                throw std::runtime_error("Failed to create composite component type in Slang.");
         }
 
         // 6. Link
@@ -365,7 +365,7 @@ namespace EmbeddedShader
                 diagnosticsBlob.writeRef());
             diagnoseIfNeeded(diagnosticsBlob);
             if (SLANG_FAILED(result))
-                return;
+                throw std::runtime_error("Failed to link Slang program.");
         }
 
         if (isEnabledSpirvTarget)
@@ -381,7 +381,7 @@ namespace EmbeddedShader
                     diagnosticsBlob.writeRef());
                 diagnoseIfNeeded(diagnosticsBlob);
                 if (SLANG_FAILED(result))
-                    return;
+                    throw std::runtime_error("Failed to get SPIR-V code from Slang program.");
             }
             if (spirvCodeBlob)
             {
@@ -402,13 +402,53 @@ namespace EmbeddedShader
                 diagnosticsBlob.writeRef());
             diagnoseIfNeeded(diagnosticsBlob);
             if (SLANG_FAILED(result))
-                return;
+                throw std::runtime_error("Failed to get target code from Slang program.");
             if (targetCodeBlob)
             {
                 targetsOutput[i].resize(targetCodeBlob->getBufferSize() / sizeof(char));
                 memcpy(targetsOutput[i].data(), targetCodeBlob->getBufferPointer(), targetCodeBlob->getBufferSize());
             }
         }
+
+        if (!isEnabledReflection)
+            return {};
+
+        std::vector<ShaderCodeModule::ShaderResources> reflectedResources(targets.size());
+        // for (size_t i = 0; i < targets.size(); ++i)
+        // {
+        //     auto& reflection = reflectedResources[i];
+        //     auto programLayout = composedProgram->getLayout(static_cast<SlangInt>(i));
+        //     auto globalLayout = programLayout->getGlobalParamsVarLayout();
+        //     if (globalLayout->getCategory() == slang::ParameterCategory::PushConstantBuffer)
+        //     {
+        //         reflection.pushConstantSize = globalLayout->getTypeLayout()->getSize();
+        //         reflection.pushConstantName = globalLayout->getName();
+        //     }
+        //
+        //     auto entryPointLayout = programLayout->getEntryPointByIndex(0);
+        //     auto varLayout = entryPointLayout->getVarLayout();
+        //     auto typeLayout = varLayout->getTypeLayout();
+        //     switch (typeLayout->getKind())
+        //     {
+        //         case slang::TypeReflection::Kind::ConstantBuffer:
+        //             reflection.bindInfoPool[typeLayout->getName()] = ShaderCodeModule::ShaderResources::ShaderBindInfo{
+        //                 varLayout->getBindingSpace(),
+        //                 varLayout->getBindingIndex(),
+        //                 varLayout->getBindingIndex(),
+        //                 varLayout->getName(),
+        //                 typeLayout->getName(),
+        //                 ShaderCodeModule::ShaderResources::BindType::uniformBuffers};
+        //             break;
+        //         case slang::TypeReflection::Kind::SamplerState:
+        //             break;
+        //         case slang::TypeReflection::Kind::TextureBuffer:
+        //             break;
+        //         case slang::TypeReflection::Kind::ShaderStorageBuffer:
+        //             break;
+        //         default:break;
+        //     }
+        // }
+        return reflectedResources;
     }
 
     std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string &shaderCode, Slang::ComPtr<slang::IComponentType>& program)
