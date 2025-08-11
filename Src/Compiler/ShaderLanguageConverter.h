@@ -16,7 +16,7 @@ namespace EmbeddedShader
 
 		// Compile Slang to others
 		static std::string slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage, Slang::ComPtr<slang::IComponentType>& program);
-		static Slang::ComPtr<slang::IComponentType> slangCompiler(const std::string& shaderCode, bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage, std::vector<
+		static void slangCompiler(const std::string& shaderCode, bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage, std::vector<
 		                                                          uint32_t>& spirvCode, std::vector<std::string>& targetsOutput);
 
 		static std::vector<uint32_t> slangSpirvCompiler(const std::string& shaderCode, Slang::ComPtr<slang::IComponentType>& program);

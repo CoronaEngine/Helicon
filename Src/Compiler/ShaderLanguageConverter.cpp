@@ -243,7 +243,7 @@ namespace EmbeddedShader
         return result;
     }
 
-    Slang::ComPtr<slang::IComponentType> ShaderLanguageConverter::slangCompiler(const std::string& shaderCode,
+    void ShaderLanguageConverter::slangCompiler(const std::string& shaderCode,
         bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage,
         std::vector<uint32_t>& spirvCode, std::vector<std::string>& targetsOutput)
     {
@@ -283,8 +283,12 @@ namespace EmbeddedShader
                 }
                 // case ShaderLanguage::MSL:
                 //	targetDesc.format = SLANG_METAL; break;
-                //case ShaderLanguage::DXIL:
-                    //targetDesc.format = SLANG_DXIL; break;
+                case ShaderLanguage::DXIL:
+                    target.format = SLANG_DXIL;
+                    break;
+                case ShaderLanguage::DXBC:
+                    target.format = SLANG_DXBC;
+                    break;
                 default:
                     throw std::logic_error("Unsupported target language for Slang compilation.");
             }
@@ -317,7 +321,7 @@ namespace EmbeddedShader
             diagnoseIfNeeded(diagnosticsBlob);
             if (!slangModule)
             {
-                return {};
+                return;
             }
         }
 
@@ -329,7 +333,7 @@ namespace EmbeddedShader
             if (!entryPoint)
             {
                 std::cout << "Error getting entry point" << std::endl;
-                return {};
+                return;
             }
         }
 
@@ -349,7 +353,7 @@ namespace EmbeddedShader
                 diagnosticsBlob.writeRef());
             diagnoseIfNeeded(diagnosticsBlob);
             if (SLANG_FAILED(result))
-                return {};
+                return;
         }
 
         // 6. Link
@@ -361,7 +365,7 @@ namespace EmbeddedShader
                 diagnosticsBlob.writeRef());
             diagnoseIfNeeded(diagnosticsBlob);
             if (SLANG_FAILED(result))
-                return {};
+                return;
         }
 
         if (isEnabledSpirvTarget)
@@ -377,7 +381,7 @@ namespace EmbeddedShader
                     diagnosticsBlob.writeRef());
                 diagnoseIfNeeded(diagnosticsBlob);
                 if (SLANG_FAILED(result))
-                    return {};
+                    return;
             }
             if (spirvCodeBlob)
             {
@@ -398,14 +402,13 @@ namespace EmbeddedShader
                 diagnosticsBlob.writeRef());
             diagnoseIfNeeded(diagnosticsBlob);
             if (SLANG_FAILED(result))
-                return {};
+                return;
             if (targetCodeBlob)
             {
                 targetsOutput[i].resize(targetCodeBlob->getBufferSize() / sizeof(char));
                 memcpy(targetsOutput[i].data(), targetCodeBlob->getBufferPointer(), targetCodeBlob->getBufferSize());
             }
         }
-        return composedProgram;
     }
 
     std::vector<uint32_t> ShaderLanguageConverter::slangSpirvCompiler(const std::string &shaderCode, Slang::ComPtr<slang::IComponentType>& program)
