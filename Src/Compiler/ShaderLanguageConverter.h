@@ -4,6 +4,10 @@
 
 #include"ShaderCodeCompiler.h"
 
+#include <slang-com-helper.h>
+#include <slang-com-ptr.h>
+#include <slang.h>
+
 namespace EmbeddedShader
 {
 	struct ShaderLanguageConverter
@@ -16,8 +20,13 @@ namespace EmbeddedShader
 
 		// Compile Slang to others
 		static std::string slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage, Slang::ComPtr<slang::IComponentType>& program);
-		static std::vector<ShaderCodeModule::ShaderResources> slangCompiler(const std::string& shaderCode, bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage, std::vector<
-		                                                          uint32_t>& spirvCode, std::vector<std::string>& targetsOutput,bool isEnabledReflection);
+		static std::vector<ShaderCodeModule::ShaderResources> slangCompiler(
+			const std::string& shaderCode,
+			bool isEnabledSpirvTarget,
+			const std::vector<ShaderLanguage>& targetLanguage,
+			std::vector<uint32_t>& spirvCode,
+			std::vector<std::string>& targetsOutput,
+			bool isEnabledReflection);
 
 		static std::vector<uint32_t> slangSpirvCompiler(const std::string& shaderCode, Slang::ComPtr<slang::IComponentType>& program);
 #ifdef WIN32
@@ -29,5 +38,8 @@ namespace EmbeddedShader
 		static ShaderCodeModule::ShaderResources spirvCrossReflectedBindInfo(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage = ShaderLanguage::GLSL, int32_t targetVersion = 330);
 
 		//static ShaderCodeModule::ShaderResources slangReflectedBindInfo(const std::string& shaderCode);
+	private:
+		static void slangReflectAddBindInfo(slang::VariableLayoutReflection* var, ShaderCodeModule::ShaderResources& shaderResources, const std::string&
+		                                    parentPrefix);
 	};
 }
