@@ -5,12 +5,13 @@
 #include "Codegen/CustomLibrary.h"
 
 #include"Compiler/ShaderCodeCompiler.h"
+#include "Compiler/ShaderLanguageConverter.h"
 
-#include <Codegen/AST/Parser.hpp>
 #include <Codegen/AST/AST.hpp>
+#include <Codegen/AST/Parser.hpp>
 #include <Codegen/Generator/SlangGenerator.hpp>
-#include <utility>
 #include <ktm/type/vec.h>
+#include <utility>
 
 #include <Codegen/RasterizedPipelineObject.h>
 #include <Codegen/BuiltinVariate.h>
@@ -47,7 +48,7 @@ int main(int argc, char* argv[])
 	using namespace ktm;
 
 	ShaderHardcodeManager::setHardcodePath(std::filesystem::path(HELICON_ROOT_PATH) / "Src" / "Compiler" / "HardcodeShaders");
-
+/*
 	Float4x4 model;
 	Float3x3 modelInverse;
 	Float4x4 view;
@@ -185,4 +186,32 @@ int main(int argc, char* argv[])
 	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1));
 	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
+*/
+    std::string slangTest = R"(
+struct Data
+{
+    Texture2D<float4> texture2d;
+    Sampler2D<float4> sampler2d;
+}
+ParameterBlock<Data> data;
+
+struct Data2
+{
+    SamplerState sampler;
+    [[vk::push_constant]]
+    ConstantBuffer<float4> vec;
+}
+ParameterBlock<Data2> data2;
+[[vk::push_constant]]
+ConstantBuffer<float4> vec;
+[shader("vertex")]
+float4 main()
+{
+    return data.texture2d.Sample(data2.sampler,data2.vec.xy) * data.sampler2d.Sample(vec.xy);
+})";
+
+    std::vector<uint32_t> spirv;
+    std::vector<std::string> outputs;
+    ShaderLanguageConverter::slangCompiler(slangTest,true,{ShaderLanguage::GLSL},spirv,outputs,true);
+    puts(outputs[0].c_str());
 }
