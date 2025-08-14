@@ -239,6 +239,98 @@ namespace EmbeddedShader
         return result;
     }
 
+    size_t reflect_set = 0;
+    void addParameterBlockReflection(slang::TypeLayoutReflection* type)
+    {
+        size_t reflect_bind = 0;
+        std::cout << "pb set index: " << reflect_set << "\n";
+        if (type->getSize() > 0)
+        {
+            std::cout << "pb ubo\n binding: " << reflect_bind++ << "\n set: " << reflect_set << "\n";
+        }
+
+        //std::cout << "pb set count: " << type->getDescriptorSetCount() << "\n";
+        //for (int relativeSetIndex = 0; relativeSetIndex < type->getDescriptorSetCount(); ++relativeSetIndex)
+        //{
+            int relativeSetIndex = 0;
+            auto rangeCount = type->getDescriptorSetDescriptorRangeCount(relativeSetIndex);
+            std::cout << "pb range count: " << rangeCount << "\n";
+            for (int rangeIndex = 0; rangeIndex < rangeCount; ++rangeIndex)
+            {
+                slang::BindingType bindingType = type->getDescriptorSetDescriptorRangeType(relativeSetIndex, rangeIndex);
+                auto descriptorCount = type->getDescriptorSetDescriptorRangeDescriptorCount(relativeSetIndex, rangeIndex);
+                std::cout << "\t pb descriptor count: " << descriptorCount << "\n";
+                std::cout << "pb binding: " << reflect_bind++ << " binding type: \n\t";
+                switch (bindingType)
+                {
+                case slang::BindingType::Unknown:
+                    puts("Unknown");
+                    break;
+                case slang::BindingType::Sampler:
+                    puts("Sampler");
+                    break;
+                case slang::BindingType::Texture:
+                    puts("Texture");
+                    break;
+                case slang::BindingType::ConstantBuffer:
+                    puts("ConstantBuffer");
+                    break;
+                case slang::BindingType::ParameterBlock:
+                    puts("ParameterBlock");
+                    break;
+                case slang::BindingType::TypedBuffer:
+                    puts("TypedBuffer");
+                    break;
+                case slang::BindingType::RawBuffer:
+                    puts("RawBuffer");
+                    break;
+                case slang::BindingType::CombinedTextureSampler:
+                    puts("CombinedTextureSampler");
+                    break;
+                case slang::BindingType::InputRenderTarget:
+                    puts("InputRenderTarget");
+                    break;
+                case slang::BindingType::InlineUniformData:
+                    puts("InlineUniformData");
+                    break;
+                case slang::BindingType::RayTracingAccelerationStructure:
+                    puts("RayTracingAccelerationStructure");
+                    break;
+                case slang::BindingType::VaryingInput:
+                    puts("VaryingInput");
+                    break;
+                case slang::BindingType::VaryingOutput:
+                    puts("VaryingOutput");
+                    break;
+                case slang::BindingType::ExistentialValue:
+                    puts("ExistentialValue");
+                    break;
+                case slang::BindingType::PushConstant:
+                    puts("PushConstant");
+                    break;
+                case slang::BindingType::MutableFlag:
+                    puts("MutableFlag");
+                    break;
+                case slang::BindingType::MutableTexture:
+                    puts("MutableTexture");
+                    break;
+                case slang::BindingType::MutableTypedBuffer:
+                    puts("MutableTypedBuffer");
+                    break;
+                case slang::BindingType::MutableRawBuffer:
+                    puts("MutableRawBuffer");
+                    break;
+                case slang::BindingType::BaseMask:
+                    puts("BaseMask");
+                    break;
+                case slang::BindingType::ExtMask:
+                    puts("ExtMask");
+                    break;
+                }
+            }
+        //}
+    }
+
     std::vector<ShaderCodeModule::ShaderResources> ShaderLanguageConverter::slangCompiler(const std::string& shaderCode,
         bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage, std::vector<uint32_t>& spirvCode,
         std::vector<std::string>& targetsOutput, bool isEnabledReflection)
@@ -449,6 +541,18 @@ namespace EmbeddedShader
             // {
             //     slangReflectAddBindInfo(entryPointLayout->getParameterByIndex(ii),reflection,"");
             // }
+
+            std::cout << "begin reflect...\n";
+            //std::cout << "begin global reflect...\n";
+            //addParameterBlockReflection(programLayout->getGlobalParamsTypeLayout());
+            //std::cout << "begin entry point reflect...\n";
+            // addParameterBlockReflection(programLayout->getEntryPointByIndex(0)->getTypeLayout());
+            for (int ii = 0; ii < programLayout->getParameterCount(); ++ii)
+            {
+                reflect_set = ii;
+                 addParameterBlockReflection(programLayout->getParameterByIndex(ii)->getTypeLayout()->getElementTypeLayout());
+            }
+            std::cout << "end reflect...\n\n";
         }
         return reflectedResources;
     }
