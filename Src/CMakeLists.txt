@@ -8,10 +8,6 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES})
 add_library(Helicon STATIC ${SOURCE_FILES})
 
-set_target_properties(Helicon PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/$<CONFIG>
-)
-
 target_compile_definitions(Helicon PUBLIC
     HELICON_ROOT_PATH="${PROJECT_SOURCE_DIR}"
 )
@@ -81,12 +77,6 @@ target_link_libraries(Helicon PUBLIC
 file(GLOB SLANG_DLLS "${PROJECT_SOURCE_DIR}/Env/slang/bin/*.dll")
 file(GLOB DXC_DLLS "${PROJECT_SOURCE_DIR}/Env/dxc/bin/${TARGET_ARCH}/*.dll")
 
-if (DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set(HELICON_DLL_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-else ()
-    set(HELICON_DLL_OUTPUT_DIR ${CMAKE_BINARY_DIR})
-endif ()
-
 if(SLANG_DLLS)
     message(STATUS "Found Slang DLLs: ${SLANG_DLLS}")
 
@@ -94,7 +84,7 @@ if(SLANG_DLLS)
         TARGET Helicon POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${SLANG_DLLS} # 源文件列表
-        ${HELICON_DLL_OUTPUT_DIR}
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         COMMENT "Copying Slang DLLs to the output directory"
         VERBATIM
     )
@@ -107,7 +97,7 @@ if(DXC_DLLS)
         TARGET Helicon POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DXC_DLLS} # 源文件列表
-        ${HELICON_DLL_OUTPUT_DIR}
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         COMMENT "Copying DXC DLLs to the output directory"
         VERBATIM
     )
