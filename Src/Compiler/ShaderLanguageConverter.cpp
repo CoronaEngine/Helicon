@@ -357,7 +357,7 @@ namespace EmbeddedShader
                 target.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
             case ShaderLanguage::DXIL:
                 target.format = SLANG_DXIL;
-                target.profile = globalSession->findProfile("sm_6_0");
+                target.profile = globalSession->findProfile("sm_6_6");
                 break;
             case ShaderLanguage::DXBC:
                 target.format = SLANG_DXBC;
@@ -407,7 +407,8 @@ namespace EmbeddedShader
                 {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}},
             slang::CompilerOptionEntry{
                 slang::CompilerOptionName::BindlessSpaceIndex,
-                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}}};
+                {slang::CompilerOptionValueKind::Int, 0, 0, nullptr, nullptr}}
+            };
         sessionDesc.compilerOptionEntries = options.data();
         sessionDesc.compilerOptionEntryCount = options.size();
 
