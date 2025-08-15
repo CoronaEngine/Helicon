@@ -331,11 +331,11 @@ namespace EmbeddedShader
         //}
     }
 
-    std::vector<ShaderCodeModule::ShaderResources> ShaderLanguageConverter::slangCompiler(const std::string& shaderCode,
-        bool isEnabledSpirvTarget, const std::vector<ShaderLanguage>& targetLanguage, std::vector<uint32_t>& spirvCode,
-        std::vector<std::string>& targetsOutput, bool isEnabledReflection)
+    std::vector<ShaderCodeModule::ShaderResources> ShaderLanguageConverter::slangCompiler(const std::string &shaderCode,
+                                                                                          const std::vector<ShaderLanguage> &targetBinary, const std::vector<ShaderLanguage> &targetLanguage, std::vector<std::vector<uint32_t>> &binaryTargetsOutput,
+                                                                                          std::vector<std::string> &targetsOutput, bool isEnabledReflection)
     {
-        if (!isEnabledSpirvTarget && targetLanguage.empty())
+        if (targetBinary.empty() && targetLanguage.empty())
         {
             throw std::logic_error("No target language specified for Slang compilation.");
         }
@@ -344,18 +344,32 @@ namespace EmbeddedShader
 
         slang::SessionDesc sessionDesc = {};
 
-        size_t spirvCount = isEnabledSpirvTarget ? 1 : 0;
-        std::vector<slang::TargetDesc> targets(targetLanguage.size() + spirvCount);
-        if (isEnabledSpirvTarget)
+        std::vector<slang::TargetDesc> targets(targetLanguage.size() + targetBinary.size());
+
+        for (size_t i = 0; i < targetBinary.size(); ++i)
         {
-            auto& target = targets[0];
-            target.format = SLANG_SPIRV;
-            target.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+            auto& target = targets[i];
+            auto language = targetBinary[i];
+            switch (language)
+            {
+            case ShaderLanguage::SpirV:
+                target.format = SLANG_SPIRV;
+                target.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+            case ShaderLanguage::DXIL:
+                target.format = SLANG_DXIL;
+                target.profile = globalSession->findProfile("sm_6_6");
+                break;
+            case ShaderLanguage::DXBC:
+                target.format = SLANG_DXBC;
+                break;
+            default:
+                throw std::logic_error("Unsupported binary target for Slang compilation.");
+            }
         }
 
         for (size_t i = 0; i < targetLanguage.size(); ++i)
         {
-            auto& target = targets[i + spirvCount];
+            auto& target = targets[i + targetBinary.size()];
             auto language = targetLanguage[i];
             switch (language)
             {
@@ -393,7 +407,8 @@ namespace EmbeddedShader
                 {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}},
             slang::CompilerOptionEntry{
                 slang::CompilerOptionName::BindlessSpaceIndex,
-                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}}};
+                {slang::CompilerOptionValueKind::Int, 0, 0, nullptr, nullptr}}
+            };
         sessionDesc.compilerOptionEntries = options.data();
         sessionDesc.compilerOptionEntryCount = options.size();
 
@@ -456,25 +471,23 @@ namespace EmbeddedShader
                 throw std::runtime_error("Failed to link Slang program.");
         }
 
-        if (isEnabledSpirvTarget)
+        binaryTargetsOutput.resize(targetLanguage.size());
+        for (size_t i = 0; i < binaryTargetsOutput.size(); ++i)
         {
-            // 7. Get Target Kernel Code
-            Slang::ComPtr<slang::IBlob> spirvCodeBlob;
+            Slang::ComPtr<slang::IBlob> targetCodeBlob;
+            Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+            SlangResult result = linkedProgram->getEntryPointCode(
+                0,
+                static_cast<SlangInt>(i),
+                targetCodeBlob.writeRef(),
+                diagnosticsBlob.writeRef());
+            diagnoseIfNeeded(diagnosticsBlob);
+            if (SLANG_FAILED(result))
+                throw std::runtime_error("Failed to get target code from Slang program.");
+            if (targetCodeBlob)
             {
-                Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-                SlangResult result = linkedProgram->getEntryPointCode(
-                    0,
-                    0,
-                    spirvCodeBlob.writeRef(),
-                    diagnosticsBlob.writeRef());
-                diagnoseIfNeeded(diagnosticsBlob);
-                if (SLANG_FAILED(result))
-                    throw std::runtime_error("Failed to get SPIR-V code from Slang program.");
-            }
-            if (spirvCodeBlob)
-            {
-                spirvCode = std::vector<uint32_t>(spirvCodeBlob->getBufferSize() / sizeof(uint32_t));
-                memcpy(spirvCode.data(), spirvCodeBlob->getBufferPointer(), spirvCodeBlob->getBufferSize());
+                binaryTargetsOutput[i].resize(targetCodeBlob->getBufferSize() / sizeof(uint32_t));
+                memcpy(binaryTargetsOutput[i].data(), targetCodeBlob->getBufferPointer(), targetCodeBlob->getBufferSize());
             }
         }
 
@@ -485,7 +498,7 @@ namespace EmbeddedShader
             Slang::ComPtr<slang::IBlob> diagnosticsBlob;
             SlangResult result = linkedProgram->getEntryPointCode(
                 0,
-                static_cast<SlangInt>(i + spirvCount), // Skip the first entry point if SPIR-V is enabled
+                static_cast<SlangInt>(i + targetBinary.size()), // Skip the first entry point if there are binary targets
                 targetCodeBlob.writeRef(),
                 diagnosticsBlob.writeRef());
             diagnoseIfNeeded(diagnosticsBlob);

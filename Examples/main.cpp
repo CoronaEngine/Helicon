@@ -188,30 +188,22 @@ int main(int argc, char* argv[])
 	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 */
     std::string slangTest = R"(
+Sampler2D textures[];
 struct Data
 {
-    Texture2D<float4> texture2d;
-    Sampler2D<float4> sampler2d;
+    uint sampler2dIndex;
 }
-ParameterBlock<Data> data;
 
-struct Data2
+ConstantBuffer<Data> data;
+
+[shader("fragment")]
+float4 main(float2 coord : TEXCOORD) : SV_TARGET0
 {
-    SamplerState sampler;
-    [[vk::push_constant]]
-    ConstantBuffer<float4> vec;
-}
-ParameterBlock<Data2> data2;
-[[vk::push_constant]]
-ConstantBuffer<float4> vec;
-[shader("vertex")]
-float4 main()
-{
-    return data.texture2d.Sample(data2.sampler,data2.vec.xy) * data.sampler2d.Sample(vec.xy);
+    return textures[data.sampler2dIndex].Sample(coord);
 })";
 
-    std::vector<uint32_t> spirv;
+    std::vector<std::vector<uint32_t>> binaryOutputs;
     std::vector<std::string> outputs;
-    ShaderLanguageConverter::slangCompiler(slangTest,true,{ShaderLanguage::GLSL},spirv,outputs,true);
+    ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::HLSL}, binaryOutputs, outputs, true);
     puts(outputs[0].c_str());
 }
