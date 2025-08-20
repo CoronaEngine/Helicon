@@ -14,11 +14,8 @@ target_compile_definitions(Helicon PUBLIC
 
 target_include_directories(Helicon PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${PROJECT_SOURCE_DIR}/Env/ktm"
-    "${PROJECT_SOURCE_DIR}/Env/pfr/include"
-    "${PROJECT_SOURCE_DIR}/Env/preprocessor/include"
-    "${PROJECT_SOURCE_DIR}/Env/glslang"
-    "${PROJECT_SOURCE_DIR}/Env/SPIRV-Cross"
+    "${ktm_SOURCE_DIR}"
+    "${pfr_SOURCE_DIR}/include"
     "${PROJECT_SOURCE_DIR}/Env/slang/include"
     "${PROJECT_SOURCE_DIR}/Env/dxc/inc"
 )
@@ -26,6 +23,7 @@ target_include_directories(Helicon PUBLIC
 # --- 1. 架构检测 ---
 if(MSVC)
     message(STATUS "MSVC detected")
+
     if(DEFINED CMAKE_VS_PLATFORM_NAME)
         set(TARGET_ARCH ${CMAKE_VS_PLATFORM_NAME})
     else()
@@ -77,28 +75,9 @@ target_link_libraries(Helicon PUBLIC
 file(GLOB SLANG_DLLS "${PROJECT_SOURCE_DIR}/Env/slang/bin/*.dll")
 file(GLOB DXC_DLLS "${PROJECT_SOURCE_DIR}/Env/dxc/bin/${TARGET_ARCH}/*.dll")
 
-if(SLANG_DLLS)
-    message(STATUS "Found Slang DLLs: ${SLANG_DLLS}")
-
-    add_custom_command(
-        TARGET Helicon POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${SLANG_DLLS} # 源文件列表
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        COMMENT "Copying Slang DLLs to the output directory"
-        VERBATIM
-    )
-endif()
-
-if(DXC_DLLS)
-    message(STATUS "Found DXC DLLs: ${DXC_DLLS}")
-
-    add_custom_command(
-        TARGET Helicon POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${DXC_DLLS} # 源文件列表
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        COMMENT "Copying DXC DLLs to the output directory"
-        VERBATIM
+if(SLANG_DLLS AND DXC_DLLS)
+    message(STATUS "Found Slang and DXC DLLs")
+    set_target_properties(Helicon PROPERTIES
+        INTERFACE_HELICON_RUNTIME_DEPS "${SLANG_DLLS};${DXC_DLLS}"
     )
 endif()

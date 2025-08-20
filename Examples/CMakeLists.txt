@@ -17,3 +17,4 @@ set_target_properties(HeliconExamples PROPERTIES
 
 target_link_libraries(HeliconExamples PRIVATE Helicon)
 
+helicon_install_runtime_deps(HeliconExamples)
