@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 	using namespace ktm;
 
 	ShaderHardcodeManager::setHardcodePath(std::filesystem::path(HELICON_ROOT_PATH) / "Src" / "Compiler" / "HardcodeShaders");
-/*
+
 	Float4x4 model;
 	Float3x3 modelInverse;
 	Float4x4 view;
@@ -186,24 +186,24 @@ int main(int argc, char* argv[])
 	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1));
 	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
-*/
-    std::string slangTest = R"(
-Sampler2D textures[];
-struct Data
-{
-    uint sampler2dIndex;
-}
 
-ConstantBuffer<Data> data;
-
-[shader("fragment")]
-float4 main(float2 coord : TEXCOORD) : SV_TARGET0
-{
-    return textures[data.sampler2dIndex].Sample(coord);
-})";
-
-    std::vector<std::vector<uint32_t>> binaryOutputs;
-    std::vector<std::string> outputs;
-    ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::HLSL}, binaryOutputs, outputs, true);
-    puts(outputs[0].c_str());
+//     std::string slangTest = R"(
+// Sampler2D textures[];
+// struct Data
+// {
+//     uint sampler2dIndex;
+// }
+//
+// ConstantBuffer<Data> data;
+//
+// [shader("fragment")]
+// float4 main(float2 coord : TEXCOORD) : SV_TARGET0
+// {
+//     return textures[data.sampler2dIndex].Sample(coord);
+// })";
+//
+//     std::vector<std::vector<uint32_t>> binaryOutputs;
+//     std::vector<std::string> outputs;
+//     ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::HLSL}, binaryOutputs, outputs, true);
+//     puts(outputs[0].c_str());
 }

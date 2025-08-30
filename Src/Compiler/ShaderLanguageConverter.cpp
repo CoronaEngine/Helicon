@@ -355,6 +355,7 @@ namespace EmbeddedShader
             case ShaderLanguage::SpirV:
                 target.format = SLANG_SPIRV;
                 target.flags = SLANG_TARGET_FLAG_GENERATE_SPIRV_DIRECTLY;
+                break;
             case ShaderLanguage::DXIL:
                 target.format = SLANG_DXIL;
                 target.profile = globalSession->findProfile("sm_6_6");
