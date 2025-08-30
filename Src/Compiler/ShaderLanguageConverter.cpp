@@ -472,7 +472,7 @@ namespace EmbeddedShader
                 throw std::runtime_error("Failed to link Slang program.");
         }
 
-        binaryTargetsOutput.resize(targetLanguage.size());
+        binaryTargetsOutput.resize(targetBinary.size());
         for (size_t i = 0; i < binaryTargetsOutput.size(); ++i)
         {
             Slang::ComPtr<slang::IBlob> targetCodeBlob;
