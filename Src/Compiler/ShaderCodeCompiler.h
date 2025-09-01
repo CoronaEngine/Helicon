@@ -119,11 +119,20 @@ namespace EmbeddedShader
         // ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, const std::source_location &sourceLocation = std::source_location::current());
         // ShaderCodeCompiler(const std::vector<uint32_t> &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, const std::source_location &sourceLocation = std::source_location::current());
 
-        ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, const std::source_location &sourceLocation = std::source_location::current());
+        struct CompilerOption
+        {
+            bool compileGLSL = true;
+            bool compileHLSL = true;
+            bool compileDXIL = true;
+            bool compileDXBC = true;
+            bool compileSpirV = true;
+        };
+
+        ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, CompilerOption option = {}, const std::source_location &sourceLocation = std::source_location::current());
         ~ShaderCodeCompiler() = default;
 
         [[nodiscard]] ShaderCodeModule getShaderCode(ShaderLanguage language, bool bindless = false) const;
-        void compile(const std::string& shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL) const;
+        void compile(const std::string& shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, CompilerOption option = {}) const;
     private:
         std::string sourceLocationStr;
         std::string stage;

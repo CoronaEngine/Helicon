@@ -10,22 +10,22 @@ namespace EmbeddedShader
 	class ComputePipelineObject
 	{
 	public:
-		static ComputePipelineObject compile(auto&& computeShaderCode, ktm::uvec3 numthreads = ktm::uvec3(1), std::source_location sourceLocation = std::source_location::current());
+		static ComputePipelineObject compile(auto&& computeShaderCode, ktm::uvec3 numthreads = ktm::uvec3(1), ShaderCodeCompiler::CompilerOption compilerOption = {}, std::source_location sourceLocation = std::source_location::current());
 		std::unique_ptr<ShaderCodeCompiler> compute;
 	private:
 		static std::vector<Ast::ParseOutput> parse(auto&& computeShaderCode);
 	};
 
-	ComputePipelineObject ComputePipelineObject::compile(auto&& computeShaderCode, ktm::uvec3 numthreads,std::source_location sourceLocation)
+	ComputePipelineObject ComputePipelineObject::compile(auto&& computeShaderCode, ktm::uvec3 numthreads,ShaderCodeCompiler::CompilerOption compilerOption,std::source_location sourceLocation)
 	{
 		Generator::SlangGenerator::numthreads = numthreads;
 		Ast::Parser::setBindless(false);
 		auto outputs = parse(computeShaderCode);
 		ComputePipelineObject result;
-		result.compute = std::make_unique<ShaderCodeCompiler>(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,sourceLocation);
+		result.compute = std::make_unique<ShaderCodeCompiler>(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,compilerOption,sourceLocation);
 		Ast::Parser::setBindless(true);
 		outputs = parse(std::forward<decltype(computeShaderCode)>(computeShaderCode));
-		result.compute->compile(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang);
+		result.compute->compile(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,compilerOption);
 		return result;
 	}
 

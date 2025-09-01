@@ -42,11 +42,12 @@ namespace EmbeddedShader
         return "Unknown";
     }
 
-    ShaderCodeCompiler::ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language, const std::source_location &sourceLocation)
+    ShaderCodeCompiler::ShaderCodeCompiler(const std::string& shaderCode, ShaderStage inputStage,
+        ShaderLanguage language, CompilerOption option, const std::source_location& sourceLocation)
     {
         sourceLocationStr = ShaderHardcodeManager::getSourceLocationString(sourceLocation);
         stage = enumToString(inputStage);
-        compile(shaderCode,inputStage,language);
+        compile(shaderCode,inputStage,language,option);
     }
 
     ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language, bool bindless) const
@@ -58,16 +59,27 @@ namespace EmbeddedShader
         return result;
     }
 
-    void ShaderCodeCompiler::compile(const std::string& shaderCode, ShaderStage inputStage, ShaderLanguage language) const
+    void ShaderCodeCompiler::compile(const std::string& shaderCode, ShaderStage inputStage, ShaderLanguage language,
+        CompilerOption option) const
     {
 #if CABBAGE_ENGINE_DEBUG
-        std::string bindlessStr = EmbeddedShader::Ast::Parser::getBindless() ? "_Bindless" : "";
+        std::string bindlessStr = Ast::Parser::getBindless() ? "_Bindless" : "";
         std::vector<uint32_t> codeSpirV = {};
 #ifdef WIN32
         std::vector<uint32_t> codeDXIL = {};
-        bool bindless = EmbeddedShader::Ast::Parser::getBindless();
         std::vector<uint32_t> codeDXBC = {};
 #endif
+
+        if (Ast::Parser::getBindless())
+            option.compileDXBC = false; // DXBC不支持sm6.6 bindless
+
+        if (language != ShaderLanguage::Slang && language != ShaderLanguage::HLSL && !option.compileHLSL)
+        {
+            //slang可以直接编译到dxil和dxbc，但其他情况需要依赖HLSL，所以如果不需要HLSL就直接跳过
+            option.compileDXIL = false;
+            option.compileDXBC = false;
+        }
+
         std::string codeGLSL;
         std::string codeHLSL;
         std::string codeSlang;
@@ -77,27 +89,56 @@ namespace EmbeddedShader
             case ShaderLanguage::Slang:
             {
                 codeSlang = shaderCode;
-                // codeSpirV = ShaderLanguageConverter::slangSpirvCompiler(codeSlang, program);
-                // codeGLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::GLSL,program);
-                // codeHLSL = ShaderLanguageConverter::slangCompiler(codeSlang,ShaderLanguage::HLSL,program);
+
                 std::vector<std::string> outputs;
                 std::vector<std::vector<uint32_t>> binaryOutputs;
-                ShaderLanguageConverter::slangCompiler(codeSlang, {ShaderLanguage::SpirV}, {ShaderLanguage::GLSL, ShaderLanguage::HLSL}, binaryOutputs, outputs, true);
-                codeSpirV = binaryOutputs[0];
-                codeGLSL = outputs[0];
-                codeHLSL = outputs[1];
+                std::vector<ShaderLanguage> binaryLanguages;
+                std::vector<ShaderLanguage> languages;
+                if (option.compileSpirV)
+                    binaryLanguages.push_back(ShaderLanguage::SpirV);
 #ifdef WIN32
-                codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
-                if (!bindless)
-                    codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
+                if (option.compileDXIL)
+                    binaryLanguages.push_back(ShaderLanguage::DXIL);
+                if (option.compileDXBC)
+                    binaryLanguages.push_back(ShaderLanguage::DXBC);
 #endif
+                if (option.compileGLSL)
+                    languages.push_back(ShaderLanguage::GLSL);
+                if (option.compileHLSL)
+                    languages.push_back(ShaderLanguage::HLSL);
+
+
+                ShaderLanguageConverter::slangCompiler(codeSlang, binaryLanguages, languages, binaryOutputs, outputs, true);
+                size_t index = 0;
+                if (option.compileSpirV)
+                    codeSpirV = binaryOutputs[index++];
+#ifdef WIN32
+                if (option.compileDXIL)
+                    codeDXIL = binaryOutputs[index++];
+                if (option.compileDXBC)
+                    codeDXBC = binaryOutputs[index++];
+
+                // if (option.compileDXIL)
+                //     codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
+                // if (!bindless && option.compileDXBC)
+                //     codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
+#endif
+
+                index = 0;
+                if (option.compileGLSL)
+                    codeGLSL = outputs[index++];
+                if (option.compileHLSL)
+                    codeHLSL = outputs[index++];
                 break;
             }
             case ShaderLanguage::GLSL:
                 codeGLSL = shaderCode;
-                codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeGLSL, language, inputStage);
-                codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
-                codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
+                if (option.compileSpirV)
+                    codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeGLSL, language, inputStage);
+                if (option.compileGLSL)
+                    codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
+                if (option.compileHLSL)
+                    codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
 #ifdef WIN32
                 // codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
                 // if (!bindless)
@@ -106,12 +147,16 @@ namespace EmbeddedShader
                 break;
             case ShaderLanguage::HLSL:
                 codeHLSL = shaderCode;
-                codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeHLSL, language, inputStage);
-                codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
-                codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
+                if (option.compileSpirV)
+                    codeSpirV = ShaderLanguageConverter::glslangSpirvCompiler(codeHLSL, language, inputStage);
+                if (option.compileGLSL)
+                    codeGLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::GLSL);
+                if (option.compileHLSL)
+                    codeHLSL = ShaderLanguageConverter::spirvCrossConverter(codeSpirV, ShaderLanguage::HLSL);
 #ifdef WIN32
-                codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
-                if (!bindless)
+                if (option.compileDXIL)
+                    codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
+                if (option.compileDXBC)
                     codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
 #endif
                 break;
@@ -131,13 +176,19 @@ namespace EmbeddedShader
 
         auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
         ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr));
-        ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV" + bindlessStr));
-        ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL" + bindlessStr));
-        ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL" + bindlessStr));
-        ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang" + bindlessStr));
+
+        if (option.compileSpirV)
+            ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV" + bindlessStr));
+        if (language == ShaderLanguage::GLSL || option.compileGLSL)
+            ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL" + bindlessStr));
+        if (language == ShaderLanguage::HLSL || option.compileDXIL)
+            ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL" + bindlessStr));
+        if (language == ShaderLanguage::Slang)
+            ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang" + bindlessStr));
 #ifdef WIN32
-        ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL" + bindlessStr));
-        if (!bindless)
+        if (option.compileDXIL)
+            ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL" + bindlessStr));
+        if (option.compileDXBC)
             ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
 #endif
 #endif

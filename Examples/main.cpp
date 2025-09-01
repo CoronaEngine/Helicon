@@ -181,10 +181,16 @@ int main(int argc, char* argv[])
 		inputImageRGBA16[dispatchThreadID()->xy()] = Float4(acesFilmicToneMapCurve(color->xyz()),1.f);
 	};
 
-	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment);
+	ShaderCodeCompiler::CompilerOption compilerOption = {};
+	compilerOption.compileHLSL = false;
+	compilerOption.compileDXIL = true;
+	compilerOption.compileDXBC = true;
+	compilerOption.compileGLSL = false;
+
+	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment,compilerOption);
 	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
-	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1));
+	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
 	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 
 //     std::string slangTest = R"(

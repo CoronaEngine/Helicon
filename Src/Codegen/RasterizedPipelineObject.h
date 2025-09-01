@@ -11,26 +11,26 @@ namespace EmbeddedShader
 	{
 		RasterizedPipelineObject() = default;
 	public:
-		static RasterizedPipelineObject compile(auto&& vertexShaderCode, auto&& fragmentShaderCode,std::source_location sourceLocation = std::source_location::current());
+		static RasterizedPipelineObject compile(auto&& vertexShaderCode, auto&& fragmentShaderCode, ShaderCodeCompiler::CompilerOption compilerOption = {}, std::source_location sourceLocation = std::source_location::current());
 		std::unique_ptr<ShaderCodeCompiler> vertex;
 		std::unique_ptr<ShaderCodeCompiler> fragment;
 	private:
 		static std::vector<Ast::ParseOutput> parse(auto&& vertexShaderCode, auto&& fragmentShaderCode);
 	};
 
-	RasterizedPipelineObject RasterizedPipelineObject::compile(auto&& vertexShaderCode, auto&& fragmentShaderCode,std::source_location sourceLocation)
+	RasterizedPipelineObject RasterizedPipelineObject::compile(auto&& vertexShaderCode, auto&& fragmentShaderCode, ShaderCodeCompiler::CompilerOption compilerOption, std::source_location sourceLocation)
 	{
 		Ast::Parser::setBindless(false);
 		auto outputs = parse(vertexShaderCode,fragmentShaderCode);
 		RasterizedPipelineObject result;
-		result.vertex = std::make_unique<ShaderCodeCompiler>(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang, sourceLocation);
-		result.fragment = std::make_unique<ShaderCodeCompiler>(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang, sourceLocation);
+		result.vertex = std::make_unique<ShaderCodeCompiler>(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang,compilerOption, sourceLocation);
+		result.fragment = std::make_unique<ShaderCodeCompiler>(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang,compilerOption, sourceLocation);
 
 		Ast::Parser::setBindless(true);
 		outputs = parse(std::forward<decltype(vertexShaderCode)>(vertexShaderCode),
 			std::forward<decltype(fragmentShaderCode)>(fragmentShaderCode));
-		result.vertex->compile(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang);
-		result.fragment->compile(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang);
+		result.vertex->compile(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang,compilerOption);
+		result.fragment->compile(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang,compilerOption);
 		return result;
 	}
 
