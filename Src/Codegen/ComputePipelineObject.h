@@ -1,9 +1,9 @@
 #pragma once
 #include <functional>
-#include <string>
 #include <Codegen/ParseHelper.h>
 #include <Codegen/AST/AST.hpp>
 #include <Codegen/AST/Parser.hpp>
+#include <Compiler/ShaderCodeCompiler.h>
 
 namespace EmbeddedShader
 {
@@ -23,9 +23,13 @@ namespace EmbeddedShader
 		auto outputs = parse(computeShaderCode);
 		ComputePipelineObject result;
 		result.compute = std::make_unique<ShaderCodeCompiler>(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,compilerOption,sourceLocation);
-		Ast::Parser::setBindless(true);
-		outputs = parse(std::forward<decltype(computeShaderCode)>(computeShaderCode));
-		result.compute->compile(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,compilerOption);
+
+		if (compilerOption.enableBindless)
+		{
+			Ast::Parser::setBindless(true);
+			outputs = parse(std::forward<decltype(computeShaderCode)>(computeShaderCode));
+			result.compute->compile(outputs[0].output, ShaderStage::ComputeShader, ShaderLanguage::Slang,compilerOption);
+		}
 		return result;
 	}
 

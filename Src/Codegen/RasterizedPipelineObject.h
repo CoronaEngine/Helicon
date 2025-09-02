@@ -26,11 +26,14 @@ namespace EmbeddedShader
 		result.vertex = std::make_unique<ShaderCodeCompiler>(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang,compilerOption, sourceLocation);
 		result.fragment = std::make_unique<ShaderCodeCompiler>(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang,compilerOption, sourceLocation);
 
-		Ast::Parser::setBindless(true);
-		outputs = parse(std::forward<decltype(vertexShaderCode)>(vertexShaderCode),
-			std::forward<decltype(fragmentShaderCode)>(fragmentShaderCode));
-		result.vertex->compile(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang,compilerOption);
-		result.fragment->compile(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang,compilerOption);
+		if (compilerOption.enableBindless)
+		{
+			Ast::Parser::setBindless(true);
+			outputs = parse(std::forward<decltype(vertexShaderCode)>(vertexShaderCode),
+							std::forward<decltype(fragmentShaderCode)>(fragmentShaderCode));
+			result.vertex->compile(outputs[0].output, ShaderStage::VertexShader, ShaderLanguage::Slang, compilerOption);
+			result.fragment->compile(outputs[1].output, ShaderStage::FragmentShader, ShaderLanguage::Slang, compilerOption);
+		}
 		return result;
 	}
 

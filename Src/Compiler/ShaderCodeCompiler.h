@@ -126,6 +126,7 @@ namespace EmbeddedShader
             bool compileDXIL = true;
             bool compileDXBC = true;
             bool compileSpirV = true;
+            bool enableBindless = true;
         };
 
         ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, CompilerOption option = {}, const std::source_location &sourceLocation = std::source_location::current());

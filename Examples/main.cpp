@@ -186,12 +186,13 @@ int main(int argc, char* argv[])
 	compilerOption.compileDXIL = true;
 	compilerOption.compileDXBC = true;
 	compilerOption.compileGLSL = false;
+	compilerOption.enableBindless = false;
 
 	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment,compilerOption);
-	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
-	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
+	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
-	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
+	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 
 //     std::string slangTest = R"(
 // Sampler2D textures[];
