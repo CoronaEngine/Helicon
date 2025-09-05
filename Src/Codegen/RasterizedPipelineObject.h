@@ -11,14 +11,14 @@ namespace EmbeddedShader
 	{
 		RasterizedPipelineObject() = default;
 	public:
-		static RasterizedPipelineObject compile(auto&& vertexShaderCode, auto&& fragmentShaderCode, ShaderCodeCompiler::CompilerOption compilerOption = {}, std::source_location sourceLocation = std::source_location::current());
+		static RasterizedPipelineObject compile(auto&& vertexShaderCode, auto&& fragmentShaderCode, CompilerOption compilerOption = {}, std::source_location sourceLocation = std::source_location::current());
 		std::unique_ptr<ShaderCodeCompiler> vertex;
 		std::unique_ptr<ShaderCodeCompiler> fragment;
 	private:
 		static std::vector<Ast::ParseOutput> parse(auto&& vertexShaderCode, auto&& fragmentShaderCode);
 	};
 
-	RasterizedPipelineObject RasterizedPipelineObject::compile(auto&& vertexShaderCode, auto&& fragmentShaderCode, ShaderCodeCompiler::CompilerOption compilerOption, std::source_location sourceLocation)
+	RasterizedPipelineObject RasterizedPipelineObject::compile(auto&& vertexShaderCode, auto&& fragmentShaderCode, CompilerOption compilerOption, std::source_location sourceLocation)
 	{
 		Ast::Parser::setBindless(false);
 		auto outputs = parse(vertexShaderCode,fragmentShaderCode);

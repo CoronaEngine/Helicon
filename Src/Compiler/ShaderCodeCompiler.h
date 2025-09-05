@@ -113,21 +113,23 @@ namespace EmbeddedShader
         std::variant<std::vector<uint32_t>, std::string> shaderCode;
     };
 
+    struct CompilerOption
+    {
+        bool compileGLSL = true;
+        bool compileHLSL = true;
+        bool compileDXIL = true;
+        bool compileDXBC = true;
+        bool compileSpirV = true;
+        bool enableBindless = true;
+    };
+
     struct ShaderCodeCompiler
     {
     public:
         // ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, const std::source_location &sourceLocation = std::source_location::current());
         // ShaderCodeCompiler(const std::vector<uint32_t> &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, const std::source_location &sourceLocation = std::source_location::current());
 
-        struct CompilerOption
-        {
-            bool compileGLSL = true;
-            bool compileHLSL = true;
-            bool compileDXIL = true;
-            bool compileDXBC = true;
-            bool compileSpirV = true;
-            bool enableBindless = true;
-        };
+
 
         ShaderCodeCompiler(const std::string &shaderCode, ShaderStage inputStage, ShaderLanguage language = ShaderLanguage::GLSL, CompilerOption option = {}, const std::source_location &sourceLocation = std::source_location::current());
         ~ShaderCodeCompiler() = default;
