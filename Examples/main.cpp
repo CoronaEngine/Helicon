@@ -194,23 +194,34 @@ int main(int argc, char* argv[])
 	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
 	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 
-    std::string slangTest = R"(
-uniform Texture2D.Handle texture;
-uniform SamplerState.Handle sampler;
-
+	std::string slangTest = R"(
 struct Data
 {
 	float2 coord;
 };
-uniform ConstantBuffer<Data>.Handle data;
+
+struct ParameterBlockData
+{
+	ConstantBuffer<Data>.Handle data;
+};
+
+
+struct ParameterBlockData2
+{
+	Texture2D.Handle texture;
+	SamplerState.Handle sampler;
+};
+
+ParameterBlock<ParameterBlockData> data;
+ParameterBlock<ParameterBlockData2> data2;
 
 [shader("fragment")]
 float4 main() : SV_TARGET0
 {
-    return texture.Sample(sampler,(*data).coord);
+    return data2.texture.Sample(data2.sampler,(*(data.data)).coord);
 })";
 
-    std::vector<std::vector<uint32_t>> binaryOutputs;
+	std::vector<std::vector<uint32_t>> binaryOutputs;
     std::vector<std::string> outputs;
     ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::GLSL}, binaryOutputs, outputs, true);
     puts(outputs[0].c_str());
