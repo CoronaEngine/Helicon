@@ -195,6 +195,49 @@ int main(int argc, char* argv[])
 	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 
 	std::string slangTest = R"(
+[vk::binding(0, 1)]
+__DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
+
+[vk::binding(1, 2)]
+__DynamicResource<__DynamicResourceKind.General> textureHandles[];
+
+[vk::binding(2, 3)]
+__DynamicResource<__DynamicResourceKind.General> bufferHandles[];
+
+[vk::binding(3, 4)]
+__DynamicResource<__DynamicResourceKind.General> combinedTextureSamplerHandles[];
+
+[vk::binding(4, 5)]
+__DynamicResource<__DynamicResourceKind.General> accelerationStructureHandles[];
+
+[vk::binding(5, 6)]
+__DynamicResource<__DynamicResourceKind.General> texelBufferHandles[];
+
+export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqueDescriptor
+{
+    __target_switch
+    {
+    case spirv:
+    case glsl:
+        if (T.kind == DescriptorKind.Sampler)
+            return samplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Texture)
+            return textureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Buffer)
+            return bufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.CombinedTextureSampler)
+            return combinedTextureSamplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.AccelerationStructure)
+			return accelerationStructureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.TexelBuffer)
+			return texelBufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+        else
+            return defaultGetDescriptorFromHandle(handle);
+    default:
+        return defaultGetDescriptorFromHandle(handle);
+    }
+}
+
 struct Data
 {
 	float2 coord;
@@ -203,22 +246,16 @@ struct Data
 struct ParameterBlockData
 {
 	ConstantBuffer<Data>.Handle data;
-};
-
-
-struct ParameterBlockData2
-{
 	Texture2D.Handle texture;
 	SamplerState.Handle sampler;
 };
 
 ParameterBlock<ParameterBlockData> data;
-ParameterBlock<ParameterBlockData2> data2;
 
 [shader("fragment")]
 float4 main() : SV_TARGET0
 {
-    return data2.texture.Sample(data2.sampler,(*(data.data)).coord);
+    return data.texture.Sample(data.sampler,(*(data.data)).coord);
 })";
 
 	std::vector<std::vector<uint32_t>> binaryOutputs;
