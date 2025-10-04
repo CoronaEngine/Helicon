@@ -4,7 +4,50 @@
 std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast::EmbeddedShaderStructure& structure)
 {
 	currentStage = structure.stage;
-	std::string output;
+	std::string output =
+		// Vulkan Bindless Process
+		R"([vk::binding(0, 1)]
+__DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
+
+[vk::binding(0, 2)]
+__DynamicResource<__DynamicResourceKind.General> textureHandles[];
+
+[vk::binding(0, 3)]
+__DynamicResource<__DynamicResourceKind.General> bufferHandles[];
+
+[vk::binding(0, 4)]
+__DynamicResource<__DynamicResourceKind.General> combinedTextureSamplerHandles[];
+
+[vk::binding(0, 5)]
+__DynamicResource<__DynamicResourceKind.General> accelerationStructureHandles[];
+
+[vk::binding(0, 6)]
+__DynamicResource<__DynamicResourceKind.General> texelBufferHandles[];
+
+export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqueDescriptor
+{
+	__target_switch
+	{
+		case spirv:
+		case glsl:
+		if (T.kind == DescriptorKind.Sampler)
+			return samplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Texture)
+			return textureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Buffer)
+			return bufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.CombinedTextureSampler)
+			return combinedTextureSamplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.AccelerationStructure)
+			return accelerationStructureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.TexelBuffer)
+			return texelBufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else
+			return defaultGetDescriptorFromHandle(handle);
+		default:
+		return defaultGetDescriptorFromHandle(handle);
+	}
+})";
 
 	std::string mainContent;
 	for (auto& statement: structure.localStatements)
