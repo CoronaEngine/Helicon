@@ -73,81 +73,81 @@ layout(location = 3)
 in vec3 input_var_0_fragColor_0;
 
 
-#line 71 1
+#line 30 1
 struct fragment_output_0
 {
     vec4 var_32_0;
 };
 
 
-#line 75
+#line 34
 void main()
 {
 
-#line 76
+#line 35
     fragment_output_0 output_0;
 
     vec4 _S1 = (texture((global_ubo_global_var_7_texture_0), (input_var_0_fragTexCoord_0)));
 
-#line 78
+#line 37
     vec3 var_1_0;
 
-#line 78
+#line 37
     if((_S1.w) > 0.00999999977648258)
     {
 
-#line 78
+#line 37
         var_1_0 = _S1.xyz;
 
-#line 78
+#line 37
     }
     else
     {
 
-#line 78
+#line 37
         var_1_0 = input_var_0_fragColor_0;
 
-#line 78
+#line 37
     }
 
-#line 87
+#line 46
     vec3 var_4_0 = mix(vec3(0.03999999910593033, 0.03999999910593033, 0.03999999910593033), var_1_0, vec3(0.5));
 
-#line 95
+#line 54
     vec3 _S2 = normalize(input_var_0_fragNormal_0);
 
-#line 95
+#line 54
     vec3 _S3 = normalize(global_ubo_0.global_var_4_0 - input_var_0_fragPos_0);
 
-#line 95
+#line 54
     vec3 _S4 = normalize(global_ubo_0.global_var_6_0 - input_var_0_fragPos_0);
 
-#line 95
+#line 54
     vec3 _S5 = normalize(_S3 + _S4);
 
-#line 95
+#line 54
     float _S6 = max(dot(_S2, _S5), 0.0);
 
-#line 95
+#line 54
     float _S7 = _S6 * _S6 * -0.9375 + 1.0;
     float var_13_0 = max(dot(_S2, _S3), 0.0);
 
-#line 101
+#line 60
     float var_18_0 = max(dot(_S2, _S4), 0.0);
 
-#line 107
+#line 66
     const vec3 var_24_0 = vec3(1.0, 1.0, 1.0);
 
 
     vec3 var_27_0 = var_4_0 + (var_24_0 - var_4_0) * pow(clamp(1.0 - clamp(dot(_S5, _S3), 0.0, 1.0), 0.0, 1.0), 5.0);
 
-#line 116
+#line 75
     output_0.var_32_0 = vec4(vec3(0.02999999932944775, 0.02999999932944775, 0.02999999932944775) * var_1_0 + ((var_24_0 - var_27_0) * var_1_0 / 3.14159297943115234 + 0.0625 / (3.14159297943115234 * _S7 * _S7) * (var_18_0 / (var_18_0 * 0.71875 + 0.28125) * (var_13_0 / (var_13_0 * 0.71875 + 0.28125))) * var_27_0 / (4.0 * var_13_0 * var_18_0 + 0.00009999999747379)) * global_ubo_0.global_var_5_0 * var_18_0, 1.0);
 
-#line 116
+#line 75
     entryPointParam_main_var_32_0 = output_0.var_32_0;
 
-#line 116
+#line 75
     return;
 }
 
@@ -177,48 +177,7 @@ struct global_ubo_struct {
 	aggregate_type_0 global_var_7;
 }
 ConstantBuffer<global_ubo_struct> global_ubo;
-[vk::binding(0, 1)]
-__DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
-
-[vk::binding(0, 2)]
-__DynamicResource<__DynamicResourceKind.General> textureHandles[];
-
-[vk::binding(0, 3)]
-__DynamicResource<__DynamicResourceKind.General> bufferHandles[];
-
-[vk::binding(0, 4)]
-__DynamicResource<__DynamicResourceKind.General> combinedTextureSamplerHandles[];
-
-[vk::binding(0, 5)]
-__DynamicResource<__DynamicResourceKind.General> accelerationStructureHandles[];
-
-[vk::binding(0, 6)]
-__DynamicResource<__DynamicResourceKind.General> texelBufferHandles[];
-
-export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqueDescriptor
-{
-	__target_switch
-	{
-		case spirv:
-		case glsl:
-		if (T.kind == DescriptorKind.Sampler)
-			return samplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.Texture)
-			return textureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.Buffer)
-			return bufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.CombinedTextureSampler)
-			return combinedTextureSamplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.AccelerationStructure)
-			return accelerationStructureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.TexelBuffer)
-			return texelBufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else
-			return defaultGetDescriptorFromHandle(handle);
-		default:
-		return defaultGetDescriptorFromHandle(handle);
-	}
-}struct fragment_input {
+struct fragment_input {
 	aggregate_type_2 var_0 : LOCATION0;
 }
 struct fragment_output {
@@ -367,66 +326,66 @@ layout(location = 3)
 in vec3 input_var_0_fragColor_0;
 
 
-#line 71 1
+#line 72 1
 struct fragment_output_0
 {
     vec4 var_32_0;
 };
 
 
-#line 75
+#line 76
 void main()
 {
 
-#line 76
+#line 77
     fragment_output_0 output_0;
 
-#line 76
+#line 77
     uvec2 _S1 = globalParams_0.global_ubo_0;
 
-#line 76
+#line 77
     vec3 var_1_0;
 
     if(((texture((combinedTextureSamplerHandles_0[bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_7_0.texture_0.x]), (input_var_0_fragTexCoord_0))).w) > 0.00999999977648258)
     {
 
-#line 78
+#line 79
         var_1_0 = (texture((combinedTextureSamplerHandles_0[bufferHandles_0[_S1.x].global_var_7_0.texture_0.x]), (input_var_0_fragTexCoord_0))).xyz;
 
-#line 78
+#line 79
     }
     else
     {
 
-#line 78
+#line 79
         var_1_0 = input_var_0_fragColor_0;
 
-#line 78
+#line 79
     }
 
-#line 87
+#line 88
     vec3 var_4_0 = mix(vec3(0.03999999910593033, 0.03999999910593033, 0.03999999910593033), var_1_0, vec3(0.5));
 
-#line 95
+#line 96
     vec3 _S2 = normalize(input_var_0_fragNormal_0);
     float var_13_0 = max(dot(_S2, normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0)), 0.0);
 
-#line 101
+#line 102
     float var_18_0 = max(dot(_S2, normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0)), 0.0);
 
-#line 107
+#line 108
     const vec3 var_24_0 = vec3(1.0, 1.0, 1.0);
 
 
     vec3 _S3 = var_24_0 - var_4_0;
 
-#line 116
+#line 117
     output_0.var_32_0 = vec4(vec3(0.02999999932944775, 0.02999999932944775, 0.02999999932944775) * var_1_0 + ((var_24_0 - (var_4_0 + _S3 * pow(clamp(1.0 - clamp(dot(normalize(normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0) + normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0)), normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0)), 0.0, 1.0), 0.0, 1.0), 5.0))) * var_1_0 / 3.14159297943115234 + 0.0625 / (3.14159297943115234 * (max(dot(_S2, normalize(normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0) + normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0))), 0.0) * max(dot(_S2, normalize(normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0) + normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0))), 0.0) * -0.9375 + 1.0) * (max(dot(_S2, normalize(normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0) + normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0))), 0.0) * max(dot(_S2, normalize(normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0) + normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0))), 0.0) * -0.9375 + 1.0)) * (var_18_0 / (var_18_0 * 0.71875 + 0.28125) * (var_13_0 / (var_13_0 * 0.71875 + 0.28125))) * (var_4_0 + _S3 * pow(clamp(1.0 - clamp(dot(normalize(normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0) + normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0)), normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0)), 0.0, 1.0), 0.0, 1.0), 5.0)) / (4.0 * max(dot(_S2, normalize(bufferHandles_0[_S1.x].global_var_4_0 - input_var_0_fragPos_0)), 0.0) * max(dot(_S2, normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0)), 0.0) + 0.00009999999747379)) * bufferHandles_0[_S1.x].global_var_5_0 * max(dot(_S2, normalize(bufferHandles_0[_S1.x].global_var_6_0 - input_var_0_fragPos_0)), 0.0), 1.0);
 
-#line 116
+#line 117
     entryPointParam_main_var_32_0 = output_0.var_32_0;
 
-#line 116
+#line 117
     return;
 }
 
@@ -497,7 +456,8 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 		default:
 		return defaultGetDescriptorFromHandle(handle);
 	}
-}struct fragment_input {
+}
+struct fragment_input {
 	aggregate_type_2 var_0 : LOCATION0;
 }
 struct fragment_output {

@@ -4,8 +4,11 @@
 std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast::EmbeddedShaderStructure& structure)
 {
 	currentStage = structure.stage;
-	std::string output =
-		// Vulkan Bindless Process
+	std::string output;
+
+	if (Ast::Parser::getBindless())
+	{
+		output += // Vulkan Bindless Process
 		R"([vk::binding(0, 1)]
 __DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
 
@@ -47,7 +50,9 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 		default:
 		return defaultGetDescriptorFromHandle(handle);
 	}
-})";
+}
+)";
+	}
 
 	std::string mainContent;
 	for (auto& statement: structure.localStatements)
@@ -139,17 +144,29 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 		pushConstantMembers.clear();
 	}
 
+	std::string ubo;
 	if (!uboMembers.empty())
 	{
 		std::string uboStructName = "global_ubo_struct";
 		auto uboStruct = "struct " + uboStructName + " {\n" + uboMembers + "}\n";
-		std::string ubo;
 		if (!bindless())
 			ubo = "ConstantBuffer<" + uboStructName + "> global_ubo;\n";
 		else
 			ubo = "uniform ConstantBuffer<" + uboStructName + ">.Handle global_ubo;\n";
-		output += uboStruct + ubo;
+		output += uboStruct;
 		uboMembers.clear();
+	}
+
+	if (!parameterBlockMembers.empty() || !ubo.empty())
+	{
+		std::string parameterBlockStructName = "parameter_block_struct";
+		auto parameterBlockStruct = "struct " + parameterBlockStructName + " {\n" + parameterBlockMembers;
+		if (!ubo.empty())
+			parameterBlockStruct += "\t" + ubo + "\n";
+		parameterBlockStruct += "}\n";
+		auto parameterBlock = "ParameterBlock<" + parameterBlockStructName + "> global_parameter_block;\n";
+		output += parameterBlockStruct + parameterBlock;
+		parameterBlockMembers.clear();
 	}
 
 	return output;
@@ -247,6 +264,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->array->permissions != Ast::AccessPermissions::ReadOnly)
 		result = "RW" + result;
 
+	parameterBlockMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
+	return "";
 	return (bindless() ? "uniform " : "") + result;
 }
 
@@ -312,6 +331,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
         result = "RW" + result;
     }
 
+	parameterBlockMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
+	return "";
     return (bindless() ? "uniform " : "") + result;
 }
 

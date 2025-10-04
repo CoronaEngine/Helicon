@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
-	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
 
 	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::GLSL,true).shaderCode).c_str());
 

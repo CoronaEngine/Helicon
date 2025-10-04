@@ -12,8 +12,6 @@ namespace EmbeddedShader
 
 namespace EmbeddedShader::Generator
 {
-	//后续把BaseShaderGenerator移除
-
 	class SlangGenerator final
 	{
 		friend class ComputePipelineObject;
@@ -112,6 +110,7 @@ template<> constexpr std::string_view variateBasicTypeNameMap<type> = #name
 	private:
 		static bool bindless();
 		static thread_local inline std::string uboMembers;
+		static thread_local inline std::string parameterBlockMembers;
 		static thread_local inline std::string pushConstantMembers;
 		static thread_local inline ktm::uvec3 numthreads = ktm::uvec3(1);
 		static thread_local inline Ast::ShaderStage currentStage;
@@ -119,6 +118,7 @@ template<> constexpr std::string_view variateBasicTypeNameMap<type> = #name
 		static thread_local inline size_t nestHierarchy = 1;
 		static std::string getCodeIndentation();
 
+		//貌似是冗余代码，暂时不清理，后续再查一下有没有依赖
 		template<typename T>
 		struct vec_traits
 		{

@@ -94,7 +94,7 @@ layout(location = 0)
 in vec3 input_var_0_inPosition_0;
 
 
-#line 71 1
+#line 30 1
 struct vertex_output_0
 {
     vec4 position_output_0;
@@ -102,41 +102,41 @@ struct vertex_output_0
 };
 
 
-#line 76
+#line 35
 void main()
 {
 
 #line 11
     const vec3 _S2 = vec3(0.0, 0.0, 0.0);
 
-#line 78
+#line 37
     aggregate_type_2_0 var_1_0 = aggregate_type_2_x24init_0(_S2, _S2, vec2(0.0, 0.0), _S2);
 
-#line 77
+#line 36
     vertex_output_0 output_0;
 
     output_0.position_output_0 = (((vec4(input_var_0_inPosition_0, 1.0)) * ((((mat4x4(global_ubo_0.global_var_0_0.data_0[0][0], global_ubo_0.global_var_0_0.data_0[1][0], global_ubo_0.global_var_0_0.data_0[2][0], global_ubo_0.global_var_0_0.data_0[3][0], global_ubo_0.global_var_0_0.data_0[0][1], global_ubo_0.global_var_0_0.data_0[1][1], global_ubo_0.global_var_0_0.data_0[2][1], global_ubo_0.global_var_0_0.data_0[3][1], global_ubo_0.global_var_0_0.data_0[0][2], global_ubo_0.global_var_0_0.data_0[1][2], global_ubo_0.global_var_0_0.data_0[2][2], global_ubo_0.global_var_0_0.data_0[3][2], global_ubo_0.global_var_0_0.data_0[0][3], global_ubo_0.global_var_0_0.data_0[1][3], global_ubo_0.global_var_0_0.data_0[2][3], global_ubo_0.global_var_0_0.data_0[3][3])) * ((((mat4x4(global_ubo_0.global_var_2_0.data_0[0][0], global_ubo_0.global_var_2_0.data_0[1][0], global_ubo_0.global_var_2_0.data_0[2][0], global_ubo_0.global_var_2_0.data_0[3][0], global_ubo_0.global_var_2_0.data_0[0][1], global_ubo_0.global_var_2_0.data_0[1][1], global_ubo_0.global_var_2_0.data_0[2][1], global_ubo_0.global_var_2_0.data_0[3][1], global_ubo_0.global_var_2_0.data_0[0][2], global_ubo_0.global_var_2_0.data_0[1][2], global_ubo_0.global_var_2_0.data_0[2][2], global_ubo_0.global_var_2_0.data_0[3][2], global_ubo_0.global_var_2_0.data_0[0][3], global_ubo_0.global_var_2_0.data_0[1][3], global_ubo_0.global_var_2_0.data_0[2][3], global_ubo_0.global_var_2_0.data_0[3][3])) * (mat4x4(global_ubo_0.global_var_3_0.data_0[0][0], global_ubo_0.global_var_3_0.data_0[1][0], global_ubo_0.global_var_3_0.data_0[2][0], global_ubo_0.global_var_3_0.data_0[3][0], global_ubo_0.global_var_3_0.data_0[0][1], global_ubo_0.global_var_3_0.data_0[1][1], global_ubo_0.global_var_3_0.data_0[2][1], global_ubo_0.global_var_3_0.data_0[3][1], global_ubo_0.global_var_3_0.data_0[0][2], global_ubo_0.global_var_3_0.data_0[1][2], global_ubo_0.global_var_3_0.data_0[2][2], global_ubo_0.global_var_3_0.data_0[3][2], global_ubo_0.global_var_3_0.data_0[0][3], global_ubo_0.global_var_3_0.data_0[1][3], global_ubo_0.global_var_3_0.data_0[2][3], global_ubo_0.global_var_3_0.data_0[3][3]))))))))));
 
-#line 84
+#line 43
     output_0.var_6_0 = var_1_0;
     vertex_output_0 _S3 = output_0;
 
-#line 85
+#line 44
     gl_Position = output_0.position_output_0;
 
-#line 85
+#line 44
     entryPointParam_main_var_6_fragPos_0 = _S3.var_6_0.fragPos_0;
 
-#line 85
+#line 44
     entryPointParam_main_var_6_fragNormal_0 = _S3.var_6_0.fragNormal_0;
 
-#line 85
+#line 44
     entryPointParam_main_var_6_fragTexCoord_0 = _S3.var_6_0.fragTexCoord_0;
 
-#line 85
+#line 44
     entryPointParam_main_var_6_fragColor_0 = _S3.var_6_0.fragColor_0;
 
-#line 85
+#line 44
     return;
 }
 
@@ -166,48 +166,7 @@ struct global_ubo_struct {
 	aggregate_type_0 global_var_7;
 }
 ConstantBuffer<global_ubo_struct> global_ubo;
-[vk::binding(0, 1)]
-__DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
-
-[vk::binding(0, 2)]
-__DynamicResource<__DynamicResourceKind.General> textureHandles[];
-
-[vk::binding(0, 3)]
-__DynamicResource<__DynamicResourceKind.General> bufferHandles[];
-
-[vk::binding(0, 4)]
-__DynamicResource<__DynamicResourceKind.General> combinedTextureSamplerHandles[];
-
-[vk::binding(0, 5)]
-__DynamicResource<__DynamicResourceKind.General> accelerationStructureHandles[];
-
-[vk::binding(0, 6)]
-__DynamicResource<__DynamicResourceKind.General> texelBufferHandles[];
-
-export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqueDescriptor
-{
-	__target_switch
-	{
-		case spirv:
-		case glsl:
-		if (T.kind == DescriptorKind.Sampler)
-			return samplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.Texture)
-			return textureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.Buffer)
-			return bufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.CombinedTextureSampler)
-			return combinedTextureSamplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.AccelerationStructure)
-			return accelerationStructureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.TexelBuffer)
-			return texelBufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else
-			return defaultGetDescriptorFromHandle(handle);
-		default:
-		return defaultGetDescriptorFromHandle(handle);
-	}
-}struct vertex_input {
+struct vertex_input {
 	aggregate_type_1 var_0 : LOCATION0;
 }
 struct vertex_output {
@@ -344,7 +303,7 @@ layout(location = 0)
 in vec3 input_var_0_inPosition_0;
 
 
-#line 71 1
+#line 72 1
 struct vertex_output_0
 {
     vec4 position_output_0;
@@ -352,41 +311,41 @@ struct vertex_output_0
 };
 
 
-#line 76
+#line 77
 void main()
 {
 
 #line 11
     const vec3 _S2 = vec3(0.0, 0.0, 0.0);
 
-#line 78
+#line 79
     aggregate_type_2_0 var_1_0 = aggregate_type_2_x24init_0(_S2, _S2, vec2(0.0, 0.0), _S2);
 
-#line 77
+#line 78
     vertex_output_0 output_0;
 
     output_0.position_output_0 = (((vec4(input_var_0_inPosition_0, 1.0)) * ((((mat4x4(bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[0][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[1][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[2][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_0_0.data_0[3][3])) * ((((mat4x4(bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[0][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[1][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[2][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_2_0.data_0[3][3])) * (mat4x4(bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][0], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][1], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][2], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[0][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[1][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[2][3], bufferHandles_0[globalParams_0.global_ubo_0.x].global_var_3_0.data_0[3][3]))))))))));
 
-#line 84
+#line 85
     output_0.var_6_0 = var_1_0;
     vertex_output_0 _S3 = output_0;
 
-#line 85
+#line 86
     gl_Position = output_0.position_output_0;
 
-#line 85
+#line 86
     entryPointParam_main_var_6_fragPos_0 = _S3.var_6_0.fragPos_0;
 
-#line 85
+#line 86
     entryPointParam_main_var_6_fragNormal_0 = _S3.var_6_0.fragNormal_0;
 
-#line 85
+#line 86
     entryPointParam_main_var_6_fragTexCoord_0 = _S3.var_6_0.fragTexCoord_0;
 
-#line 85
+#line 86
     entryPointParam_main_var_6_fragColor_0 = _S3.var_6_0.fragColor_0;
 
-#line 85
+#line 86
     return;
 }
 
@@ -457,7 +416,8 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 		default:
 		return defaultGetDescriptorFromHandle(handle);
 	}
-}struct vertex_input {
+}
+struct vertex_input {
 	aggregate_type_1 var_0 : LOCATION0;
 }
 struct vertex_output {

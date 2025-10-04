@@ -9,7 +9,7 @@ layout(binding = 0)
 uniform image2D global_var_8_0;
 
 
-#line 48
+
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 void main()
 {
@@ -18,105 +18,64 @@ void main()
 
     ivec2 _S1 = ivec2(gl_GlobalInvocationID.xy);
 
-#line 54
+#line 13
     vec4 _S2 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 54
+#line 13
     vec3 _S3 = _S2.xyz;
 
-#line 54
+#line 13
     vec4 _S4 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 54
+#line 13
     vec3 _S5 = _S3 * (0.02999999932944775 + 2.50999999046325684 * _S4.xyz);
 
-#line 54
+#line 13
     vec4 _S6 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 54
+#line 13
     vec3 _S7 = _S6.xyz;
 
-#line 54
+#line 13
     vec4 _S8 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 54
+#line 13
     const vec3 _S9 = vec3(0.0, 0.0, 0.0);
 
-#line 54
+#line 13
     const vec3 _S10 = vec3(1.0, 1.0, 1.0);
 
-#line 54
+#line 13
     imageStore((global_var_8_0), (_S1), vec4(clamp(_S5 / (0.14000000059604645 + _S7 * (0.5899999737739563 + 2.43000006675720215 * _S8.xyz)), _S9, _S10), 1.0));
 
-#line 60
+#line 19
     vec4 _S11 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 60
+#line 19
     vec3 _S12 = _S11.xyz;
 
-#line 60
+#line 19
     vec4 _S13 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 60
+#line 19
     vec3 _S14 = _S12 * (0.02999999932944775 + 2.50999999046325684 * _S13.xyz);
 
-#line 60
+#line 19
     vec4 _S15 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 60
+#line 19
     vec3 _S16 = _S15.xyz;
 
-#line 60
+#line 19
     vec4 _S17 = (imageLoad((global_var_8_0), (_S1)));
 
-#line 60
+#line 19
     imageStore((global_var_8_0), (_S1), vec4(clamp(_S14 / (0.14000000059604645 + _S16 * (0.5899999737739563 + 2.43000006675720215 * _S17.xyz)), _S9, _S10), 1.0));
     return;
 }
 
 )"},{"HLSL_D__Files_Code_Projects_Helicon_Examples_main_cpp", R"()"},{"Slang_D__Files_Code_Projects_Helicon_Examples_main_cpp", R"(RWTexture2D<float4> global_var_8;
-[vk::binding(0, 1)]
-__DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
-
-[vk::binding(0, 2)]
-__DynamicResource<__DynamicResourceKind.General> textureHandles[];
-
-[vk::binding(0, 3)]
-__DynamicResource<__DynamicResourceKind.General> bufferHandles[];
-
-[vk::binding(0, 4)]
-__DynamicResource<__DynamicResourceKind.General> combinedTextureSamplerHandles[];
-
-[vk::binding(0, 5)]
-__DynamicResource<__DynamicResourceKind.General> accelerationStructureHandles[];
-
-[vk::binding(0, 6)]
-__DynamicResource<__DynamicResourceKind.General> texelBufferHandles[];
-
-export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqueDescriptor
-{
-	__target_switch
-	{
-		case spirv:
-		case glsl:
-		if (T.kind == DescriptorKind.Sampler)
-			return samplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.Texture)
-			return textureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.Buffer)
-			return bufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.CombinedTextureSampler)
-			return combinedTextureSamplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.AccelerationStructure)
-			return accelerationStructureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else if (T.kind == DescriptorKind.TexelBuffer)
-			return texelBufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
-		else
-			return defaultGetDescriptorFromHandle(handle);
-		default:
-		return defaultGetDescriptorFromHandle(handle);
-	}
-}struct compute_input {
+struct compute_input {
 	uint3 dispatch_thread_id_input : SV_DispatchThreadID;
 }
 [shader("compute")]
@@ -160,75 +119,75 @@ layout(binding = 0, set = 2)
 uniform image2D  textureHandles_0[];
 
 
-#line 48 1
+#line 49 1
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 void main()
 {
 
-#line 48
+#line 49
     uvec2 _S1 = globalParams_0.global_var_8_0;
 
-#line 54
+#line 55
     uint _S2 = globalParams_0.global_var_8_0.x;
 
-#line 54
+#line 55
     ivec2 _S3 = ivec2(gl_GlobalInvocationID.xy);
 
-#line 54
+#line 55
     vec4 _S4 = (imageLoad((textureHandles_0[globalParams_0.global_var_8_0.x]), (_S3)));
 
-#line 54
+#line 55
     vec3 _S5 = _S4.xyz;
 
-#line 54
+#line 55
     vec4 _S6 = (imageLoad((textureHandles_0[_S1.x]), (_S3)));
 
-#line 54
+#line 55
     vec3 _S7 = _S5 * (0.02999999932944775 + 2.50999999046325684 * _S6.xyz);
 
-#line 54
+#line 55
     vec4 _S8 = (imageLoad((textureHandles_0[_S1.x]), (_S3)));
 
-#line 54
+#line 55
     vec3 _S9 = _S8.xyz;
 
-#line 54
+#line 55
     vec4 _S10 = (imageLoad((textureHandles_0[_S1.x]), (_S3)));
 
-#line 54
+#line 55
     const vec3 _S11 = vec3(0.0, 0.0, 0.0);
 
-#line 54
+#line 55
     const vec3 _S12 = vec3(1.0, 1.0, 1.0);
 
-#line 54
+#line 55
     imageStore((textureHandles_0[_S2]), (_S3), vec4(clamp(_S7 / (0.14000000059604645 + _S9 * (0.5899999737739563 + 2.43000006675720215 * _S10.xyz)), _S11, _S12), 1.0));
 
-#line 60
+#line 61
     uint _S13 = _S1.x;
 
-#line 60
+#line 61
     vec4 _S14 = (imageLoad((textureHandles_0[_S1.x]), (_S3)));
 
-#line 60
+#line 61
     vec3 _S15 = _S14.xyz;
 
-#line 60
+#line 61
     vec4 _S16 = (imageLoad((textureHandles_0[_S1.x]), (_S3)));
 
-#line 60
+#line 61
     vec3 _S17 = _S15 * (0.02999999932944775 + 2.50999999046325684 * _S16.xyz);
 
-#line 60
+#line 61
     vec4 _S18 = (imageLoad((textureHandles_0[_S1.x]), (_S3)));
 
-#line 60
+#line 61
     vec3 _S19 = _S18.xyz;
 
-#line 60
+#line 61
     vec4 _S20 = (imageLoad((textureHandles_0[_S1.x]), (_S3)));
 
-#line 60
+#line 61
     imageStore((textureHandles_0[_S13]), (_S3), vec4(clamp(_S17 / (0.14000000059604645 + _S19 * (0.5899999737739563 + 2.43000006675720215 * _S20.xyz)), _S11, _S12), 1.0));
     return;
 }
@@ -275,7 +234,8 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 		default:
 		return defaultGetDescriptorFromHandle(handle);
 	}
-}struct compute_input {
+}
+struct compute_input {
 	uint3 dispatch_thread_id_input : SV_DispatchThreadID;
 }
 [shader("compute")]
