@@ -116,6 +116,11 @@ void EmbeddedShader::Ast::UniversalArray::access(AccessPermissions permissions)
 	this->permissions = this->permissions | permissions;
 }
 
+std::string EmbeddedShader::Ast::UniversalArray::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
 void EmbeddedShader::Ast::ElementVariate::access(AccessPermissions permissions)
 {
 	Value::access(permissions);
@@ -172,6 +177,11 @@ void EmbeddedShader::Ast::UniversalTexture2D::access(AccessPermissions permissio
 {
 	Value::access(permissions);
     this->permissions = this->permissions | permissions;
+}
+
+std::string EmbeddedShader::Ast::UniversalTexture2D::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
 }
 
 std::string EmbeddedShader::Ast::DefineUniversalTexture2D::parse()

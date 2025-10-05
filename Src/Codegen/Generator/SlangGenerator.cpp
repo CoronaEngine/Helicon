@@ -287,8 +287,18 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->pushConstant)
 		return "global_push_constant." + node->name;
 	if (bindless())
-		return "(*global_ubo)." + node->name;
-	return "global_ubo." + node->name;
+		return "(*global_parameter_block.global_ubo)." + node->name;
+	return "global_parameter_block.global_ubo." + node->name;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniversalTexture2D* node)
+{
+	return "global_parameter_block." + node->name;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniversalArray* node)
+{
+	return "global_parameter_block." + node->name;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineAggregateType* node)

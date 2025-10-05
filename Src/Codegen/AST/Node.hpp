@@ -154,6 +154,7 @@ namespace EmbeddedShader::Ast
 
 		AccessPermissions permissions = AccessPermissions::None;
 		void access(AccessPermissions permissions) override;
+		std::string parse() override;
 	};
 
 	struct ElementVariate : Variate
@@ -212,6 +213,7 @@ namespace EmbeddedShader::Ast
 
         AccessPermissions permissions = AccessPermissions::None;
         void access(AccessPermissions permissions) override;
+    	std::string parse() override;
     };
 
     struct DefineUniversalTexture2D : Statement
