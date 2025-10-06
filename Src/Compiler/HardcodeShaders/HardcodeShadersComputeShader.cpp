@@ -209,12 +209,12 @@ layout(binding = 1)
 uniform image2D global_parameter_block_global_ubo_global_var_10_image_0;
 
 
-#line 15 0
+#line 14 0
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 void main()
 {
 
-#line 16
+#line 15
     imageStore((global_parameter_block_global_ubo_global_var_10_image_0), (ivec2(uvec2(0U, 0U))), vec4(global_parameter_block_global_ubo_0.global_var_9_0, 1.0, 1.0, 1.0));
     return;
 }
@@ -228,7 +228,6 @@ struct global_ubo_struct {
 }
 struct parameter_block_struct {
 	ConstantBuffer<global_ubo_struct> global_ubo;
-
 }
 ParameterBlock<parameter_block_struct> global_parameter_block;
 [shader("compute")]
@@ -236,7 +235,7 @@ ParameterBlock<parameter_block_struct> global_parameter_block;
 void main() {
 	global_parameter_block.global_ubo.global_var_10.image[uint2(0,0)] = float4(global_parameter_block.global_ubo.global_var_9,1,1,1);
 }
-)"},{"Reflection_Bindless_D__Files_Code_Projects_Helicon_Examples_main_cpp", ShaderCodeModule::ShaderResources{0,"",{{"parameter_block_struct_std140",{0,0,0,"parameter_block_struct_std140","uniform",1,8,0,static_cast<EmbeddedShader::ShaderCodeModule::ShaderResources::BindType>(3)}},{"global_ubo_struct_std140",{3,0,0,"global_ubo_struct_std140","uniform",2,24,0,static_cast<EmbeddedShader::ShaderCodeModule::ShaderResources::BindType>(3)}},}}},{"SpirV_Bindless_D__Files_Code_Projects_Helicon_Examples_main_cpp", std::vector<uint32_t>{119734787,66816,2621440,49,0,131089,5302,131089,55,131089,56,131089,1,196622,0,1,524303,5,2,1852399981,0,9,33,21,393232,2,17,1,1,1,196611,11,1,655365,5,1634886000,1702126957,1818386290,1600873327,1970435187,1935635555,875652212,48,393222,5,0,1651469415,1969187937,28514,524293,9,1651469415,1885301857,1835102817,1919251557,1869374047,27491,524293,19,1919379297,1952540517,2037669733,861889904,1685353311,3159089,327686,19,0,1734438249,101,589829,17,1651469415,1969187937,1935634274,1668641396,1953718132,808726884,0,458758,17,0,1651469415,1985965153,962556513,0,458758,17,1,1651469415,1985965153,828338785,48,393221,21,1717990754,1632137829,1701602414,115,393221,33,1954047348,1214607989,1818521185,29541,262149,2,1852399981,0,196679,5,2,327752,5,0,35,0,262215,9,33,0,262215,9,34,0,327752,19,0,35,0,196679,17,2,327752,17,0,35,0,327752,17,1,35,16,262215,21,33,0,262215,21,34,3,262215,33,33,0,262215,33,34,2,131091,1,196641,3,1,262165,6,32,0,262167,7,6,2,196638,5,7,262176,8,2,5,262165,10,32,1,262187,10,11,0,262176,12,2,7,196630,18,32,196638,19,7,262174,17,18,19,196637,16,17,262176,20,2,16,262176,22,2,17,262187,10,24,1,262176,25,2,19,589849,31,18,1,2,0,0,2,0,196637,30,31,262176,32,0,30,262176,34,0,31,262176,38,2,18,262167,41,18,4,262187,18,43,1065353216,262187,6,46,0,327724,7,45,46,46,262203,8,9,2,262203,20,21,2,262203,32,33,0,327734,1,2,0,3,131320,4,327746,12,13,9,11,262205,7,14,13,327761,6,15,14,0,327745,22,23,21,15,327746,25,26,23,24,327746,12,27,26,11,262205,7,28,27,327761,6,29,28,0,327745,34,35,33,29,327761,6,36,14,0,327745,22,37,21,36,327746,38,39,37,11,262205,18,40,39,458832,41,42,40,43,43,43,262205,31,44,35,262243,44,45,42,65789,65592,}},{"GLSL_Bindless_D__Files_Code_Projects_Helicon_Examples_main_cpp", R"(#version 450
+)"},{"Reflection_Bindless_D__Files_Code_Projects_Helicon_Examples_main_cpp", ShaderCodeModule::ShaderResources{8,"global_push_constant",{{"global_ubo_struct_std140",{3,0,0,"global_ubo_struct_std140","uniform",2,24,0,static_cast<EmbeddedShader::ShaderCodeModule::ShaderResources::BindType>(3)}},{"global_push_constant.global_ubo",{0,0,0,"global_ubo","",0,8,0,static_cast<EmbeddedShader::ShaderCodeModule::ShaderResources::BindType>(0)}},}}},{"SpirV_Bindless_D__Files_Code_Projects_Helicon_Examples_main_cpp", std::vector<uint32_t>{119734787,66816,2621440,50,0,131089,5302,131089,55,131089,56,131089,1,196622,0,1,524303,5,2,1852399981,0,9,34,21,393232,2,17,1,1,1,196611,11,1,720901,5,1651469415,1885301857,1600680821,1936617315,1953390964,1920234335,1601463157,878998643,12339,393222,5,0,1651469415,1969187937,28514,524293,9,1651469415,1885301857,1600680821,1936617315,1953390964,0,524293,19,1919379297,1952540517,2037669733,861889904,1685353311,3159089,327686,19,0,1734438249,101,589829,17,1651469415,1969187937,1935634274,1668641396,1953718132,808726884,0,458758,17,0,1651469415,1985965153,962556513,0,458758,17,1,1651469415,1985965153,828338785,48,393221,21,1717990754,1632137829,1701602414,115,393221,34,1954047348,1214607989,1818521185,29541,262149,2,1852399981,0,196679,5,2,327752,5,0,35,0,327752,19,0,35,0,196679,17,2,327752,17,0,35,0,327752,17,1,35,16,262215,21,33,0,262215,21,34,3,262215,34,33,0,262215,34,34,2,131091,1,196641,3,1,262165,6,32,0,262167,7,6,2,196638,5,7,262176,8,9,5,262165,10,32,1,262187,10,11,0,262176,12,9,7,196630,18,32,196638,19,7,262174,17,18,19,196637,16,17,262176,20,2,16,262176,22,2,17,262187,10,24,1,262176,25,2,19,262176,27,2,7,589849,32,18,1,2,0,0,2,0,196637,31,32,262176,33,0,31,262176,35,0,32,262176,39,2,18,262167,42,18,4,262187,18,44,1065353216,262187,6,47,0,327724,7,46,47,47,262203,8,9,9,262203,20,21,2,262203,33,34,0,327734,1,2,0,3,131320,4,327746,12,13,9,11,262205,7,14,13,327761,6,15,14,0,327745,22,23,21,15,327746,25,26,23,24,327746,27,28,26,11,262205,7,29,28,327761,6,30,29,0,327745,35,36,34,30,327761,6,37,14,0,327745,22,38,21,37,327746,39,40,38,11,262205,18,41,40,458832,42,43,41,44,44,44,262205,32,45,36,262243,45,46,43,65789,65592,}},{"GLSL_Bindless_D__Files_Code_Projects_Helicon_Examples_main_cpp", R"(#version 450
 #extension GL_EXT_nonuniform_qualifier : require
 layout(row_major) uniform;
 layout(row_major) buffer;
@@ -257,26 +256,26 @@ struct global_ubo_struct_std140_0
 
 
 #line 22879
-struct parameter_block_struct_std140_0
+struct global_push_constant_struct_std430_0
 {
     uvec2 global_ubo_0;
 };
 
 
-#line 12 1
-layout(binding = 0)
-layout(std140) uniform block_parameter_block_struct_std140_0
+#line 11 1
+layout(push_constant)
+layout(std430) uniform block_global_push_constant_struct_std430_0
 {
     uvec2 global_ubo_0;
-}global_parameter_block_0;
+}global_push_constant_0;
 
-#line 12
+#line 11
 layout(rgba32f)
 layout(binding = 0, set = 2)
 uniform image2D  textureHandles_0[];
 
 
-#line 12
+#line 11
 layout(binding = 0, set = 3)
 layout(std140) uniform block_global_ubo_struct_std140_0
 {
@@ -284,13 +283,13 @@ layout(std140) uniform block_global_ubo_struct_std140_0
     aggregate_type_3_std140_0 global_var_10_0;
 }bufferHandles_0[];
 
-#line 57
+#line 59
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 void main()
 {
 
-#line 58
-    imageStore((textureHandles_0[bufferHandles_0[global_parameter_block_0.global_ubo_0.x].global_var_10_0.image_0.x]), (ivec2(uvec2(0U, 0U))), vec4(bufferHandles_0[global_parameter_block_0.global_ubo_0.x].global_var_9_0, 1.0, 1.0, 1.0));
+#line 60
+    imageStore((textureHandles_0[bufferHandles_0[global_push_constant_0.global_ubo_0.x].global_var_10_0.image_0.x]), (ivec2(uvec2(0U, 0U))), vec4(bufferHandles_0[global_push_constant_0.global_ubo_0.x].global_var_9_0, 1.0, 1.0, 1.0));
     return;
 }
 
@@ -301,9 +300,11 @@ struct global_ubo_struct {
 	float global_var_9;
 	aggregate_type_3 global_var_10;
 }
+struct global_push_constant_struct {
+	ConstantBuffer<global_ubo_struct>.Handle global_ubo;
+}
+[[vk::push_constant]] ConstantBuffer<global_push_constant_struct> global_push_constant;
 struct parameter_block_struct {
-	uniform ConstantBuffer<global_ubo_struct>.Handle global_ubo;
-
 }
 ParameterBlock<parameter_block_struct> global_parameter_block;
 [vk::binding(0, 1)]
@@ -351,7 +352,7 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 [shader("compute")]
 [numthreads(1,1,1)]
 void main() {
-	(*global_parameter_block.global_ubo).global_var_10.image[uint2(0,0)] = float4((*global_parameter_block.global_ubo).global_var_9,1,1,1);
+	(*global_push_constant.global_ubo).global_var_10.image[uint2(0,0)] = float4((*global_push_constant.global_ubo).global_var_9,1,1,1);
 }
 )"},
 };

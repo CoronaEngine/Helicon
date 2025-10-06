@@ -133,17 +133,6 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 			output += std::move(statementContent) + '\n';
 	}
 
-	if (!pushConstantMembers.empty())
-	{
-		std::string pushConstantStructName = "global_push_constant_struct";
-		auto pushConstantStruct = "struct " + pushConstantStructName + " {\n" + pushConstantMembers;
-
-		pushConstantStruct += "}\n";
-		auto pushConstant = "[[vk::push_constant]] ConstantBuffer<" + pushConstantStructName + "> global_push_constant;\n";
-		output += pushConstantStruct + pushConstant;
-		pushConstantMembers.clear();
-	}
-
 	std::string ubo;
 	if (!uboMembers.empty())
 	{
@@ -152,17 +141,29 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 		if (!bindless())
 			ubo = "ConstantBuffer<" + uboStructName + "> global_ubo;\n";
 		else
-			ubo = "uniform ConstantBuffer<" + uboStructName + ">.Handle global_ubo;\n";
+			ubo = "ConstantBuffer<" + uboStructName + ">.Handle global_ubo;\n";
 		output += uboStruct;
 		uboMembers.clear();
+	}
+
+	if (!pushConstantMembers.empty() || (bindless() && !ubo.empty()))
+	{
+		std::string pushConstantStructName = "global_push_constant_struct";
+		auto pushConstantStruct = "struct " + pushConstantStructName + " {\n" + pushConstantMembers;
+		if (bindless())
+			pushConstantStruct += "\t" + ubo;
+		pushConstantStruct += "}\n";
+		auto pushConstant = "[[vk::push_constant]] ConstantBuffer<" + pushConstantStructName + "> global_push_constant;\n";
+		output += pushConstantStruct + pushConstant;
+		pushConstantMembers.clear();
 	}
 
 	if (!parameterBlockMembers.empty() || !ubo.empty())
 	{
 		std::string parameterBlockStructName = "parameter_block_struct";
 		auto parameterBlockStruct = "struct " + parameterBlockStructName + " {\n" + parameterBlockMembers;
-		if (!ubo.empty())
-			parameterBlockStruct += "\t" + ubo + "\n";
+		if (!ubo.empty() && !bindless())
+			parameterBlockStruct += "\t" + ubo;
 		parameterBlockStruct += "}\n";
 		auto parameterBlock = "ParameterBlock<" + parameterBlockStructName + "> global_parameter_block;\n";
 		output += parameterBlockStruct + parameterBlock;
@@ -287,7 +288,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->pushConstant)
 		return "global_push_constant." + node->name;
 	if (bindless())
-		return "(*global_parameter_block.global_ubo)." + node->name;
+		return "(*global_push_constant.global_ubo)." + node->name;
 	return "global_parameter_block.global_ubo." + node->name;
 }
 
