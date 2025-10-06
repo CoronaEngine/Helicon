@@ -564,7 +564,22 @@ namespace EmbeddedShader
             for (int ii = 0; ii < programLayout->getParameterCount(); ++ii)
             {
                 reflect_set = ii;
-                 addParameterBlockReflection(programLayout->getParameterByIndex(ii)->getTypeLayout()->getElementTypeLayout());
+                addParameterBlockReflection(programLayout->getParameterByIndex(ii)->getTypeLayout()->getElementTypeLayout());
+            }
+
+            for (int ii = 0; ii < programLayout->getEntryPointCount(); ++ii)
+            {
+                auto input = programLayout->getEntryPointByIndex(ii)->getVarLayout();
+                auto inputType = input->getTypeLayout();
+                //仅针对Helicon Shader特殊处理，简化反射流程
+                inputType->getFieldCount();
+                for (int j = 0; j < inputType->getFieldCount(); ++j)
+                {
+                    auto param = inputType->getFieldByIndex(j);
+                    std::cout << "Entry Point Input Param Name: " << param->getName() << "\n";
+                    std::cout << inputType->getFieldCount() << " Params Found.\n";
+                    slangReflectType(param->getTypeLayout());
+                }
             }
             std::cout << "end reflect...\n\n";
         }
@@ -1057,6 +1072,87 @@ namespace EmbeddedShader
             info.bindType    = ShaderCodeModule::ShaderResources::stageOutputs;
 
             shaderResources.bindInfoPool[fullName] = info;
+        }
+    }
+
+    void ShaderLanguageConverter::slangReflectType(slang::TypeLayoutReflection* type)
+    {
+        switch (type->getKind())
+        {
+            case slang::TypeReflection::Kind::None:
+                std::cout << "None";
+                break;
+            case slang::TypeReflection::Kind::Struct:
+                std::cout << "Struct";
+                break;
+            case slang::TypeReflection::Kind::Array:
+                std::cout << "Array";
+                break;
+            case slang::TypeReflection::Kind::Matrix:
+                std::cout << "Matrix";
+                break;
+            case slang::TypeReflection::Kind::Vector:
+                std::cout << "Vector";
+                break;
+            case slang::TypeReflection::Kind::Scalar:
+                std::cout << "Scalar";
+                break;
+            case slang::TypeReflection::Kind::ConstantBuffer:
+                std::cout << "ConstantBuffer";
+                break;
+            case slang::TypeReflection::Kind::Resource:
+                std::cout << "Resource";
+                break;
+            case slang::TypeReflection::Kind::SamplerState:
+                std::cout << "SamplerState";
+                break;
+            case slang::TypeReflection::Kind::TextureBuffer:
+                std::cout << "TextureBuffer";
+                break;
+            case slang::TypeReflection::Kind::ShaderStorageBuffer:
+                std::cout << "ShaderStorageBuffer";
+                break;
+            case slang::TypeReflection::Kind::ParameterBlock:
+                std::cout << "ParameterBlock";
+                break;
+            case slang::TypeReflection::Kind::GenericTypeParameter:
+                std::cout << "GenericTypeParameter";
+                break;
+            case slang::TypeReflection::Kind::Interface:
+                std::cout << "Interface";
+                break;
+            case slang::TypeReflection::Kind::OutputStream:
+                std::cout << "OutputStream";
+                break;
+            case slang::TypeReflection::Kind::Specialized:
+                std::cout << "Specialized";
+                break;
+            case slang::TypeReflection::Kind::Feedback:
+                std::cout << "Feedback";
+                break;
+            case slang::TypeReflection::Kind::Pointer:
+                std::cout << "Pointer";
+                break;
+            case slang::TypeReflection::Kind::DynamicResource:
+                std::cout << "DynamicResource";
+                break;
+        }
+        std::cout << "\n";
+
+        if (type->getKind() == slang::TypeReflection::Kind::Struct ||
+            type->getKind() == slang::TypeReflection::Kind::ParameterBlock)
+        {
+            std::cout << "Struct Name: " << type->getName() << "\n";
+            std::cout << "Size: " << type->getSize() << "\n";
+            std::cout << "Field Count: " << type->getFieldCount() << "\n";
+            for (uint32_t i = 0; i < type->getFieldCount(); ++i)
+            {
+                auto field = type->getFieldByIndex(i);
+                std::cout << " Field Name: " << field->getName() << "\n";
+                std::cout << " Field Offset: " << field->getOffset() << "\n";
+                std::cout << " Field Size: " << field->getTypeLayout()->getSize() << "\n";
+                slangReflectType(field->getTypeLayout());
+            }
         }
     }
 }

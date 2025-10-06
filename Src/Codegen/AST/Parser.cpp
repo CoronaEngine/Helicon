@@ -28,6 +28,7 @@ void EmbeddedShader::Ast::Parser::beginShaderParse(ShaderStage stage)
 	{
 		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.stage);
 		currentParser->reset();
+		currentParser->localStatementStack.pop();
 		currentParser->isInShaderParse = false;
 	}
 	currentParser->structure.stage = stage;
@@ -41,6 +42,7 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPi
 	{
 		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.stage);
 		currentParser->reset();
+		currentParser->localStatementStack.pop();
 		currentParser->isInShaderParse = false;
 	}
 

@@ -41,5 +41,7 @@ namespace EmbeddedShader
 	private:
 		static void slangReflectAddBindInfo(slang::VariableLayoutReflection* var, ShaderCodeModule::ShaderResources& shaderResources, const std::string&
 		                                    parentPrefix);
+
+		static void slangReflectType(slang::TypeLayoutReflection* type);
 	};
 }
