@@ -70,6 +70,7 @@ namespace EmbeddedShader
 		{
 			static std::shared_ptr<Ast::Value> valueOrNode(const VariateProxy<T>& proxy)
 			{
+				proxy.node->access(Ast::AccessPermissions::ReadOnly);
 				return proxy.node;
 			}
 		};

@@ -39,7 +39,6 @@ namespace EmbeddedShader
 
 		Ast::Parser::beginShaderParse(Ast::ShaderStage::Compute);
 		auto csParams = ParseHelper::createParamTuple(csFunc);
-		ParseHelper::callLambda(csFunc,std::move(csParams));
 		if constexpr (!ParseHelper::hasReturnValue(csFunc))
 			ParseHelper::callLambda(csFunc,std::move(csParams));
 		else

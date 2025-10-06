@@ -246,7 +246,7 @@ namespace EmbeddedShader
         std::cout << "pb set index: " << reflect_set << "\n";
         if (type->getSize() > 0)
         {
-            std::cout << "pb ubo\n binding: " << reflect_bind++ << "\n set: " << reflect_set << "\n";
+            std::cout << "pb ubo\n binding: " << reflect_bind++ << "\n set: " << reflect_set << "\n Size: " << type->getSize() << "\n";
         }
 
         //std::cout << "pb set count: " << type->getDescriptorSetCount() << "\n";

@@ -42,6 +42,11 @@ struct TextureStruct
 	Texture2D<ktm::fvec4> texture = Sampler{};
 };
 
+struct ImageStruct
+{
+	Texture2D<ktm::fvec4> image;
+};
+
 int main(int argc, char* argv[])
 {
 	using namespace EmbeddedShader::Ast;
@@ -189,12 +194,12 @@ int main(int argc, char* argv[])
 	compilerOption.enableBindless = true;
 
 	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment,compilerOption);
+	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
 	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
-	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
-	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang,true).shaderCode).c_str());
+	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 
-	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::GLSL,true).shaderCode).c_str());
+	//puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::GLSL,true).shaderCode).c_str());
 
 	std::string slangTest = R"(
 
@@ -264,10 +269,27 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 	}
 }*/
 
-	std::vector<std::vector<uint32_t>> binaryOutputs;
-    std::vector<std::string> outputs;
-    ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::GLSL}, binaryOutputs, outputs, true);
-    //puts(outputs[0].c_str());
+	// std::vector<std::vector<uint32_t>> binaryOutputs;
+ //    std::vector<std::string> outputs;
+ //    ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::GLSL}, binaryOutputs, outputs, true);
+ //    //puts(outputs[0].c_str());
+ //
+	// ShaderLanguageConverter::glslangSpirvCompiler(outputs[0], ShaderLanguage::GLSL, ::ShaderStage::FragmentShader);
 
-	ShaderLanguageConverter::glslangSpirvCompiler(outputs[0], ShaderLanguage::GLSL, ::ShaderStage::FragmentShader);
+	system("clear");
+	Float a = 10;
+	Aggregate<ImageStruct> image;
+	auto testShader = [&]
+	{
+		image->image[Uint2(0,0)] = Float4(a,1,1,1);
+	};
+	compilerOption.compileDXBC = false;
+	compilerOption.compileDXIL = false;
+	compilerOption.compileHLSL = false;
+	compilerOption.compileGLSL = true;
+	compilerOption.compileSpirV = true;
+	compilerOption.enableBindless = true;
+	auto testPipeline = ComputePipelineObject::compile(testShader,uvec3(8,8,1),compilerOption);
+	puts(std::get<1>(testPipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	puts(std::get<1>(testPipeline.compute->getShaderCode(ShaderLanguage::GLSL,true).shaderCode).c_str());
 }
