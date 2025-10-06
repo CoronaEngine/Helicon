@@ -43,5 +43,6 @@ namespace EmbeddedShader
 		                                    parentPrefix);
 
 		static void slangReflectType(slang::TypeLayoutReflection* type);
+		static void slangReflectParameterBlock(slang::ProgramLayout* program);
 	};
 }

@@ -277,11 +277,11 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 	// ShaderLanguageConverter::glslangSpirvCompiler(outputs[0], ShaderLanguage::GLSL, ::ShaderStage::FragmentShader);
 
 	system("clear");
-	Float a = 10;
-	Aggregate<ImageStruct> image;
+	Texture2D<fvec4> image;
+	Texture2D<fvec4> image2 = Sampler{};
 	auto testShader = [&]
 	{
-		image->image[Uint2(0,0)] = Float4(a,1,1,1);
+		image[Uint2(0,0)] = image2[Uint2(0,0)];
 	};
 	compilerOption.compileDXBC = false;
 	compilerOption.compileDXIL = false;
