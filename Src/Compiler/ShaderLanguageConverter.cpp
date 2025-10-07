@@ -1084,7 +1084,8 @@ namespace EmbeddedShader
                 slang::BindingType bindingType = type->getDescriptorSetDescriptorRangeType(relativeSetIndex, rangeIndex);
                 auto descriptorCount = type->getDescriptorSetDescriptorRangeDescriptorCount(relativeSetIndex, rangeIndex);
                 std::cout << "\t pb descriptor count: " << descriptorCount << "\n";
-                std::cout << "pb binding: " << reflect_bind++ << " binding type: \n\t";
+                std::cout << " pb binding: " << reflect_bind << " binding type: \n\t";
+                ++reflect_bind;
                 switch (bindingType)
                 {
                     case slang::BindingType::Unknown:

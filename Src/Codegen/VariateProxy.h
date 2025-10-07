@@ -650,6 +650,18 @@ namespace EmbeddedShader
 
 	struct SamplerProxy
 	{
+		SamplerProxy()
+		{
+			if (auto parent = ParseHelper::getAggregateParent())
+			{
+				auto index = ParseHelper::getAggregateMemberIndex();
+				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+				auto member = aggregateType->members[index];
+				node = Ast::AST::access(parent,member->name, member->type);
+				return;
+			}
+		}
+
 		void init(std::string name)
 		{
 			if (node)
@@ -682,25 +694,25 @@ namespace EmbeddedShader
 			node = Ast::AST::defineUniversalTexture2D<Type>();
 		}
 
-		Texture2DProxy(SamplerProxy&& sampler)
-		{
-			isHybrid = true;
-			if (ParseHelper::notInitNode())
-				return;
-
-			if (auto parent = ParseHelper::getAggregateParent())
-			{
-				auto index = ParseHelper::getAggregateMemberIndex();
-				auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
-				auto member = aggregateType->members[index];
-				std::reinterpret_pointer_cast<Ast::Texture2DType>(member->type)->name = "Sampler2D";
-				node = Ast::AST::access(parent,member->name, member->type);
-				return;
-			}
-
-			node = Ast::AST::defineUniversalTexture2D<Type>();
-			std::reinterpret_pointer_cast<Ast::Texture2DType>(node->type)->name = "Sampler2D";
-		}
+		// Texture2DProxy(SamplerProxy&& sampler)
+		// {
+		// 	isHybrid = true;
+		// 	if (ParseHelper::notInitNode())
+		// 		return;
+		//
+		// 	if (auto parent = ParseHelper::getAggregateParent())
+		// 	{
+		// 		auto index = ParseHelper::getAggregateMemberIndex();
+		// 		auto aggregateType = reinterpret_cast<Ast::AggregateType*>(parent->type.get());
+		// 		auto member = aggregateType->members[index];
+		// 		std::reinterpret_pointer_cast<Ast::Texture2DType>(member->type)->name = "Sampler2D";
+		// 		node = Ast::AST::access(parent,member->name, member->type);
+		// 		return;
+		// 	}
+		//
+		// 	node = Ast::AST::defineUniversalTexture2D<Type>();
+		// 	std::reinterpret_pointer_cast<Ast::Texture2DType>(node->type)->name = "Sampler2D";
+		// }
 
 		template<std::integral IndexType>
 		VariateProxy<Type> operator[](ktm::vec<2,IndexType> index)
@@ -741,14 +753,14 @@ namespace EmbeddedShader
 			return {Ast::AST::access(node,func->parse(), func->type)};
 		}
 
-		VariateProxy<Type> sample(const VariateProxy<ktm::fvec2>& location)
-		{
-			//Cannot sample texture without sampler in non-hybrid mode, use sample(sampler, location) instead.
-			assert(isHybrid);
-			node->access(Ast::AccessPermissions::ReadOnly);
-			auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{location.node});
-			return {Ast::AST::access(node,func->parse(), func->type)};
-		}
+		// VariateProxy<Type> sample(const VariateProxy<ktm::fvec2>& location)
+		// {
+		// 	//Cannot sample texture without sampler in non-hybrid mode, use sample(sampler, location) instead.
+		// 	assert(isHybrid);
+		// 	node->access(Ast::AccessPermissions::ReadOnly);
+		// 	auto func = Ast::AST::callFunc("Sample",Ast::AST::createType<Type>(),{location.node});
+		// 	return {Ast::AST::access(node,func->parse(), func->type)};
+		// }
 
 		Texture2DProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node)) {}
 	private:

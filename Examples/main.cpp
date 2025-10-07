@@ -39,7 +39,8 @@ struct VertexOutput
 
 struct TextureStruct
 {
-	Texture2D<ktm::fvec4> texture = Sampler{};
+	Texture2D<ktm::fvec4> texture;
+	Sampler sampler;
 };
 
 struct ImageStruct
@@ -149,7 +150,7 @@ int main(int argc, char* argv[])
 
 	auto fragment = [&](Aggregate<VertexOutput> input)
 	{
-		Float4 color = textureStruct->texture.sample(input->fragTexCoord);
+		Float4 color = textureStruct->texture.sample(textureStruct->sampler,input->fragTexCoord);
 		Float3 albedo;
 		$IF(color->w > 0.01)
 			albedo = color->xyz();
@@ -278,7 +279,7 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 
 	system("clear");
 	Texture2D<fvec4> image;
-	Texture2D<fvec4> image2 = Sampler{};
+	Texture2D<fvec4> image2;
 	auto testShader = [&]
 	{
 		image[Uint2(0,0)] = image2[Uint2(0,0)];
