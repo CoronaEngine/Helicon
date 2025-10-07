@@ -470,7 +470,9 @@ namespace EmbeddedShader
             //std::cout << "begin entry point reflect...\n";
             // addParameterBlockReflection(programLayout->getEntryPointByIndex(0)->getTypeLayout());
 
-            slangReflectParameterBlock(programLayout);
+            //slangReflectParameterBlock(programLayout);
+
+            slangReflectResource(programLayout);
 
             for (int ii = 0; ii < programLayout->getEntryPointCount(); ++ii)
             {
@@ -1154,6 +1156,108 @@ namespace EmbeddedShader
                 }
             }
             //}
+        }
+    }
+
+    void ShaderLanguageConverter::slangReflectResource(slang::ProgramLayout* program)
+    {
+        int set = 0;
+        for (int i = 0; i < program->getParameterCount(); ++i)
+        {
+            /*
+            * int relativeSetIndex = 0;
+            auto rangeCount = type->getDescriptorSetDescriptorRangeCount(relativeSetIndex);
+            std::cout << "pb range count: " << rangeCount << "\n";
+            for (int rangeIndex = 0; rangeIndex < rangeCount; ++rangeIndex)
+            {
+                slang::BindingType bindingType = type->getDescriptorSetDescriptorRangeType(relativeSetIndex, rangeIndex);
+                auto descriptorCount = type->getDescriptorSetDescriptorRangeDescriptorCount(relativeSetIndex, rangeIndex);
+                std::cout << "\t pb descriptor count: " << descriptorCount << "\n";
+                std::cout << " pb binding: " << reflect_bind << " binding type: \n\t";
+                ++reflect_bind;
+             */
+            auto elementLayout = program->getParameterByIndex(i)->getTypeLayout()->getElementTypeLayout();
+            auto fieldCount = elementLayout->getFieldCount();
+            for (int j = 0; j < fieldCount; ++j)
+            {
+                auto field = elementLayout->getFieldByIndex(j);
+                auto type = field->getTypeLayout();
+                if (type->getSize() > 0)
+                {
+                    std::cout << "-----------------ubo\n Size: " << type->getSize() << "\n";
+                }
+                std::cout << "Field Binding Range Count(" << field->getName() << "): " << type->
+                        getDescriptorSetDescriptorRangeCount(set) << "\n";
+                for (int o = 0; o < type->getDescriptorSetDescriptorRangeCount(set); ++o)
+                {
+                    switch (slang::BindingType bindingType = type->getDescriptorSetDescriptorRangeType(set, o))
+                    {
+                        case slang::BindingType::Unknown:
+                            puts("Unknown");
+                            break;
+                        case slang::BindingType::Sampler:
+                            puts("Sampler");
+                            break;
+                        case slang::BindingType::Texture:
+                            puts("Texture");
+                            break;
+                        case slang::BindingType::ConstantBuffer:
+                            puts("ConstantBuffer");
+                            break;
+                        case slang::BindingType::ParameterBlock:
+                            puts("ParameterBlock");
+                            break;
+                        case slang::BindingType::TypedBuffer:
+                            puts("TypedBuffer");
+                            break;
+                        case slang::BindingType::RawBuffer:
+                            puts("RawBuffer");
+                            break;
+                        case slang::BindingType::CombinedTextureSampler:
+                            puts("CombinedTextureSampler");
+                            break;
+                        case slang::BindingType::InputRenderTarget:
+                            puts("InputRenderTarget");
+                            break;
+                        case slang::BindingType::InlineUniformData:
+                            puts("InlineUniformData");
+                            break;
+                        case slang::BindingType::RayTracingAccelerationStructure:
+                            puts("RayTracingAccelerationStructure");
+                            break;
+                        case slang::BindingType::VaryingInput:
+                            puts("VaryingInput");
+                            break;
+                        case slang::BindingType::VaryingOutput:
+                            puts("VaryingOutput");
+                            break;
+                        case slang::BindingType::ExistentialValue:
+                            puts("ExistentialValue");
+                            break;
+                        case slang::BindingType::PushConstant:
+                            puts("PushConstant");
+                            break;
+                        case slang::BindingType::MutableFlag:
+                            puts("MutableFlag");
+                            break;
+                        case slang::BindingType::MutableTexture:
+                            puts("MutableTexture");
+                            break;
+                        case slang::BindingType::MutableTypedBuffer:
+                            puts("MutableTypedBuffer");
+                            break;
+                        case slang::BindingType::MutableRawBuffer:
+                            puts("MutableRawBuffer");
+                            break;
+                        case slang::BindingType::BaseMask:
+                            puts("BaseMask");
+                            break;
+                        case slang::BindingType::ExtMask:
+                            puts("ExtMask");
+                            break;
+                    }
+                }
+            }
         }
     }
 }
