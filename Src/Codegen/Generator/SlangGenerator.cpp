@@ -265,9 +265,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->array->permissions != Ast::AccessPermissions::ReadOnly)
 		result = "RW" + result;
 
-	parameterBlockMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
+	uboMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
 	return "";
-	return (bindless() ? "uniform " : "") + result;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
@@ -294,12 +293,16 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniversalTexture2D* node)
 {
-	return "global_parameter_block." + node->name;
+	if (bindless())
+		return "(*global_push_constant.global_ubo)." + node->name;
+	return "global_parameter_block.global_ubo." + node->name;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniversalArray* node)
 {
-	return "global_parameter_block." + node->name;
+	if (bindless())
+		return "(*global_push_constant.global_ubo)." + node->name;
+	return "global_parameter_block.global_ubo." + node->name;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineAggregateType* node)
@@ -342,7 +345,7 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
         result = "RW" + result;
     }
 
-	parameterBlockMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
+	uboMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
 	return "";
     return (bindless() ? "uniform " : "") + result;
 }
