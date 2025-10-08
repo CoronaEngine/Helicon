@@ -1260,4 +1260,30 @@ namespace EmbeddedShader
             }
         }
     }
+
+    void ShaderLanguageConverter::slangReflectTypeLayout(
+        ShaderCodeModule::ShaderResources& shaderResources,
+        int set,slang::VariableLayoutReflection* variableLayout)
+    {
+        auto type = variableLayout->getTypeLayout();
+        auto rangeCount = type->getDescriptorSetDescriptorRangeCount(set);
+        ShaderCodeModule::ShaderResources::ShaderBindInfo info{};
+        for (int i = 0; i < rangeCount; ++i)
+        {
+            switch (type->getDescriptorSetDescriptorRangeType(set,i))
+            {
+                case slang::BindingType::ConstantBuffer:
+                    info.binding = i;
+                    info.set = set;
+                    info.bindType = ShaderCodeModule::ShaderResources::uniformBuffers;
+                    info.variateName = variableLayout->getName();
+                    info.typeName = type->getName();
+                    info.typeSize = type->getSize();
+                    shaderResources.bindInfoPool.insert({variableLayout->getName(), info});
+                    break;
+                case slang::BindingType::Unknown:
+                default:break;
+            }
+        }
+    }
 }

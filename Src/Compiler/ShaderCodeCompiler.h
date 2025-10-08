@@ -46,6 +46,12 @@ namespace EmbeddedShader
                 stageOutputs = 2,
                 uniformBuffers = 3,
                 sampledImages = 4,
+
+                texture,
+                sampler,
+                rawBuffer,
+                storageTexture,
+                storageBuffer,
             };
             struct ShaderBindInfo
             {

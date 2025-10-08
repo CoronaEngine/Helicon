@@ -45,5 +45,6 @@ namespace EmbeddedShader
 		static void slangReflectType(slang::TypeLayoutReflection* type);
 		static void slangReflectParameterBlock(slang::ProgramLayout* program);
 		static void slangReflectResource(slang::ProgramLayout* program);
+		static void slangReflectTypeLayout(ShaderCodeModule::ShaderResources& shaderResources,int set,slang::VariableLayoutReflection* variableLayout);
 	};
 }
