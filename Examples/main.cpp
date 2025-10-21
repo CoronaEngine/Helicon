@@ -293,4 +293,5 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 	auto testPipeline = ComputePipelineObject::compile(testShader,uvec3(8,8,1),compilerOption);
 	puts(std::get<1>(testPipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 	puts(std::get<1>(testPipeline.compute->getShaderCode(ShaderLanguage::GLSL,true).shaderCode).c_str());
+	std::cout << textureStruct->texture.node->accessPath();
 }

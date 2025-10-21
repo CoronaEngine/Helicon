@@ -34,7 +34,17 @@ void EmbeddedShader::Ast::Value::access(AccessPermissions permissions)
 	type->access(permissions);
 }
 
+std::string EmbeddedShader::Ast::Value::accessPath()
+{
+	return "";
+}
+
 std::string EmbeddedShader::Ast::Variate::parse()
+{
+	return name;
+}
+
+std::string EmbeddedShader::Ast::Variate::accessPath()
 {
 	return name;
 }
@@ -83,6 +93,11 @@ void EmbeddedShader::Ast::MemberAccess::access(AccessPermissions permissions)
 {
 	Value::access(permissions);
 	value->access(permissions);
+}
+
+std::string EmbeddedShader::Ast::MemberAccess::accessPath()
+{
+	return value->accessPath() + "." + memberName;
 }
 
 std::string EmbeddedShader::Ast::OutputVariate::parse()

@@ -763,7 +763,7 @@ namespace EmbeddedShader
 		// }
 
 		Texture2DProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node)) {}
-	private:
+
 		std::shared_ptr<Ast::Value> node;
 		bool isHybrid = false;
 	};
