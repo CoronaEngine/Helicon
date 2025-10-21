@@ -1049,6 +1049,84 @@ namespace EmbeddedShader
         }
         std::cout << "\n";
 
+        int set = 0;
+        auto descriptorCount = type->getDescriptorSetDescriptorRangeCount(set);
+        for (int i = 0; i < descriptorCount; ++i)
+        {
+            puts("Descriptor Type: ");
+            switch (type->getDescriptorSetDescriptorRangeType(set, i))
+            {
+                case slang::BindingType::Unknown:
+                    puts("Unknown");
+                    break;
+                case slang::BindingType::Sampler:
+                    puts("Sampler");
+                    break;
+                case slang::BindingType::Texture:
+                    puts("Texture");
+                    break;
+                case slang::BindingType::ConstantBuffer:
+                    puts("ConstantBuffer");
+                    break;
+                case slang::BindingType::ParameterBlock:
+                    puts("ParameterBlock");
+                    break;
+                case slang::BindingType::TypedBuffer:
+                    puts("TypedBuffer");
+                    break;
+                case slang::BindingType::RawBuffer:
+                    puts("RawBuffer");
+                    break;
+                case slang::BindingType::CombinedTextureSampler:
+                    puts("CombinedTextureSampler");
+                    break;
+                case slang::BindingType::InputRenderTarget:
+                    puts("InputRenderTarget");
+                    break;
+                case slang::BindingType::InlineUniformData:
+                    puts("InlineUniformData");
+                    break;
+                case slang::BindingType::RayTracingAccelerationStructure:
+                    puts("RayTracingAccelerationStructure");
+                    break;
+                case slang::BindingType::VaryingInput:
+                    puts("VaryingInput");
+                    break;
+                case slang::BindingType::VaryingOutput:
+                    puts("VaryingOutput");
+                    break;
+                case slang::BindingType::ExistentialValue:
+                    puts("ExistentialValue");
+                    break;
+                case slang::BindingType::PushConstant:
+                    puts("PushConstant");
+                    break;
+                case slang::BindingType::MutableFlag:
+                    puts("MutableFlag");
+                    break;
+                case slang::BindingType::MutableTexture:
+                    puts("MutableTexture");
+                    break;
+                case slang::BindingType::MutableTypedBuffer:
+                    puts("MutableTypedBuffer");
+                    break;
+                case slang::BindingType::MutableRawBuffer:
+                    puts("MutableRawBuffer");
+                    break;
+                case slang::BindingType::BaseMask:
+                    puts("BaseMask");
+                    break;
+                case slang::BindingType::ExtMask:
+                    puts("ExtMask");
+                    break;
+            }
+            std::cout << "set 0, Binding: " << type->getBindingRangeFirstDescriptorRangeIndex(i) << "\n";
+        }
+
+        std::cout << "Semantic:" << (field->getSemanticName() ? field->getSemanticName() : "None") << (field->getSemanticName() ? std::to_string(field->getSemanticIndex()) : "") << "\n";
+        std::cout << "Size: " << type->getSize() << "\n";
+        std::cout << "Offset: " << field->getOffset() << "\n";
+
         if (type->getKind() == slang::TypeReflection::Kind::Struct ||
             type->getKind() == slang::TypeReflection::Kind::ParameterBlock)
         {
