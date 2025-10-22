@@ -42,8 +42,9 @@ namespace EmbeddedShader
 		static void slangReflectAddBindInfo(slang::VariableLayoutReflection* var, ShaderCodeModule::ShaderResources& shaderResources, const std::string&
 		                                    parentPrefix);
 
-		static void slangReflectField(slang::VariableLayoutReflection* field, std::string_view accessPath);
-		static void slangReflectParameterBlock(slang::ProgramLayout* program, std::string_view uboName);
+		static void slangReflectField(slang::VariableLayoutReflection* field, std::string_view accessPath, ShaderCodeModule::ShaderResources& reflection);
+		static void slangReflectParameterBlock(slang::ProgramLayout* program, std::string_view uboName, ShaderCodeModule::ShaderResources& reflection);
+		static void slangReflectDescriptor(slang::VariableLayoutReflection* var, int set, std::string_view name, ShaderCodeModule::ShaderResources& resource);
 		static void slangReflectResource(slang::ProgramLayout* program);
 		static void slangReflectTypeLayout(ShaderCodeModule::ShaderResources& shaderResources,int set,slang::VariableLayoutReflection* variableLayout);
 	};
