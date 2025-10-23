@@ -486,7 +486,7 @@ namespace EmbeddedShader
                     auto param = inputType->getFieldByIndex(j);
                     std::cout << "Entry Point Input Param Name: " << param->getName() << "\n";
                     std::cout << inputType->getFieldCount() << " Params Found.\n";
-                    slangReflectField(param, "", reflection);
+                    slangReflectField(param, "", 0, reflection);
                 }
             }
             std::cout << "end reflect...\n\n";
@@ -983,7 +983,7 @@ namespace EmbeddedShader
         }
     }
 
-    void ShaderLanguageConverter::slangReflectField(slang::VariableLayoutReflection* field, std::string_view accessPath, ShaderCodeModule::ShaderResources& reflection)
+    void ShaderLanguageConverter::slangReflectField(slang::VariableLayoutReflection* field, std::string_view accessPath, size_t varBaseOffset, ShaderCodeModule::ShaderResources& reflection)
     {
         auto type = field->getTypeLayout();
         auto name = accessPath.empty() ? field->getName() : accessPath.data() + std::string(".") + field->getName();
@@ -1140,10 +1140,10 @@ namespace EmbeddedShader
                 std::cout << " Field Name: " << innerField->getName() << "\n";
                 std::cout << " Field Offset: " << innerField->getOffset() << "\n";
                 std::cout << " Field Size: " << innerField->getTypeLayout()->getSize() << "\n";
-                slangReflectField(innerField, name, reflection);
+                slangReflectField(innerField, name, varBaseOffset + field->getOffset(), reflection);
             }
         }
-        else slangReflectDescriptor(field,set,name, reflection);
+        else slangReflectDescriptor(field,set,name, varBaseOffset, reflection);
     }
 
     void ShaderLanguageConverter::slangReflectParameterBlock(slang::ProgramLayout* program, std::string_view uboName, ShaderCodeModule::ShaderResources& reflection)
@@ -1156,17 +1156,17 @@ namespace EmbeddedShader
                 continue;
             auto ubo = type->getFieldByIndex(index);
             auto uboType = ubo->getTypeLayout()->getElementTypeLayout();
-            slangReflectDescriptor(ubo, 0, uboName, reflection);
+            slangReflectDescriptor(ubo, 0, uboName, 0, reflection);
             for (uint32_t j = 0; j < uboType->getFieldCount(); ++j)
             {
                 auto field = uboType->getFieldByIndex(j);
-                slangReflectField(field,"", reflection);
+                slangReflectField(field,"", 0, reflection);
             }
         }
     }
 
     void ShaderLanguageConverter::slangReflectDescriptor(slang::VariableLayoutReflection* var,
-                                                         int set, std::string_view name, ShaderCodeModule::ShaderResources& resource)
+                                                         int set, std::string_view name, size_t varBaseOffset, ShaderCodeModule::ShaderResources& resource)
     {
         auto type = var->getTypeLayout();
         auto rangeCount = type->getDescriptorSetDescriptorRangeCount(set);
@@ -1175,7 +1175,6 @@ namespace EmbeddedShader
             ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo;
             bindInfo.set = set;
             bindInfo.binding = type->getBindingRangeFirstDescriptorRangeIndex(0);
-            bindInfo.byteOffset = var->getOffset();
             bindInfo.typeName = type->getName();
             bindInfo.typeSize = type->getSize();
             bindInfo.variateName = var->getName();
@@ -1207,7 +1206,22 @@ namespace EmbeddedShader
                 default:return;
             }
             resource.bindInfoPool.insert({name.data(), bindInfo});
+            return;
         }
+
+        ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo;
+        bindInfo.bindType = ShaderCodeModule::ShaderResources::none;
+        bindInfo.byteOffset = var->getOffset() + varBaseOffset;
+        bindInfo.typeName = type->getName();
+        bindInfo.typeSize = type->getSize();
+        bindInfo.variateName = var->getName();
+        bindInfo.location = var->getSemanticName() ? var->getSemanticIndex() : 0;
+        bindInfo.semantic = var->getSemanticName() ? var->getSemanticName() : "";
+        // if (type->getKind() == slang::TypeReflection::Kind::Vector)
+        // {
+        //     type->getElementTypeLayout()->getSize() * type->getElementTypeLayout()->getSize();
+        // }
+        resource.bindInfoPool.insert({name.data(), bindInfo});
     }
 
     void ShaderLanguageConverter::slangReflectResource(slang::ProgramLayout* program)
