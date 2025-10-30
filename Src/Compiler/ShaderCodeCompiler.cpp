@@ -9,8 +9,12 @@
 
 #include "ShaderHardcodeManager.h"
 #include "ShaderLanguageConverter.h"
+
+
 namespace EmbeddedShader
 {
+    std::mutex threadMutex;
+
     std::string enumToString(ShaderLanguage language) {
         switch (language)
         {
@@ -45,6 +49,8 @@ namespace EmbeddedShader
     ShaderCodeCompiler::ShaderCodeCompiler(const std::string& shaderCode, ShaderStage inputStage,
         ShaderLanguage language, CompilerOption option, const std::source_location& sourceLocation)
     {
+        std::unique_lock<std::mutex> lock(threadMutex);
+
         sourceLocationStr = ShaderHardcodeManager::getSourceLocationString(sourceLocation);
         stage = enumToString(inputStage);
         compile(shaderCode,inputStage,language,option);
@@ -52,6 +58,8 @@ namespace EmbeddedShader
 
     ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language, bool bindless) const
     {
+        std::unique_lock<std::mutex> lock(threadMutex);
+
         std::string bindlessStr = bindless ? "_Bindless" : "";
         ShaderCodeModule result;
         result.shaderCode = std::get<1>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language) + bindlessStr)));
