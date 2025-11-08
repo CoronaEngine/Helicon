@@ -49,8 +49,6 @@ namespace EmbeddedShader
     ShaderCodeCompiler::ShaderCodeCompiler(const std::string& shaderCode, ShaderStage inputStage,
         ShaderLanguage language, CompilerOption option, const std::source_location& sourceLocation)
     {
-        std::unique_lock<std::mutex> lock(threadMutex);
-
         sourceLocationStr = ShaderHardcodeManager::getSourceLocationString(sourceLocation);
         stage = enumToString(inputStage);
         compile(shaderCode,inputStage,language,option);
@@ -177,28 +175,28 @@ namespace EmbeddedShader
                 break;
         }
 
-        // ShaderHardcodeManager::hardcodeShaderCode(codeSpirV, ShaderLanguage::SpirV, inputStage, sourceLocation);
-        // ShaderHardcodeManager::hardcodeShaderCode(codeGLSL, ShaderLanguage::GLSL, inputStage, sourceLocation);
-        // ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
-        // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
+        // support mutil-thread
+        {
+            std::unique_lock<std::mutex> lock(threadMutex);
 
-        auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
-        ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr));
+            auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+            ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr));
 
-        if (option.compileSpirV)
-            ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV" + bindlessStr));
-        if (language == ShaderLanguage::GLSL || option.compileGLSL)
-            ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL" + bindlessStr));
-        if (language == ShaderLanguage::HLSL || option.compileDXIL)
-            ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL" + bindlessStr));
-        if (language == ShaderLanguage::Slang)
-            ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang" + bindlessStr));
+            if (option.compileSpirV)
+                ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV" + bindlessStr));
+            if (language == ShaderLanguage::GLSL || option.compileGLSL)
+                ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL" + bindlessStr));
+            if (language == ShaderLanguage::HLSL || option.compileDXIL)
+                ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL" + bindlessStr));
+            if (language == ShaderLanguage::Slang)
+                ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang" + bindlessStr));
 #ifdef WIN32
-        if (option.compileDXIL)
-            ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL" + bindlessStr));
-        if (option.compileDXBC)
-            ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
+            if (option.compileDXIL)
+                ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL" + bindlessStr));
+            if (option.compileDXBC)
+                ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
 #endif
+        }
 #endif
     }
 }
