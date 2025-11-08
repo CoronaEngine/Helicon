@@ -1,4 +1,6 @@
 
+#include<shared_mutex>
+
 #include "ShaderCodeCompiler.h"
 
 #include <slang-com-helper.h>
@@ -13,7 +15,7 @@
 
 namespace EmbeddedShader
 {
-    std::mutex threadMutex;
+    std::shared_mutex threadMutex;
 
     std::string enumToString(ShaderLanguage language) {
         switch (language)
@@ -56,7 +58,7 @@ namespace EmbeddedShader
 
     ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language, bool bindless) const
     {
-        std::unique_lock<std::mutex> lock(threadMutex);
+        std::shared_lock<std::shared_mutex> lock(threadMutex);
 
         std::string bindlessStr = bindless ? "_Bindless" : "";
         ShaderCodeModule result;
@@ -177,7 +179,7 @@ namespace EmbeddedShader
 
         // support mutil-thread
         {
-            std::unique_lock<std::mutex> lock(threadMutex);
+            std::unique_lock<std::shared_mutex> lock(threadMutex);
 
             auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
             ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr));
