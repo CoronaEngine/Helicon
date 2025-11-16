@@ -108,7 +108,7 @@ namespace EmbeddedShader
                     languages.push_back(ShaderLanguage::HLSL);
 
 
-                ShaderLanguageConverter::slangCompiler(codeSlang, binaryLanguages, languages, binaryOutputs, outputs, true);
+                auto resource = ShaderLanguageConverter::slangCompiler(codeSlang, binaryLanguages, languages, binaryOutputs, outputs, true);
                 size_t index = 0;
                 if (option.compileSpirV)
                     codeSpirV = binaryOutputs[index++];

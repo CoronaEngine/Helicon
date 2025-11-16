@@ -1125,8 +1125,12 @@ namespace EmbeddedShader
         }
 
         std::cout << "Semantic:" << (field->getSemanticName() ? field->getSemanticName() : "None") << (field->getSemanticName() ? std::to_string(field->getSemanticIndex()) : "") << "\n";
-        std::cout << "Size: " << type->getSize() << "\n";
-        std::cout << "Offset: " << field->getOffset() << "\n";
+        for (int i = 0; i < field->getCategoryCount(); ++i)
+        {
+            std::cout << "Size: " << type->getSize(field->getCategoryByIndex(i)) << "\n";
+            std::cout << "Offset: " << field->getOffset(field->getCategoryByIndex(i)) << "\n";
+        }
+
 
         if (type->getKind() == slang::TypeReflection::Kind::Struct ||
             type->getKind() == slang::TypeReflection::Kind::ParameterBlock)
@@ -1211,16 +1215,12 @@ namespace EmbeddedShader
 
         ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo;
         bindInfo.bindType = ShaderCodeModule::ShaderResources::none;
-        bindInfo.byteOffset = var->getOffset() + varBaseOffset;
+        bindInfo.byteOffset = var->getOffset(var->getCategory()) + varBaseOffset;
         bindInfo.typeName = type->getName();
-        bindInfo.typeSize = type->getSize();
+        bindInfo.typeSize = type->getSize(var->getCategory());
         bindInfo.variateName = var->getName();
         bindInfo.location = var->getSemanticName() ? var->getSemanticIndex() : 0;
         bindInfo.semantic = var->getSemanticName() ? var->getSemanticName() : "";
-        // if (type->getKind() == slang::TypeReflection::Kind::Vector)
-        // {
-        //     type->getElementTypeLayout()->getSize() * type->getElementTypeLayout()->getSize();
-        // }
         resource.bindInfoPool.insert({name.data(), bindInfo});
     }
 
