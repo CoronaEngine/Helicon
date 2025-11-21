@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 		inputImageRGBA16[dispatchThreadID()->xy()] = Float4(acesFilmicToneMapCurve(color->xyz()),1.f);
 	};
 
-	ShaderCodeCompiler::CompilerOption compilerOption = {};
+	CompilerOption compilerOption = {};
 	compilerOption.compileHLSL = false;
 	compilerOption.compileDXIL = true;
 	compilerOption.compileDXBC = true;

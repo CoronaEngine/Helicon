@@ -117,6 +117,7 @@ namespace EmbeddedShader
 			// 如果不存在，则创建文件
 			hardcodeShaderFile.open(hardcodePath / "HardcodeShaders.h", std::ios::out | std::ios::trunc);
 			hardcodeShaderFile << R"(#pragma once
+#include <string>
 #include <unordered_map>
 #include "../ShaderCodeCompiler.h"
 namespace EmbeddedShader

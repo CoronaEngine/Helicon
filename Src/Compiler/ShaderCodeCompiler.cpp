@@ -9,8 +9,12 @@
 
 #include "ShaderHardcodeManager.h"
 #include "ShaderLanguageConverter.h"
+
+
 namespace EmbeddedShader
 {
+    std::shared_mutex threadMutex;
+
     std::string enumToString(ShaderLanguage language) {
         switch (language)
         {
@@ -52,6 +56,8 @@ namespace EmbeddedShader
 
     ShaderCodeModule ShaderCodeCompiler::getShaderCode(ShaderLanguage language, bool bindless) const
     {
+        std::shared_lock<std::shared_mutex> lock(threadMutex);
+
         std::string bindlessStr = bindless ? "_Bindless" : "";
         ShaderCodeModule result;
         auto languageStr = enumToString(language);
@@ -166,10 +172,9 @@ namespace EmbeddedShader
                 break;
         }
 
-        // ShaderHardcodeManager::hardcodeShaderCode(codeSpirV, ShaderLanguage::SpirV, inputStage, sourceLocation);
-        // ShaderHardcodeManager::hardcodeShaderCode(codeGLSL, ShaderLanguage::GLSL, inputStage, sourceLocation);
-        // ShaderHardcodeManager::hardcodeShaderCode(codeHLSL, ShaderLanguage::HLSL, inputStage, sourceLocation);
-        // ShaderHardcodeManager::hardcodeShaderCode(codeSlang, ShaderLanguage::Slang, inputStage, sourceLocation);
+        // support mutil-thread
+        {
+            std::unique_lock<std::shared_mutex> lock(threadMutex);
 
         size_t index = 0;
         if (!codeSpirV.empty())
@@ -234,6 +239,7 @@ namespace EmbeddedShader
             }
         }
 #endif
+        }
 #endif
     }
 }
