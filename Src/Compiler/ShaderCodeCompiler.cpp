@@ -9,6 +9,7 @@
 
 #include "ShaderHardcodeManager.h"
 #include "ShaderLanguageConverter.h"
+#include <shared_mutex>
 
 
 namespace EmbeddedShader
