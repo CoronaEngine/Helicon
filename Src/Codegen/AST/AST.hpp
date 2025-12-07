@@ -8,6 +8,10 @@
 #include <Codegen/Generator/SlangGenerator.hpp>
 #include <Codegen/ParseHelper.h>
 
+namespace EmbeddedShader {
+	struct SamplerProxy;
+}
+
 namespace EmbeddedShader::Generator
 {
 	class SlangGenerator;
@@ -308,6 +312,12 @@ namespace EmbeddedShader::Ast
 				auto texture2DType = std::make_shared<Texture2DType>();
 				texture2DType->texelType = createType<std::remove_cvref_t<typename MemberType::value_type>>();
 				member->type = std::move(texture2DType);
+			}
+			else if constexpr (std::is_same_v<MemberType, SamplerProxy>)
+			{
+				auto samplerType = std::make_shared<SamplerType>();
+				samplerType->name = "SamplerState";
+				member->type = std::move(samplerType);
 			}
 
 			aggregateType->members.push_back(std::move(member));

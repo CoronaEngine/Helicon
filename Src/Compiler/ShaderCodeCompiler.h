@@ -42,17 +42,25 @@ namespace EmbeddedShader
         {
             enum BindType
             {
+                none = -1,
                 pushConstantMembers = 0,
                 stageInputs = 1,
                 stageOutputs = 2,
                 uniformBuffers = 3,
                 sampledImages = 4,
+
+                texture,
+                sampler,
+                rawBuffer,
+                storageTexture,
+                storageBuffer,
             };
             struct ShaderBindInfo
             {
                 uint32_t set = 0;
                 uint32_t binding = 0;
                 uint32_t location = 0;
+                std::string semantic;
 
                 std::string variateName;
                 std::string typeName;

@@ -6,6 +6,54 @@ std::string EmbeddedShader::Generator::SlangGenerator::getShaderOutput(const Ast
 	currentStage = structure.stage;
 	std::string output;
 
+	if (Ast::Parser::getBindless())
+	{
+		output += // Vulkan Bindless Process
+		R"([vk::binding(0, 1)]
+__DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
+
+[vk::binding(0, 2)]
+__DynamicResource<__DynamicResourceKind.General> textureHandles[];
+
+[vk::binding(0, 3)]
+__DynamicResource<__DynamicResourceKind.General> bufferHandles[];
+
+[vk::binding(0, 4)]
+__DynamicResource<__DynamicResourceKind.General> combinedTextureSamplerHandles[];
+
+[vk::binding(0, 5)]
+__DynamicResource<__DynamicResourceKind.General> accelerationStructureHandles[];
+
+[vk::binding(0, 6)]
+__DynamicResource<__DynamicResourceKind.General> texelBufferHandles[];
+
+export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqueDescriptor
+{
+	__target_switch
+	{
+		case spirv:
+		case glsl:
+		if (T.kind == DescriptorKind.Sampler)
+			return samplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Texture)
+			return textureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Buffer)
+			return bufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.CombinedTextureSampler)
+			return combinedTextureSamplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.AccelerationStructure)
+			return accelerationStructureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.TexelBuffer)
+			return texelBufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else
+			return defaultGetDescriptorFromHandle(handle);
+		default:
+		return defaultGetDescriptorFromHandle(handle);
+	}
+}
+)";
+	}
+
 	std::string mainContent;
 	for (auto& statement: structure.localStatements)
 	{
@@ -85,28 +133,41 @@ std::string EmbeddedShader::Generator::SlangGenerator::getGlobalOutput(const Ast
 			output += std::move(statementContent) + '\n';
 	}
 
-	if (!pushConstantMembers.empty())
+	std::string ubo;
+	if (!uboMembers.empty())
+	{
+		std::string uboStructName = "global_ubo_struct";
+		auto uboStruct = "struct " + uboStructName + " {\n" + uboMembers + "}\n";
+		if (!bindless())
+			ubo = "ConstantBuffer<" + uboStructName + "> global_ubo;\n";
+		else
+			ubo = "ConstantBuffer<" + uboStructName + ">.Handle global_ubo;\n";
+		output += uboStruct;
+		uboMembers.clear();
+	}
+
+	if (!pushConstantMembers.empty() || (bindless() && !ubo.empty()))
 	{
 		std::string pushConstantStructName = "global_push_constant_struct";
 		auto pushConstantStruct = "struct " + pushConstantStructName + " {\n" + pushConstantMembers;
-
+		if (bindless())
+			pushConstantStruct += "\t" + ubo;
 		pushConstantStruct += "}\n";
 		auto pushConstant = "[[vk::push_constant]] ConstantBuffer<" + pushConstantStructName + "> global_push_constant;\n";
 		output += pushConstantStruct + pushConstant;
 		pushConstantMembers.clear();
 	}
 
-	if (!uboMembers.empty())
+	if (!parameterBlockMembers.empty() || !ubo.empty())
 	{
-		std::string uboStructName = "global_ubo_struct";
-		auto uboStruct = "struct " + uboStructName + " {\n" + uboMembers + "}\n";
-		std::string ubo;
-		if (!bindless())
-			ubo = "ConstantBuffer<" + uboStructName + "> global_ubo;\n";
-		else
-			ubo = "uniform ConstantBuffer<" + uboStructName + ">.Handle global_ubo;\n";
-		output += uboStruct + ubo;
-		uboMembers.clear();
+		std::string parameterBlockStructName = "parameter_block_struct";
+		auto parameterBlockStruct = "struct " + parameterBlockStructName + " {\n" + parameterBlockMembers;
+		if (!ubo.empty() && !bindless())
+			parameterBlockStruct += "\t" + ubo;
+		parameterBlockStruct += "}\n";
+		auto parameterBlock = "ParameterBlock<" + parameterBlockStructName + "> global_parameter_block;\n";
+		output += parameterBlockStruct + parameterBlock;
+		parameterBlockMembers.clear();
 	}
 
 	return output;
@@ -204,7 +265,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->array->permissions != Ast::AccessPermissions::ReadOnly)
 		result = "RW" + result;
 
-	return (bindless() ? "uniform " : "") + result;
+	uboMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
+	return "";
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineUniformVariate* node)
@@ -225,8 +287,22 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 	if (node->pushConstant)
 		return "global_push_constant." + node->name;
 	if (bindless())
-		return "(*global_ubo)." + node->name;
-	return "global_ubo." + node->name;
+		return "(*global_push_constant.global_ubo)." + node->name;
+	return "global_parameter_block.global_ubo." + node->name;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniversalTexture2D* node)
+{
+	if (bindless())
+		return "(*global_push_constant.global_ubo)." + node->name;
+	return "global_parameter_block.global_ubo." + node->name;
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::UniversalArray* node)
+{
+	if (bindless())
+		return "(*global_push_constant.global_ubo)." + node->name;
+	return "global_parameter_block.global_ubo." + node->name;
 }
 
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::DefineAggregateType* node)
@@ -269,6 +345,8 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
         result = "RW" + result;
     }
 
+	uboMembers += (bindless() ? "\t""uniform " : "\t") + result + "\n";
+	return "";
     return (bindless() ? "uniform " : "") + result;
 }
 

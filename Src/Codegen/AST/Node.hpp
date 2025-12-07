@@ -34,12 +34,14 @@ namespace EmbeddedShader::Ast
 	public:
 		std::shared_ptr<Type> type;
 		virtual void access(AccessPermissions permissions);
+		virtual std::string accessPath();
 	};
 
 	struct Variate : Value
 	{
 		std::string name;
 		std::string parse() override;
+		std::string accessPath() override;
 	};
 
 	struct LocalVariate : Variate
@@ -113,6 +115,7 @@ namespace EmbeddedShader::Ast
 		std::string memberName;
 		std::string parse() override;
 		void access(AccessPermissions permissions) override;
+		std::string accessPath() override;
 	};
 
 	struct OutputVariate : Variate
@@ -154,6 +157,7 @@ namespace EmbeddedShader::Ast
 
 		AccessPermissions permissions = AccessPermissions::None;
 		void access(AccessPermissions permissions) override;
+		std::string parse() override;
 	};
 
 	struct ElementVariate : Variate
@@ -212,6 +216,7 @@ namespace EmbeddedShader::Ast
 
         AccessPermissions permissions = AccessPermissions::None;
         void access(AccessPermissions permissions) override;
+    	std::string parse() override;
     };
 
     struct DefineUniversalTexture2D : Statement

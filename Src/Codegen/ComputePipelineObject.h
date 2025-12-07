@@ -38,17 +38,10 @@ namespace EmbeddedShader
 		auto csFunc = std::function(std::forward<decltype(computeShaderCode)>(computeShaderCode));
 
 		Ast::Parser::beginShaderParse(Ast::ShaderStage::Compute);
+		if (ParseHelper::hasReturnValue(csFunc))
+			throw std::logic_error("Compute shader function doesn't have return value");
 		auto csParams = ParseHelper::createParamTuple(csFunc);
 		ParseHelper::callLambda(csFunc,std::move(csParams));
-		if constexpr (!ParseHelper::hasReturnValue(csFunc))
-			ParseHelper::callLambda(csFunc,std::move(csParams));
-		else
-		{
-			auto csOutput = ParseHelper::callLambda(csFunc,std::move(csParams));
-			static_assert(ParseHelper::isReturnVariateProxy(csFunc), "The output of the shader must be a proxy!");
-			auto outputVar = Ast::AST::defineOutputVariate(reinterpret_cast<Ast::Variate*>(csOutput.node.get())->type,0);
-			Ast::AST::assign(outputVar,csOutput.node);
-		}
 		return Ast::Parser::endPipelineParse();
 	}
 }

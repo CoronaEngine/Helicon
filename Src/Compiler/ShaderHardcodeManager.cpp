@@ -183,6 +183,7 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 			result << bindInfo.set << ",";
 			result << bindInfo.binding << ",";
 			result << bindInfo.location << ",";
+			result << "\"" << bindInfo.semantic << "\",";
 			result << "\"" << bindInfo.variateName << "\",";
 			result << "\"" << bindInfo.typeName << "\",";
 			result << bindInfo.elementCount << ",";

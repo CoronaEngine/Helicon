@@ -14,6 +14,7 @@
 #include "ShaderLanguageConverter.h"
 
 #include <array>
+#include <set>
 #include <utility>
 
 #ifdef WIN32
@@ -239,98 +240,6 @@ namespace EmbeddedShader
         return result;
     }
 
-    size_t reflect_set = 0;
-    void addParameterBlockReflection(slang::TypeLayoutReflection* type)
-    {
-        size_t reflect_bind = 0;
-        std::cout << "pb set index: " << reflect_set << "\n";
-        if (type->getSize() > 0)
-        {
-            std::cout << "pb ubo\n binding: " << reflect_bind++ << "\n set: " << reflect_set << "\n";
-        }
-
-        //std::cout << "pb set count: " << type->getDescriptorSetCount() << "\n";
-        //for (int relativeSetIndex = 0; relativeSetIndex < type->getDescriptorSetCount(); ++relativeSetIndex)
-        //{
-            int relativeSetIndex = 0;
-            auto rangeCount = type->getDescriptorSetDescriptorRangeCount(relativeSetIndex);
-            std::cout << "pb range count: " << rangeCount << "\n";
-            for (int rangeIndex = 0; rangeIndex < rangeCount; ++rangeIndex)
-            {
-                slang::BindingType bindingType = type->getDescriptorSetDescriptorRangeType(relativeSetIndex, rangeIndex);
-                auto descriptorCount = type->getDescriptorSetDescriptorRangeDescriptorCount(relativeSetIndex, rangeIndex);
-                std::cout << "\t pb descriptor count: " << descriptorCount << "\n";
-                std::cout << "pb binding: " << reflect_bind++ << " binding type: \n\t";
-                switch (bindingType)
-                {
-                case slang::BindingType::Unknown:
-                    puts("Unknown");
-                    break;
-                case slang::BindingType::Sampler:
-                    puts("Sampler");
-                    break;
-                case slang::BindingType::Texture:
-                    puts("Texture");
-                    break;
-                case slang::BindingType::ConstantBuffer:
-                    puts("ConstantBuffer");
-                    break;
-                case slang::BindingType::ParameterBlock:
-                    puts("ParameterBlock");
-                    break;
-                case slang::BindingType::TypedBuffer:
-                    puts("TypedBuffer");
-                    break;
-                case slang::BindingType::RawBuffer:
-                    puts("RawBuffer");
-                    break;
-                case slang::BindingType::CombinedTextureSampler:
-                    puts("CombinedTextureSampler");
-                    break;
-                case slang::BindingType::InputRenderTarget:
-                    puts("InputRenderTarget");
-                    break;
-                case slang::BindingType::InlineUniformData:
-                    puts("InlineUniformData");
-                    break;
-                case slang::BindingType::RayTracingAccelerationStructure:
-                    puts("RayTracingAccelerationStructure");
-                    break;
-                case slang::BindingType::VaryingInput:
-                    puts("VaryingInput");
-                    break;
-                case slang::BindingType::VaryingOutput:
-                    puts("VaryingOutput");
-                    break;
-                case slang::BindingType::ExistentialValue:
-                    puts("ExistentialValue");
-                    break;
-                case slang::BindingType::PushConstant:
-                    puts("PushConstant");
-                    break;
-                case slang::BindingType::MutableFlag:
-                    puts("MutableFlag");
-                    break;
-                case slang::BindingType::MutableTexture:
-                    puts("MutableTexture");
-                    break;
-                case slang::BindingType::MutableTypedBuffer:
-                    puts("MutableTypedBuffer");
-                    break;
-                case slang::BindingType::MutableRawBuffer:
-                    puts("MutableRawBuffer");
-                    break;
-                case slang::BindingType::BaseMask:
-                    puts("BaseMask");
-                    break;
-                case slang::BindingType::ExtMask:
-                    puts("ExtMask");
-                    break;
-                }
-            }
-        //}
-    }
-
     std::vector<ShaderCodeModule::ShaderResources> ShaderLanguageConverter::slangCompiler(const std::string &shaderCode,
                                                                                           const std::vector<ShaderLanguage> &targetBinary, const std::vector<ShaderLanguage> &targetLanguage, std::vector<std::vector<uint32_t>> &binaryTargetsOutput,
                                                                                           std::vector<std::string> &targetsOutput, bool isEnabledReflection)
@@ -520,53 +429,21 @@ namespace EmbeddedShader
         {
             auto& reflection = reflectedResources[i];
             auto programLayout = composedProgram->getLayout(static_cast<SlangInt>(i));
-            // auto globalLayout = programLayout->getGlobalParamsVarLayout();
-            // if (globalLayout->getCategory() == slang::ParameterCategory::PushConstantBuffer)
-            // {
-            //     reflection.pushConstantSize = globalLayout->getTypeLayout()->getSize();
-            //     reflection.pushConstantName = globalLayout->getName();
-            // }
-            //
-            // auto entryPointLayout = programLayout->getEntryPointByIndex(0);
-            // auto varLayout = entryPointLayout->getVarLayout();
-            // auto typeLayout = varLayout->getTypeLayout();
-            // switch (typeLayout->getKind())
-            // {
-            //     case slang::TypeReflection::Kind::ConstantBuffer:
-            //         reflection.bindInfoPool[typeLayout->getName()] = ShaderCodeModule::ShaderResources::ShaderBindInfo{
-            //             varLayout->getBindingSpace(),
-            //             varLayout->getBindingIndex(),
-            //             varLayout->getBindingIndex(),
-            //             varLayout->getName(),
-            //             typeLayout->getName(),
-            //             ShaderCodeModule::ShaderResources::BindType::uniformBuffers};
-            //         break;
-            //     case slang::TypeReflection::Kind::SamplerState:
-            //         break;
-            //     case slang::TypeReflection::Kind::TextureBuffer:
-            //         break;
-            //     case slang::TypeReflection::Kind::ShaderStorageBuffer:
-            //         break;
-            //     default:break;
-            // }
 
-            // auto entryPointLayout = programLayout->getEntryPointByIndex(0);
-            // for (int ii = 0; ii < entryPointLayout->getParameterCount(); ++ii)
-            // {
-            //     slangReflectAddBindInfo(entryPointLayout->getParameterByIndex(ii),reflection,"");
-            // }
+            slangReflectParameterBlock(programLayout,"global_ubo", reflection);
 
-            std::cout << "begin reflect...\n";
-            //std::cout << "begin global reflect...\n";
-            //addParameterBlockReflection(programLayout->getGlobalParamsTypeLayout());
-            //std::cout << "begin entry point reflect...\n";
-            // addParameterBlockReflection(programLayout->getEntryPointByIndex(0)->getTypeLayout());
-            for (int ii = 0; ii < programLayout->getParameterCount(); ++ii)
+            for (int ii = 0; ii < programLayout->getEntryPointCount(); ++ii)
             {
-                reflect_set = ii;
-                 addParameterBlockReflection(programLayout->getParameterByIndex(ii)->getTypeLayout()->getElementTypeLayout());
+                auto input = programLayout->getEntryPointByIndex(ii)->getVarLayout();
+                auto inputType = input->getTypeLayout();
+                //仅针对Helicon Shader特殊处理，简化反射流程
+                inputType->getFieldCount();
+                for (int j = 0; j < inputType->getFieldCount(); ++j)
+                {
+                    auto param = inputType->getFieldByIndex(j);
+                    slangReflectField(param, "", 0, reflection);
+                }
             }
-            std::cout << "end reflect...\n\n";
         }
         return reflectedResources;
     }
@@ -964,99 +841,96 @@ namespace EmbeddedShader
         return result;
     }
 
-    void ShaderLanguageConverter::slangReflectAddBindInfo(slang::VariableLayoutReflection* var,
-                                                          ShaderCodeModule::ShaderResources& shaderResources, const std::string& parentPrefix)
+    void ShaderLanguageConverter::slangReflectField(slang::VariableLayoutReflection* field, std::string_view accessPath, size_t varBaseOffset, ShaderCodeModule::ShaderResources& reflection)
     {
-        slang::TypeLayoutReflection* type = var->getTypeLayout();
-        auto name = var->getName();
+        auto type = field->getTypeLayout();
+        auto name = accessPath.empty() ? field->getName() : accessPath.data() + std::string(".") + field->getName();
 
-        std::string fullName = parentPrefix.empty() ? name :
-                           parentPrefix + "." + name;
+        int set = 0;
 
-        if (type->getKind() == slang::TypeReflection::Kind::ConstantBuffer ||
-        type->getKind() == slang::TypeReflection::Kind::ParameterBlock)
+        if (type->getKind() == slang::TypeReflection::Kind::Struct ||
+            type->getKind() == slang::TypeReflection::Kind::ParameterBlock)
         {
-            ShaderCodeModule::ShaderResources::ShaderBindInfo info {};
-            info.variateName = name;
-            info.typeName    = "uniform";
-            info.set         = static_cast<uint32_t>(var->getBindingSpace(SLANG_PARAMETER_CATEGORY_DESCRIPTOR_TABLE_SLOT));
-            info.binding     = var->getBindingIndex();
-            info.location    = var->getBindingIndex();
-            info.bindType    = ShaderCodeModule::ShaderResources::uniformBuffers;
-            info.elementCount= type->getFieldCount();
-            info.typeSize    = static_cast<uint32_t>(type->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
-
-            shaderResources.bindInfoPool[fullName] = info;
-
-            // 继续展开内部字段（如果关心成员）
-            for (uint32_t f = 0; f < type->getFieldCount(); ++f)
-                slangReflectAddBindInfo(type->getFieldByIndex(f), shaderResources, fullName);
-            return;
-        }
-
-        // 2. push constant buffer
-        if (var->getCategory() == SLANG_PARAMETER_CATEGORY_PUSH_CONSTANT_BUFFER)
-        {
-            shaderResources.pushConstantName = name;
-            shaderResources.pushConstantSize = (uint32_t)type->getSize(SLANG_PARAMETER_CATEGORY_PUSH_CONSTANT_BUFFER);
-
-            for (uint32_t f = 0; f < type->getFieldCount(); ++f)
+            for (uint32_t i = 0; i < type->getFieldCount(); ++i)
             {
-                auto* field = type->getFieldByIndex(f);
-                ShaderCodeModule::ShaderResources::ShaderBindInfo info {};
-                info.variateName = field->getName();
-                info.typeName    = field->getTypeLayout()->getName();
-                info.byteOffset  = static_cast<uint32_t>(field->getOffset(SLANG_PARAMETER_CATEGORY_UNIFORM));
-                info.typeSize    = static_cast<uint32_t>(field->getTypeLayout()->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
-                info.bindType    = ShaderCodeModule::ShaderResources::pushConstantMembers;
-
-                shaderResources.bindInfoPool[shaderResources.pushConstantName + "." + info.variateName] = info;
+                auto innerField = type->getFieldByIndex(i);
+                slangReflectField(innerField, name, varBaseOffset + field->getOffset(), reflection);
             }
+        }
+        else slangReflectDescriptor(field,set,name, varBaseOffset, reflection);
+    }
+
+    void ShaderLanguageConverter::slangReflectParameterBlock(slang::ProgramLayout* program, std::string_view uboName, ShaderCodeModule::ShaderResources& reflection)
+    {
+        for (uint32_t i = 0; i < program->getParameterCount(); ++i)
+        {
+            auto type = program->getParameterByIndex(i)->getTypeLayout()->getElementTypeLayout();
+            auto index = type->findFieldIndexByName(uboName.data());
+            if (index == -1)
+                continue;
+            auto ubo = type->getFieldByIndex(index);
+            auto uboType = ubo->getTypeLayout()->getElementTypeLayout();
+            slangReflectDescriptor(ubo, 0, uboName, 0, reflection);
+            for (uint32_t j = 0; j < uboType->getFieldCount(); ++j)
+            {
+                auto field = uboType->getFieldByIndex(j);
+                slangReflectField(field,"", 0, reflection);
+            }
+        }
+    }
+
+    void ShaderLanguageConverter::slangReflectDescriptor(slang::VariableLayoutReflection* var,
+                                                         int set, std::string_view name, size_t varBaseOffset, ShaderCodeModule::ShaderResources& resource)
+    {
+        auto type = var->getTypeLayout();
+        auto rangeCount = type->getDescriptorSetDescriptorRangeCount(set);
+        if (rangeCount > 0)
+        {
+            ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo;
+            bindInfo.set = set;
+            bindInfo.binding = type->getBindingRangeFirstDescriptorRangeIndex(0);
+            bindInfo.typeName = type->getName();
+            bindInfo.typeSize = type->getSize();
+            bindInfo.variateName = var->getName();
+            switch (type->getDescriptorSetDescriptorRangeType(set,0))
+            {
+                case slang::BindingType::ConstantBuffer:
+                    bindInfo.bindType = ShaderCodeModule::ShaderResources::uniformBuffers;
+                    bindInfo.typeSize = type->getElementTypeLayout()->getSize();
+                    break;
+                case slang::BindingType::Texture:
+                    bindInfo.bindType = ShaderCodeModule::ShaderResources::texture;
+                    break;
+                case slang::BindingType::Sampler:
+                    bindInfo.bindType = ShaderCodeModule::ShaderResources::sampler;
+                    break;
+                case slang::BindingType::MutableTexture:
+                    bindInfo.bindType = ShaderCodeModule::ShaderResources::storageTexture;
+                    break;
+                case slang::BindingType::MutableRawBuffer:
+                    bindInfo.bindType = ShaderCodeModule::ShaderResources::storageBuffer;
+                    break;
+                case slang::BindingType::RawBuffer:
+                    bindInfo.bindType = ShaderCodeModule::ShaderResources::rawBuffer;
+                    break;
+                case slang::BindingType::CombinedTextureSampler:
+                    bindInfo.bindType = ShaderCodeModule::ShaderResources::sampledImages;
+                    break;
+                case slang::BindingType::Unknown:
+                default:return;
+            }
+            resource.bindInfoPool.insert({name.data(), bindInfo});
             return;
         }
-        // 3. texture / sampler
-        if (type->getKind() == slang::TypeReflection::Kind::Resource &&
-            type->getResourceShape() == SLANG_TEXTURE_BUFFER)
-        {
-            ShaderCodeModule::ShaderResources::ShaderBindInfo info {};
-            info.variateName = name;
-            info.typeName    = "sampler2D";
-            info.set         = static_cast<uint32_t>(var->getBindingSpace(SLANG_PARAMETER_CATEGORY_DESCRIPTOR_TABLE_SLOT));
-            info.binding     = var->getBindingIndex();
-            info.location    = info.binding;
-            info.bindType    = ShaderCodeModule::ShaderResources::sampledImages;
 
-            shaderResources.bindInfoPool[fullName] = info;
-            return;
-        }
-
-        // 4. stage inputs
-        if (var->getCategory() == SLANG_PARAMETER_CATEGORY_VARYING_INPUT)
-        {
-            ShaderCodeModule::ShaderResources::ShaderBindInfo info {};
-            info.variateName = name;
-            info.typeName    = type->getName();
-            info.location    = var->getBindingIndex();
-            info.elementCount= type->getFieldCount();
-            info.typeSize    = type->getSize();
-            info.bindType    = ShaderCodeModule::ShaderResources::stageInputs;
-
-            shaderResources.bindInfoPool[fullName] = info;
-            return;
-        }
-
-        // 5. stage outputs
-        if (var->getCategory() == SLANG_PARAMETER_CATEGORY_VARYING_OUTPUT)
-        {
-            ShaderCodeModule::ShaderResources::ShaderBindInfo info {};
-            info.variateName = name;
-            info.typeName    = type->getName();
-            info.location    = var->getBindingIndex();
-            info.elementCount= type->getFieldCount();
-            info.typeSize    = type->getSize();
-            info.bindType    = ShaderCodeModule::ShaderResources::stageOutputs;
-
-            shaderResources.bindInfoPool[fullName] = info;
-        }
+        ShaderCodeModule::ShaderResources::ShaderBindInfo bindInfo;
+        bindInfo.bindType = ShaderCodeModule::ShaderResources::none;
+        bindInfo.byteOffset = var->getOffset(var->getCategory()) + varBaseOffset;
+        bindInfo.typeName = type->getName();
+        bindInfo.typeSize = type->getSize(var->getCategory());
+        bindInfo.variateName = var->getName();
+        bindInfo.location = var->getSemanticName() ? var->getSemanticIndex() : 0;
+        bindInfo.semantic = var->getSemanticName() ? var->getSemanticName() : "";
+        resource.bindInfoPool.insert({name.data(), bindInfo});
     }
 }

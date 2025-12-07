@@ -1,6 +1,4 @@
 
-#include<shared_mutex>
-
 #include "ShaderCodeCompiler.h"
 
 #include <slang-com-helper.h>
@@ -11,6 +9,7 @@
 
 #include "ShaderHardcodeManager.h"
 #include "ShaderLanguageConverter.h"
+#include <shared_mutex>
 
 
 namespace EmbeddedShader
@@ -62,8 +61,9 @@ namespace EmbeddedShader
 
         std::string bindlessStr = bindless ? "_Bindless" : "";
         ShaderCodeModule result;
-        result.shaderCode = std::get<1>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, enumToString(language) + bindlessStr)));
-        result.shaderResources = std::get<0>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr)));
+        auto languageStr = enumToString(language);
+        result.shaderCode = std::get<1>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr,  languageStr + bindlessStr)));
+        result.shaderResources = std::get<0>(ShaderHardcodeManager::getHardcodeShader(stage, ShaderHardcodeManager::getItemName(sourceLocationStr, languageStr + "_Reflection" + bindlessStr)));
         return result;
     }
 
@@ -91,6 +91,7 @@ namespace EmbeddedShader
         std::string codeGLSL;
         std::string codeHLSL;
         std::string codeSlang;
+        std::vector<ShaderCodeModule::ShaderResources> reflections;
 
         switch (language)
         {
@@ -116,7 +117,7 @@ namespace EmbeddedShader
                     languages.push_back(ShaderLanguage::HLSL);
 
 
-                ShaderLanguageConverter::slangCompiler(codeSlang, binaryLanguages, languages, binaryOutputs, outputs, true);
+                reflections = ShaderLanguageConverter::slangCompiler(codeSlang, binaryLanguages, languages, binaryOutputs, outputs, true);
                 size_t index = 0;
                 if (option.compileSpirV)
                     codeSpirV = binaryOutputs[index++];
@@ -125,11 +126,6 @@ namespace EmbeddedShader
                     codeDXIL = binaryOutputs[index++];
                 if (option.compileDXBC)
                     codeDXBC = binaryOutputs[index++];
-
-                // if (option.compileDXIL)
-                //     codeDXIL = ShaderLanguageConverter::dxilCompiler(codeHLSL, inputStage);
-                // if (!bindless && option.compileDXBC)
-                //     codeDXBC = ShaderLanguageConverter::dxbcCompiler(codeHLSL, inputStage);
 #endif
 
                 index = 0;
@@ -181,22 +177,68 @@ namespace EmbeddedShader
         {
             std::unique_lock<std::shared_mutex> lock(threadMutex);
 
-            auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
-            ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Reflection" + bindlessStr));
-
-            if (option.compileSpirV)
-                ShaderHardcodeManager::addTarget(codeSpirV, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV" + bindlessStr));
-            if (language == ShaderLanguage::GLSL || option.compileGLSL)
-                ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL" + bindlessStr));
-            if (language == ShaderLanguage::HLSL || option.compileDXIL)
-                ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL" + bindlessStr));
-            if (language == ShaderLanguage::Slang)
-                ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang" + bindlessStr));
+        size_t index = 0;
+        if (!codeSpirV.empty())
+        {
+            ShaderHardcodeManager::addTarget(codeSpirV, stage,ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV" + bindlessStr));
+            if (!reflections.empty()) ShaderHardcodeManager::addTarget(reflections[index++], stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV_Reflection" + bindlessStr));
+            else
+            {
+                auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+                ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "SpirV_Reflection" + bindlessStr));
+            }
+        }
+        if (!codeGLSL.empty())
+        {
+            ShaderHardcodeManager::addTarget(codeGLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL" + bindlessStr));
+            if (!reflections.empty()) ShaderHardcodeManager::addTarget(reflections[index++], stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL_Reflection" + bindlessStr));
+            else
+            {
+                auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+                ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "GLSL_Reflection" + bindlessStr));
+            }
+        }
+        if (!codeHLSL.empty())
+        {
+            ShaderHardcodeManager::addTarget(codeHLSL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL" + bindlessStr));
+            if (!reflections.empty()) ShaderHardcodeManager::addTarget(reflections[index++], stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL_Reflection" + bindlessStr));
+            else
+            {
+                auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+                ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "HLSL_Reflection" + bindlessStr));
+            }
+        }
+        if (!codeSlang.empty())
+        {
+            ShaderHardcodeManager::addTarget(codeSlang, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang" + bindlessStr));
+            if (!reflections.empty()) ShaderHardcodeManager::addTarget(reflections[0], stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang_Reflection" + bindlessStr));
+            else
+            {
+                auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+                ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "Slang_Reflection" + bindlessStr));
+            }
+        }
 #ifdef WIN32
-            if (option.compileDXIL)
-                ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL" + bindlessStr));
-            if (option.compileDXBC)
-                ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
+        if (!codeDXIL.empty())
+        {
+            ShaderHardcodeManager::addTarget(codeDXIL, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL" + bindlessStr));
+            if (!reflections.empty()) ShaderHardcodeManager::addTarget(reflections[index++], stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL_Reflection" + bindlessStr));
+            else
+            {
+                auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+                ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXIL_Reflection" + bindlessStr));
+            }
+        }
+        if (!codeDXBC.empty())
+        {
+            ShaderHardcodeManager::addTarget(codeDXBC, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC"));
+            if (!reflections.empty()) ShaderHardcodeManager::addTarget(reflections[index++], stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC_Reflection" + bindlessStr));
+            else
+            {
+                auto shaderResource = ShaderLanguageConverter::spirvCrossReflectedBindInfo(codeSpirV, ShaderLanguage::HLSL);
+                ShaderHardcodeManager::addTarget(shaderResource, stage, ShaderHardcodeManager::getItemName(sourceLocationStr, "DXBC_Reflection" + bindlessStr));
+            }
+        }
 #endif
         }
 #endif

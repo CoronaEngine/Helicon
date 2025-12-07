@@ -39,7 +39,13 @@ struct VertexOutput
 
 struct TextureStruct
 {
-	Texture2D<ktm::fvec4> texture = Sampler{};
+	Texture2D<ktm::fvec4> texture;
+	Sampler sampler;
+};
+
+struct ImageStruct
+{
+	Texture2D<ktm::fvec4> image;
 };
 
 int main(int argc, char* argv[])
@@ -144,7 +150,7 @@ int main(int argc, char* argv[])
 
 	auto fragment = [&](Aggregate<VertexOutput> input)
 	{
-		Float4 color = textureStruct->texture.sample(input->fragTexCoord);
+		Float4 color = textureStruct->texture.sample(textureStruct->sampler,input->fragTexCoord);
 		Float3 albedo;
 		$IF(color->w > 0.01)
 			albedo = color->xyz();
@@ -185,32 +191,107 @@ int main(int argc, char* argv[])
 	compilerOption.compileHLSL = false;
 	compilerOption.compileDXIL = true;
 	compilerOption.compileDXBC = true;
-	compilerOption.compileGLSL = false;
-	compilerOption.enableBindless = false;
+	compilerOption.compileGLSL = true;
+	compilerOption.enableBindless = true;
 
 	auto rasterizedPipeline = RasterizedPipelineObject::compile(vertex, fragment,compilerOption);
+	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
 	puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 	puts(std::get<1>(rasterizedPipeline.fragment->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
-	auto computePipeline = ComputePipelineObject::compile(compute,uvec3(8,8,1),compilerOption);
 	puts(std::get<1>(computePipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
 
-//     std::string slangTest = R"(
-// Sampler2D textures[];
-// struct Data
-// {
-//     uint sampler2dIndex;
-// }
-//
-// ConstantBuffer<Data> data;
-//
-// [shader("fragment")]
-// float4 main(float2 coord : TEXCOORD) : SV_TARGET0
-// {
-//     return textures[data.sampler2dIndex].Sample(coord);
-// })";
-//
-//     std::vector<std::vector<uint32_t>> binaryOutputs;
-//     std::vector<std::string> outputs;
-//     ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::HLSL}, binaryOutputs, outputs, true);
-//     puts(outputs[0].c_str());
+	//puts(std::get<1>(rasterizedPipeline.vertex->getShaderCode(ShaderLanguage::GLSL,true).shaderCode).c_str());
+
+	std::string slangTest = R"(
+
+
+struct Data
+{
+	float2 coord;
+};
+
+struct ParameterBlockData
+{
+	ConstantBuffer<Data>.Handle data;
+	Texture2D.Handle texture;
+	SamplerState.Handle sampler;
+	RWTexture2D<uint2>.Handle inImage;
+	RWTexture2D<float4>.Handle outImage;
+};
+
+ParameterBlock<ParameterBlockData> data;
+
+[shader("fragment")]
+float4 main() : SV_TARGET0
+{
+    return data.texture.Sample(data.sampler,(*(data.data)).coord) * data.outImage[data.inImage[uint2(0,0)]];
+})";
+
+	/*[vk::binding(0, 1)]
+__DynamicResource<__DynamicResourceKind.Sampler> samplerHandles[];
+
+[vk::binding(0, 2)]
+__DynamicResource<__DynamicResourceKind.General> textureHandles[];
+
+[vk::binding(0, 3)]
+__DynamicResource<__DynamicResourceKind.General> bufferHandles[];
+
+[vk::binding(0, 4)]
+__DynamicResource<__DynamicResourceKind.General> combinedTextureSamplerHandles[];
+
+[vk::binding(0, 5)]
+__DynamicResource<__DynamicResourceKind.General> accelerationStructureHandles[];
+
+[vk::binding(0, 6)]
+__DynamicResource<__DynamicResourceKind.General> texelBufferHandles[];
+
+export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqueDescriptor
+{
+	__target_switch
+	{
+	case spirv:
+	case glsl:
+		if (T.kind == DescriptorKind.Sampler)
+			return samplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Texture)
+			return textureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.Buffer)
+			return bufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.CombinedTextureSampler)
+			return combinedTextureSamplerHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.AccelerationStructure)
+			return accelerationStructureHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else if (T.kind == DescriptorKind.TexelBuffer)
+			return texelBufferHandles[((uint2)handle).x].asOpaqueDescriptor<T>();
+		else
+			return defaultGetDescriptorFromHandle(handle);
+	default:
+		return defaultGetDescriptorFromHandle(handle);
+	}
+}*/
+
+	// std::vector<std::vector<uint32_t>> binaryOutputs;
+ //    std::vector<std::string> outputs;
+ //    ShaderLanguageConverter::slangCompiler(slangTest, {ShaderLanguage::SpirV}, {ShaderLanguage::GLSL}, binaryOutputs, outputs, true);
+ //    //puts(outputs[0].c_str());
+ //
+	// ShaderLanguageConverter::glslangSpirvCompiler(outputs[0], ShaderLanguage::GLSL, ::ShaderStage::FragmentShader);
+
+	system("clear");
+	Texture2D<fvec4> image;
+	Texture2D<fvec4> image2;
+	auto testShader = [&]
+	{
+		image[Uint2(0,0)] = image2[Uint2(0,0)];
+	};
+	compilerOption.compileDXBC = false;
+	compilerOption.compileDXIL = false;
+	compilerOption.compileHLSL = false;
+	compilerOption.compileGLSL = true;
+	compilerOption.compileSpirV = true;
+	compilerOption.enableBindless = true;
+	auto testPipeline = ComputePipelineObject::compile(testShader,uvec3(8,8,1),compilerOption);
+	puts(std::get<1>(testPipeline.compute->getShaderCode(ShaderLanguage::Slang).shaderCode).c_str());
+	puts(std::get<1>(testPipeline.compute->getShaderCode(ShaderLanguage::GLSL,true).shaderCode).c_str());
+	std::cout << textureStruct->texture.node->accessPath();
 }
