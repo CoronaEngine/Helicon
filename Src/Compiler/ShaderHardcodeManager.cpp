@@ -110,6 +110,7 @@ namespace EmbeddedShader
 
 	void ShaderHardcodeManager::createTarget(const std::string& name)
 	{
+		clearOldHardcode();
 		// 检查文件是否存在
 		std::fstream hardcodeShaderFile;
 		if (!hardcodeFileOpened)
@@ -168,6 +169,17 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 		exist.isExistTargetFile = true;
 	}
 
+	void ShaderHardcodeManager::clearOldHardcode()
+	{
+		if (!isClearOldHardcodeFiles)
+		{
+			for (auto& entry : std::filesystem::directory_iterator(hardcodePath))
+				if (entry.is_regular_file())
+					std::filesystem::remove(entry.path());
+			isClearOldHardcodeFiles = true;
+		}
+	}
+
 	std::string ShaderHardcodeManager::getShaderResourceOutput(const ShaderCodeModule::ShaderResources& shaderResources)
 	{
 		std::stringstream result;
@@ -221,10 +233,5 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 		std::ranges::replace(fileName, ':', '_');
 
 		return fileName;
-	}
-
-	void ShaderHardcodeManager::setHardcodePath(std::filesystem::path path)
-	{
-		hardcodePath = std::move(path);
 	}
 }
