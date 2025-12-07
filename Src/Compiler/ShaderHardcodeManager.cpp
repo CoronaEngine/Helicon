@@ -110,6 +110,7 @@ namespace EmbeddedShader
 
 	void ShaderHardcodeManager::createTarget(const std::string& name)
 	{
+		clearOldHardcode();
 		// 检查文件是否存在
 		std::fstream hardcodeShaderFile;
 		if (!hardcodeFileOpened)
@@ -168,6 +169,17 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 		exist.isExistTargetFile = true;
 	}
 
+	void ShaderHardcodeManager::clearOldHardcode()
+	{
+		if (!isClearOldHardcodeFiles)
+		{
+			for (auto& entry : std::filesystem::directory_iterator(hardcodePath))
+				if (entry.is_regular_file())
+					std::filesystem::remove(entry.path());
+			isClearOldHardcodeFiles = true;
+		}
+	}
+
 	std::string ShaderHardcodeManager::getShaderResourceOutput(const ShaderCodeModule::ShaderResources& shaderResources)
 	{
 		std::stringstream result;
@@ -201,7 +213,7 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 
 	std::string ShaderHardcodeManager::getSourceLocationString(const std::source_location& sourceLocation)
 	{
-		std::string fileName = sourceLocation.file_name();
+        std::string fileName = sourceLocation.file_name() + std::string("_line_") + std::to_string(sourceLocation.line()) + std::string("_column_") + std::to_string(sourceLocation.column());
 		std::regex pattern(R"(CabbageEngine(.*))");
 		std::smatch matches;
 		if (std::regex_search(fileName, matches, pattern))
@@ -221,10 +233,5 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 		std::ranges::replace(fileName, ':', '_');
 
 		return fileName;
-	}
-
-	void ShaderHardcodeManager::setHardcodePath(std::filesystem::path path)
-	{
-		hardcodePath = std::move(path);
 	}
 }

@@ -18,11 +18,11 @@ namespace EmbeddedShader
 
 		static std::variant<ShaderCodeModule::ShaderResources,std::variant<std::vector<uint32_t>,std::string>> getHardcodeShader(const std::string& targetName, const std::string& itemName);
 		static std::string getSourceLocationString(const std::source_location& sourceLocation);
-		static void setHardcodePath(std::filesystem::path path);
 	private:
 		static bool hardcodeFileOpened;
 
 		static void createTarget(const std::string& name);
+		static void clearOldHardcode();
 
 		static std::string getShaderResourceOutput(const ShaderCodeModule::ShaderResources& shaderResources);
 
@@ -34,6 +34,7 @@ namespace EmbeddedShader
 
 		static inline std::unordered_map<std::string, TargetInfo> targetInfos;
         static inline std::filesystem::path hardcodePath = std::string(HELICON_ROOT_PATH) + "/Src/Compiler/HardcodeShaders/";
+		static inline bool isClearOldHardcodeFiles = false;
 
 #ifdef CABBAGE_ENGINE_DEBUG
 		static inline std::unordered_map<std::string, std::unordered_map<std::string, std::variant<ShaderCodeModule::ShaderResources,std::variant<std::vector<uint32_t>,std::string>>>> debugHardcodeShaders;
