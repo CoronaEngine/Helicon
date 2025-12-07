@@ -201,7 +201,7 @@ std::unordered_map<std::string, std::variant<EmbeddedShader::ShaderCodeModule::S
 
 	std::string ShaderHardcodeManager::getSourceLocationString(const std::source_location& sourceLocation)
 	{
-		std::string fileName = sourceLocation.file_name();
+        std::string fileName = sourceLocation.file_name() + std::string("_line_") + std::to_string(sourceLocation.line()) + std::string("_column_") + std::to_string(sourceLocation.column());
 		std::regex pattern(R"(CabbageEngine(.*))");
 		std::smatch matches;
 		if (std::regex_search(fileName, matches, pattern))
