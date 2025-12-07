@@ -7,6 +7,8 @@
   - SPIRV通过spirv-cross生成HLSL、GLSL等
   - SPIRV转译后的HLSL，通过DXC编译成DXIL、DXBC
   - （开发中）支持跨语言include
+    - 通过Cmake的Pre-build反射生成shader生成对应声明
+    - 在Slang中生成对应函数与struct声明
 - 支持运行时编译JIT、支持Shader反射
   - 支持spirv-cross的JIT和反射
   - 支持Slang的JIT和反射
@@ -18,6 +20,4 @@
 
 ## TODO LIST
 - 支持跨语言include
-  - 测试 Slang 编译生成多个独立的spriv文件
-  - 测试Cmake的Pre-build，（spirv）反射shader生成对应.h的签名
 - EDSL：for和if中调用函数
