@@ -18,4 +18,6 @@
 
 ## TODO LIST
 - 支持跨语言include
+  - 测试 Slang 编译生成多个独立的spriv文件
+  - 测试Cmake的Pre-build，（spirv）反射shader生成对应.h的签名
 - EDSL：for和if中调用函数
