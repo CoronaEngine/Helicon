@@ -17,6 +17,5 @@
   - （开发中）支持Shader反射信息硬编码
 
 ## TODO LIST
-- SPIRV转译后的HLSL，通过DXC编译成DXIL、DXBC，支持DXIL、DXBC的Shader硬编码
 - 支持跨语言include
 - EDSL：for和if中调用函数
