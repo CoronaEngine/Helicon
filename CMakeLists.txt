@@ -110,6 +110,7 @@ set(SPIRV_CROSS_CLI OFF)
 FetchContent_MakeAvailable(SPIRV-Cross)
 
 add_subdirectory(Src)
+add_subdirectory(Scripts)
 
 if(HELICON_BUILD_EXAMPLES)
     add_subdirectory(Examples)
