@@ -267,12 +267,12 @@ namespace EmbeddedShader
             spirv_cross::Compiler compiler(std::move(ir));
 
             // 获取入口点列表
-            auto entryPoints = compiler.get_entry_points_and_stages();
+ /*           auto entryPoints = compiler.get_entry_points_and_stages();
             std::set<std::string> entryPointNames;
             for (const auto& ep : entryPoints)
             {
                 entryPointNames.insert(ep.name);
-            }
+            }*/
 
             // 重新解析以获取IR（因为之前的ir被move了）
             spirv_cross::Parser parser2(spirv_file);
@@ -283,7 +283,8 @@ namespace EmbeddedShader
             for (size_t i = 0; i < ir2.ids.size(); ++i)
             {
                 auto& idHolder = ir2.ids[i];
-                if (idHolder.get_type() == spirv_cross::TypeFunction)
+                auto type = idHolder.get_type();
+                if (type == spirv_cross::TypeFunction)
                 {
                     const auto& func = idHolder.get<spirv_cross::SPIRFunction>();
                     FunctionSignature sig;
@@ -294,9 +295,6 @@ namespace EmbeddedShader
                         sig.name = nameIt->second.decoration.alias;
                     else
                         sig.name = "func_" + std::to_string(func.self);
-
-                    // 检查是否为入口点
-                    sig.isEntryPoint = entryPointNames.count(sig.name) > 0;
 
                     // 获取返回类型
                     const auto& funcType = ir2.ids[func.function_type].get<spirv_cross::SPIRFunctionPrototype>();

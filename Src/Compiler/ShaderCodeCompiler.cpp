@@ -173,6 +173,10 @@ namespace EmbeddedShader
                 break;
         }
 
+        
+        //auto functionSignatures = ShaderLanguageConverter::spirvCrossGetFunctionSignatures(codeSpirV);
+
+
         // support mutil-thread
         {
             std::unique_lock<std::shared_mutex> lock(threadMutex);
