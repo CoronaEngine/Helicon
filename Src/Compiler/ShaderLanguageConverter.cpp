@@ -153,6 +153,205 @@ namespace EmbeddedShader
         return resultCode;
     }
 
+    // 辅助函数：将SPIRType转换为类型名字符串
+    static std::string spirTypeToString(const spirv_cross::Compiler& compiler, const spirv_cross::SPIRType& type)
+    {
+        std::string result;
+
+        switch (type.basetype)
+        {
+            case spirv_cross::SPIRType::Void:
+                result = "void";
+                break;
+            case spirv_cross::SPIRType::Boolean:
+                result = "bool";
+                break;
+            case spirv_cross::SPIRType::SByte:
+                result = "int8_t";
+                break;
+            case spirv_cross::SPIRType::UByte:
+                result = "uint8_t";
+                break;
+            case spirv_cross::SPIRType::Short:
+                result = "int16_t";
+                break;
+            case spirv_cross::SPIRType::UShort:
+                result = "uint16_t";
+                break;
+            case spirv_cross::SPIRType::Int:
+                result = "int";
+                break;
+            case spirv_cross::SPIRType::UInt:
+                result = "uint";
+                break;
+            case spirv_cross::SPIRType::Int64:
+                result = "int64_t";
+                break;
+            case spirv_cross::SPIRType::UInt64:
+                result = "uint64_t";
+                break;
+            case spirv_cross::SPIRType::Half:
+                result = "half";
+                break;
+            case spirv_cross::SPIRType::Float:
+                result = "float";
+                break;
+            case spirv_cross::SPIRType::Double:
+                result = "double";
+                break;
+            case spirv_cross::SPIRType::Struct:
+                result = compiler.get_name(type.self);
+                if (result.empty())
+                    result = "struct_" + std::to_string(type.self);
+                break;
+            case spirv_cross::SPIRType::Image:
+                result = "image";
+                break;
+            case spirv_cross::SPIRType::SampledImage:
+                result = "sampled_image";
+                break;
+            case spirv_cross::SPIRType::Sampler:
+                result = "sampler";
+                break;
+            case spirv_cross::SPIRType::AccelerationStructure:
+                result = "acceleration_structure";
+                break;
+            case spirv_cross::SPIRType::RayQuery:
+                result = "ray_query";
+                break;
+            default:
+                result = "unknown";
+                break;
+        }
+
+        // 处理向量类型
+        if (type.vecsize > 1 && type.columns == 1)
+        {
+            result = result + std::to_string(type.vecsize);
+        }
+        // 处理矩阵类型
+        else if (type.columns > 1)
+        {
+            result = result + std::to_string(type.columns) + "x" + std::to_string(type.vecsize);
+        }
+
+        // 处理数组类型
+        for (auto& dim : type.array)
+        {
+            if (dim == 0)
+                result += "[]";
+            else
+                result += "[" + std::to_string(dim) + "]";
+        }
+
+        return result;
+    }
+
+    std::vector<FunctionSignature> ShaderLanguageConverter::spirvCrossGetFunctionSignatures(const std::vector<uint32_t>& spirv_file)
+    {
+        std::vector<FunctionSignature> signatures;
+
+        if (spirv_file.empty())
+            return signatures;
+
+        try
+        {
+            // 使用spirv_cross::Parser来解析SPIR-V并获取IR
+            spirv_cross::Parser parser(spirv_file);
+            parser.parse();
+
+            // 获取解析后的IR
+            spirv_cross::ParsedIR& ir = parser.get_parsed_ir();
+
+            // 使用Compiler来获取更多信息（类型名称等）
+            spirv_cross::Compiler compiler(std::move(ir));
+
+            // 获取入口点列表
+            auto entryPoints = compiler.get_entry_points_and_stages();
+            std::set<std::string> entryPointNames;
+            for (const auto& ep : entryPoints)
+            {
+                entryPointNames.insert(ep.name);
+            }
+
+            // 重新解析以获取IR（因为之前的ir被move了）
+            spirv_cross::Parser parser2(spirv_file);
+            parser2.parse();
+            spirv_cross::ParsedIR& ir2 = parser2.get_parsed_ir();
+
+            // 遍历所有ID，查找函数
+            for (size_t i = 0; i < ir2.ids.size(); ++i)
+            {
+                auto& idHolder = ir2.ids[i];
+                if (idHolder.get_type() == spirv_cross::TypeFunction)
+                {
+                    const auto& func = idHolder.get<spirv_cross::SPIRFunction>();
+                    FunctionSignature sig;
+
+                    // 获取函数名称
+                    auto nameIt = ir2.meta.find(func.self);
+                    if (nameIt != ir2.meta.end() && !nameIt->second.decoration.alias.empty())
+                        sig.name = nameIt->second.decoration.alias;
+                    else
+                        sig.name = "func_" + std::to_string(func.self);
+
+                    // 检查是否为入口点
+                    sig.isEntryPoint = entryPointNames.count(sig.name) > 0;
+
+                    // 获取返回类型
+                    const auto& funcType = ir2.ids[func.function_type].get<spirv_cross::SPIRFunctionPrototype>();
+                    sig.returnTypeId = funcType.return_type;
+
+                    if (sig.returnTypeId != 0 && ir2.ids[sig.returnTypeId].get_type() == spirv_cross::TypeType)
+                    {
+                        const auto& returnType = ir2.ids[sig.returnTypeId].get<spirv_cross::SPIRType>();
+                        sig.returnTypeName = spirTypeToString(compiler, returnType);
+                    }
+                    else
+                    {
+                        sig.returnTypeName = "void";
+                    }
+
+                    // 获取函数参数
+                    for (size_t j = 0; j < func.arguments.size(); ++j)
+                    {
+                        const auto& arg = func.arguments[j];
+                        FunctionParameter param;
+
+                        // 获取参数名称
+                        auto argNameIt = ir2.meta.find(arg.id);
+                        if (argNameIt != ir2.meta.end() && !argNameIt->second.decoration.alias.empty())
+                            param.name = argNameIt->second.decoration.alias;
+                        else
+                            param.name = "param_" + std::to_string(j);
+
+                        // 获取参数类型
+                        param.typeId = arg.type;
+                        if (ir2.ids[arg.type].get_type() == spirv_cross::TypeType)
+                        {
+                            const auto& argType = ir2.ids[arg.type].get<spirv_cross::SPIRType>();
+                            param.typeName = spirTypeToString(compiler, argType);
+                        }
+                        else
+                        {
+                            param.typeName = "unknown";
+                        }
+
+                        sig.parameters.push_back(std::move(param));
+                    }
+
+                    signatures.push_back(std::move(sig));
+                }
+            }
+        }
+        catch (const spirv_cross::CompilerError& error)
+        {
+            std::cerr << "SPIRV-Cross error while getting function signatures: " << error.what() << std::endl;
+        }
+
+        return signatures;
+    }
+
     void diagnoseIfNeeded(slang::IBlob *diagnosticsBlob)
     {
         if (diagnosticsBlob != nullptr)
