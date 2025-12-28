@@ -10,7 +10,7 @@
 
 namespace EmbeddedShader
 {
-	// º¯Êı²ÎÊıĞÅÏ¢
+	// å‡½æ•°å‚æ•°ä¿¡æ¯
 	struct FunctionParameter
 	{
 		std::string name;
@@ -18,7 +18,7 @@ namespace EmbeddedShader
 		uint32_t typeId = 0;
 	};
 
-	// º¯ÊıÇ©ÃûĞÅÏ¢
+	// å‡½æ•°ç­¾åä¿¡æ¯
 	struct FunctionSignature
 	{
 		std::string name;
@@ -36,7 +36,7 @@ namespace EmbeddedShader
 		//Compile SPIR-V to others
 		static std::string spirvCrossConverter(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion = -1);
 
-		// Í¨¹ıSPIRV-Cross IR²ã»ñÈ¡º¯ÊıÇ©Ãû
+		// é€šè¿‡SPIRV-Cross IRå±‚è·å–å‡½æ•°ç­¾å
 		static std::vector<FunctionSignature> spirvCrossGetFunctionSignatures(const std::vector<uint32_t>& spirv_file);
 
 		// Compile Slang to others
