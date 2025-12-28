@@ -62,6 +62,7 @@ int main(int argc, char* argv[])
 	Float3 lightPos;
 	auto vertex = [&](Aggregate<VertexInput> input)
 	{
+		AST::functionDeclaration("func","void",{});
 		Aggregate<VertexOutput> output;
 		position() = mul(mul(mul(proj,view),model),Float4(input->inPosition,1.0));
 		output->fragPos = mul(model,Float4(input->inPosition,1.0))->xyz();

@@ -250,6 +250,11 @@ std::string EmbeddedShader::Ast::SamplerType::parse()
 	return Generator::SlangGenerator::getParseOutput(this);
 }
 
+std::string EmbeddedShader::Ast::FunctionDeclaration::parse()
+{
+	return Generator::SlangGenerator::getParseOutput(this);
+}
+
 void EmbeddedShader::Ast::AggregateType::access(AccessPermissions permissions)
 {
 	NameType::access(permissions);

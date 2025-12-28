@@ -85,6 +85,7 @@ void EmbeddedShader::Ast::Parser::reset()
 	structure.localStatements.clear();
 	structure.inputStatements.clear();
 	structure.outputStatements.clear();
+	structure.shaderOnlyStatements.clear();
 	currentVariateIndex = 0;
 	positionOutput.reset();
 	dispatchThreadIDInput.reset();

@@ -106,6 +106,7 @@ template<> constexpr std::string_view variateBasicTypeNameMap<type> = #name
 		static std::string getParseOutput(const Ast::Texture2DType* node);
 		static std::string getParseOutput(const Ast::CallFunc* node);
 		static std::string getParseOutput(const Ast::SamplerType* node);
+		static std::string getParseOutput(const Ast::FunctionDeclaration* node);
 
 		static std::shared_ptr<Ast::Variate> getPositionOutput();
 		static std::shared_ptr<Ast::Variate> getDispatchThreadIDInput();

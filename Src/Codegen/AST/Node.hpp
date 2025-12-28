@@ -277,4 +277,12 @@ namespace EmbeddedShader::Ast
 	{
 		std::string parse() override;
 	};
+
+	struct FunctionDeclaration : Statement
+	{
+		std::string funcName;
+		std::string returnType;
+		std::vector<std::string> argTypes;
+		std::string parse() override;
+	};
 }

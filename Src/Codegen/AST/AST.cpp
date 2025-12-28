@@ -225,6 +225,16 @@ void EmbeddedShader::Ast::AST::callFunc(std::string funcName, std::vector<std::s
 	addLocalUniversalStatement(callFunc(std::move(funcName),nullptr,std::move(args)));
 }
 
+void EmbeddedShader::Ast::AST::functionDeclaration(std::string funcName, std::string returnType,
+	std::vector<std::string> argTypes)
+{
+	auto funcDecl = std::make_shared<FunctionDeclaration>();
+	funcDecl->funcName = std::move(funcName);
+	funcDecl->returnType = std::move(returnType);
+	funcDecl->argTypes = std::move(argTypes);
+	addShaderOnlyStatement(funcDecl);
+}
+
 void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)
 {
 	getLocalStatementStack().top()->push_back(std::move(statement));
@@ -243,6 +253,11 @@ void EmbeddedShader::Ast::AST::addOutputStatement(std::shared_ptr<Statement> out
 void EmbeddedShader::Ast::AST::addGlobalStatement(std::shared_ptr<Statement> globalStatement)
 {
 	Parser::currentParser->structure.globalStatements.push_back(std::move(globalStatement));
+}
+
+void EmbeddedShader::Ast::AST::addShaderOnlyStatement(std::shared_ptr<Statement> shaderOnlyStatement)
+{
+	Parser::currentParser->structure.shaderOnlyStatements.push_back(std::move(shaderOnlyStatement));
 }
 
 std::stack<std::vector<std::shared_ptr<EmbeddedShader::Ast::Statement>>*>& EmbeddedShader::Ast::AST::getLocalStatementStack()

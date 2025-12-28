@@ -54,6 +54,11 @@ export T getDescriptorFromHandle<T>(DescriptorHandle<T> handle) where T : IOpaqu
 )";
 	}
 
+	for (auto& statement: structure.shaderOnlyStatements)
+	{
+		output += statement->parse() + '\n';
+	}
+
 	std::string mainContent;
 	for (auto& statement: structure.localStatements)
 	{
@@ -389,6 +394,21 @@ std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast:
 std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::SamplerType* node)
 {
 	return node->name + (bindless() ?  ".Handle" : "");
+}
+
+std::string EmbeddedShader::Generator::SlangGenerator::getParseOutput(const Ast::FunctionDeclaration* node)
+{
+	std::string result = node->returnType + " " + node->funcName + "(";
+	if (!node->argTypes.empty())
+	{
+		result += node->argTypes[0];
+		for (size_t i = 1; i < node->argTypes.size(); ++i)
+		{
+			result += ", " + node->argTypes[i];
+		}
+	}
+	result += ");";
+	return result;
 }
 
 std::shared_ptr<EmbeddedShader::Ast::Variate> EmbeddedShader::Generator::SlangGenerator::getPositionOutput()

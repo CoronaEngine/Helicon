@@ -14,5 +14,6 @@ namespace EmbeddedShader::Ast
 		std::vector<std::shared_ptr<Statement>> inputStatements;
 		std::vector<std::shared_ptr<Statement>> outputStatements;
 		std::vector<std::shared_ptr<Statement>> localStatements;
+		std::vector<std::shared_ptr<Statement>> shaderOnlyStatements;
 	};
 }
