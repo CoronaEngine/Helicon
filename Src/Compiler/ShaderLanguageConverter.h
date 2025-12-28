@@ -10,6 +10,24 @@
 
 namespace EmbeddedShader
 {
+	// 函数参数信息
+	struct FunctionParameter
+	{
+		std::string name;
+		std::string typeName;
+		uint32_t typeId = 0;
+	};
+
+	// 函数签名信息
+	struct FunctionSignature
+	{
+		std::string name;
+		std::string returnTypeName;
+		uint32_t returnTypeId = 0;
+		std::vector<FunctionParameter> parameters;
+		bool isEntryPoint = false;
+	};
+
 	struct ShaderLanguageConverter
 	{
 		// Compile HLSL or GLSL to SPIR-V.
@@ -17,6 +35,9 @@ namespace EmbeddedShader
 
 		//Compile SPIR-V to others
 		static std::string spirvCrossConverter(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion = -1);
+
+		// 通过SPIRV-Cross IR层获取函数签名
+		static std::vector<FunctionSignature> spirvCrossGetFunctionSignatures(const std::vector<uint32_t>& spirv_file);
 
 		// Compile Slang to others
 		static std::string slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage, Slang::ComPtr<slang::IComponentType>& program);
