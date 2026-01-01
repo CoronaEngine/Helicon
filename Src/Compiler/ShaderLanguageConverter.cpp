@@ -26,7 +26,7 @@
 
 namespace EmbeddedShader
 {
-    std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage)
+    std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage, bool isLink)
     {
         // GLSL version is default by 460
         // Higher versions are compatible with lower versions
@@ -81,25 +81,29 @@ namespace EmbeddedShader
             return resultSpirvCode;
         }
 
-        glslang::TProgram program;
-        program.addShader(&shader);
-        if (!program.link(EShMsgVulkanRules))
+        glslang::TIntermediate* intermediate = nullptr;
+        if (isLink)
         {
-            std::cerr << program.getInfoLog();
-            return resultSpirvCode;
-        }
+            glslang::TProgram program;
+            program.addShader(&shader);
+            if (!program.link(EShMsgVulkanRules))
+            {
+                std::cerr << program.getInfoLog();
+                return resultSpirvCode;
+            }
 
-        if (!program.buildReflection(EShReflectionAllBlockVariables | EShReflectionIntermediateIO))
-        {
-            // std::cout << "build Reflection Error" << std::endl;
-        }
-        else
-        {
-            // std::cout << program.getNumLiveUniformBlocks() << std::endl;
-            // program.dumpReflection();
-        }
+            if (!program.buildReflection(EShReflectionAllBlockVariables | EShReflectionIntermediateIO))
+            {
+                // std::cout << "build Reflection Error" << std::endl;
+            } else
+            {
+                // std::cout << program.getNumLiveUniformBlocks() << std::endl;
+                // program.dumpReflection();
+            }
 
-        const auto intermediate = program.getIntermediate(stage);
+            intermediate = program.getIntermediate(stage);
+        }
+        else intermediate = shader.getIntermediate();
 
         glslang::GlslangToSpv(*intermediate, resultSpirvCode);
 

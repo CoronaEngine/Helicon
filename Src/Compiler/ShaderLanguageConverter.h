@@ -31,7 +31,7 @@ namespace EmbeddedShader
 	struct ShaderLanguageConverter
 	{
 		// Compile HLSL or GLSL to SPIR-V.
-		static std::vector<uint32_t> glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage);
+		static std::vector<uint32_t> glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage, bool isLink = true);
 
 		//Compile SPIR-V to others
 		static std::string spirvCrossConverter(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion = -1);

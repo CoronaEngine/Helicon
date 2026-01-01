@@ -12,22 +12,20 @@ int main()
 		return int3(a,b,c);
 	}
 )";
-	CompilerOption compilerOption;
-	compilerOption.compileSpirV = true;
-	compilerOption.compileHLSL = false;
-	compilerOption.compileDXIL = false;
-	compilerOption.compileDXBC = false;
-	compilerOption.compileGLSL = false;
-	compilerOption.enableBindless = false;
-	ShaderCodeCompiler compiler{code,ShaderStage::VertexShader,ShaderLanguage::HLSL, compilerOption};
-	auto spirv = get<0>(compiler.getShaderCode(ShaderLanguage::SpirV).shaderCode);
-	auto hlsl = get<1>(compiler.getShaderCode(ShaderLanguage::HLSL).shaderCode);
-	std::cout << hlsl << "\n";
+	// CompilerOption compilerOption;
+	// compilerOption.compileSpirV = true;
+	// compilerOption.compileHLSL = false;
+	// compilerOption.compileDXIL = false;
+	// compilerOption.compileDXBC = false;
+	// compilerOption.compileGLSL = false;
+	// compilerOption.enableBindless = false;
+	auto spirv = ShaderLanguageConverter::glslangSpirvCompiler(code,ShaderLanguage::HLSL,ShaderStage::VertexShader,false);
 
 	auto signatures = ShaderLanguageConverter::spirvCrossGetFunctionSignatures(spirv);
 	for (auto& signature: signatures)
 	{
-		std::cout << "Function:" << signature.name << "\n";
+
+		std::cout << "Function:" << signature.name.substr(0,signature.name.find('(')) << "\n";
 		std::cout << "Return Type:" << signature.returnTypeName << "\n";
 		std::cout << "Parameter List:\n";
 		for (auto& parameter: signature.parameters)
