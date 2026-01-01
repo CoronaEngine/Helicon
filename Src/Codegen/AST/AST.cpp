@@ -232,7 +232,7 @@ void EmbeddedShader::Ast::AST::functionDeclaration(std::string funcName, std::st
 	funcDecl->funcName = std::move(funcName);
 	funcDecl->returnType = std::move(returnType);
 	funcDecl->argTypes = std::move(argTypes);
-	addShaderOnlyStatement(funcDecl);
+	addGlobalStatement(funcDecl);
 }
 
 void EmbeddedShader::Ast::AST::addLocalStatement(std::shared_ptr<Statement> statement)

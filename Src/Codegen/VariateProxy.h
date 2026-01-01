@@ -644,6 +644,8 @@ namespace EmbeddedShader
 		{
 			return {Ast::AST::at(node, index.node)};
 		}
+
+		ArrayProxy(std::shared_ptr<Ast::Value> node) : node(std::move(node)) {}
 	private:
 		std::shared_ptr<Ast::Value> node;
 	};
@@ -773,4 +775,35 @@ namespace EmbeddedShader
 	{
 		return proxy.node;
 	}
+
+	template<typename T>
+	class FunctionProxy
+	{
+	public:
+		FunctionProxy() = delete;
+	};
+
+	template<typename Ret,typename... Args>
+	class FunctionProxy<Ret(Args...)>
+	{
+	public:
+		FunctionProxy() = default;
+		FunctionProxy(std::string funcName) : funcName(std::move(funcName)) {}
+
+		Ret operator()(Args... args) requires ParseHelper::IsVariateProxy<Ret>::value ||
+				ParseHelper::IsArrayProxy<Ret>::value ||
+				ParseHelper::IsTexture2DProxy<Ret>::value ||
+				!std::same_as<void,Ret>
+		{
+			Ret ret{Ast::AST::callFunc(funcName,Ast::AST::createType<typename Ret::value_type>(),{proxy_wrap(args)...})};
+			return ret;
+		}
+
+		void operator()(Args... args) requires std::same_as<void,Ret>
+		{
+			Ast::AST::addLocalUniversalStatement(Ast::AST::callFunc(funcName,nullptr,{proxy_wrap(args)...}));
+		}
+	private:
+		std::string funcName;
+	};
 }
