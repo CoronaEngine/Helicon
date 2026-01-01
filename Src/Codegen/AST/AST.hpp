@@ -103,8 +103,8 @@ namespace EmbeddedShader::Ast
 		static void addLocalUniversalStatement(std::shared_ptr<Node> node);
 		static std::shared_ptr<CallFunc> callFunc(std::string funcName,std::shared_ptr<Type> returnType,std::vector<std::shared_ptr<Value>> args);
 		static void callFunc(std::string funcName,std::vector<std::shared_ptr<Value>> args);
-		static void functionDeclaration(std::string funcName,std::string returnType ,std::vector<std::string> argTypes);
-	private:
+		static std::shared_ptr<FunctionDeclaration> functionDeclaration(std::string funcName, std::string returnType,
+		                                                                std::vector<std::string> argTypes);
 		static void addLocalStatement(std::shared_ptr<Statement> statement);
 		static void addInputStatement(std::shared_ptr<Statement> inputStatement);
 		static void addOutputStatement(std::shared_ptr<Statement> outputStatement);
@@ -112,7 +112,7 @@ namespace EmbeddedShader::Ast
 		static void addShaderOnlyStatement(std::shared_ptr<Statement> shaderOnlyStatement);
 		static std::stack<std::vector<std::shared_ptr<Statement>>*>& getLocalStatementStack();
 		static EmbeddedShaderStructure& getEmbeddedShaderStructure();
-
+	private:
 		template<typename Type>
 		struct ValueConverter
 		{

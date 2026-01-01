@@ -297,7 +297,7 @@ namespace EmbeddedShader
 					// 获取函数名称
 					auto nameIt = ir.meta.find(func.self);
 					if (nameIt != ir.meta.end() && !nameIt->second.decoration.alias.empty())
-						sig.name = nameIt->second.decoration.alias;
+						sig.name = nameIt->second.decoration.alias.substr(0,nameIt->second.decoration.alias.find('('));
 					else
 						sig.name = "func_" + std::to_string(func.self);
 

@@ -787,23 +787,71 @@ namespace EmbeddedShader
 	class FunctionProxy<Ret(Args...)>
 	{
 	public:
-		FunctionProxy() = default;
-		FunctionProxy(std::string funcName) : funcName(std::move(funcName)) {}
+		FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes)
+		: node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))) {}
 
 		Ret operator()(Args... args) requires ParseHelper::IsVariateProxy<Ret>::value ||
 				ParseHelper::IsArrayProxy<Ret>::value ||
 				ParseHelper::IsTexture2DProxy<Ret>::value ||
 				!std::same_as<void,Ret>
 		{
-			Ret ret{Ast::AST::callFunc(funcName,Ast::AST::createType<typename Ret::value_type>(),{proxy_wrap(args)...})};
+			if (!isBuildDeclaration)
+			{
+				Ast::AST::addGlobalStatement(node);
+				isBuildDeclaration = true;
+			}
+			Ret ret{Ast::AST::callFunc(node->funcName,Ast::AST::createType<typename Ret::value_type>(),{proxy_wrap(args)...})};
 			return ret;
 		}
 
 		void operator()(Args... args) requires std::same_as<void,Ret>
 		{
-			Ast::AST::addLocalUniversalStatement(Ast::AST::callFunc(funcName,nullptr,{proxy_wrap(args)...}));
+			if (!isBuildDeclaration)
+			{
+				Ast::AST::addGlobalStatement(node);
+				isBuildDeclaration = true;
+			}
+			Ast::AST::addLocalUniversalStatement(Ast::AST::callFunc(node->funcName,nullptr,{proxy_wrap(args)...}));
 		}
 	private:
-		std::string funcName;
+		std::shared_ptr<Ast::FunctionDeclaration> node;
+		bool isBuildDeclaration = false;
+	};
+
+	//暂时先这样特化VariateProxy，后续优化
+
+	template<typename Ret,typename... Args>
+	class FunctionProxy<VariateProxy<Ret(Args...)>>
+	{
+	public:
+		FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes)
+		: node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))) {}
+
+		VariateProxy<Ret> operator()(Args... args) requires ParseHelper::IsVariateProxy<Ret>::value ||
+				ParseHelper::IsArrayProxy<Ret>::value ||
+				ParseHelper::IsTexture2DProxy<Ret>::value ||
+				!std::same_as<void,Ret>
+		{
+			if (!isBuildDeclaration)
+			{
+				Ast::AST::addGlobalStatement(node);//需要处理当返回值被忽略时，函数调用未被生成的问题
+				isBuildDeclaration = true;
+			}
+			VariateProxy<Ret> ret{Ast::AST::callFunc(node->funcName,Ast::AST::createType<Ret>(),{proxy_wrap(args)...})};
+			return ret;
+		}
+
+		void operator()(Args... args) requires std::same_as<void,Ret>
+		{
+			if (!isBuildDeclaration)
+			{
+				Ast::AST::addGlobalStatement(node);
+				isBuildDeclaration = true;
+			}
+			Ast::AST::addLocalUniversalStatement(Ast::AST::callFunc(node->funcName,nullptr,{proxy_wrap(args)...}));
+		}
+	private:
+		std::shared_ptr<Ast::FunctionDeclaration> node;
+		bool isBuildDeclaration = false;
 	};
 }
