@@ -11,6 +11,16 @@ int main()
 	{
 		return int3(a,b,c);
 	}
+	struct B
+	{
+		float value;
+	};
+	struct A
+	{
+		int a;
+		B b;
+	};
+	void func(A a) {}
 )";
 	// CompilerOption compilerOption;
 	// compilerOption.compileSpirV = true;
@@ -21,17 +31,32 @@ int main()
 	// compilerOption.enableBindless = false;
 	auto spirv = ShaderLanguageConverter::glslangSpirvCompiler(code,ShaderLanguage::HLSL,ShaderStage::VertexShader,false);
 
-	auto signatures = ShaderLanguageConverter::spirvCrossGetFunctionSignatures(spirv);
-	for (auto& signature: signatures)
+	auto irReflections = ShaderLanguageConverter::spirvCrossGetIRReflection(spirv);
+	for (auto& irReflection: irReflections)
 	{
-
-		std::cout << "Function:" << signature.name.substr(0,signature.name.find('(')) << "\n";
-		std::cout << "Return Type:" << signature.returnTypeName << "\n";
-		std::cout << "Parameter List:\n";
-		for (auto& parameter: signature.parameters)
+		if (irReflection.type == IRReflection::Type::FunctionSignature)
 		{
-			std::cout << "\t""Name:" << parameter.name << "\n";
-			std::cout << "\t""Type:" << parameter.typeName << "\n\n";
+			auto& signature = std::get<FunctionSignature>(irReflection.info);
+			std::cout << "Function:" << signature.name.substr(0, signature.name.find('(')) << "\n";
+			std::cout << "Return Type:" << signature.returnTypeName << "\n";
+			std::cout << "Parameter List:\n";
+			for (auto& parameter: signature.parameters)
+			{
+				std::cout << "\t""Name:" << parameter.name << "\n";
+				std::cout << "\t""Type:" << parameter.typeName << "\n\n";
+			}
+		}
+
+		if (irReflection.type == IRReflection::Type::Struct)
+		{
+			auto& structInfo = std::get<StructInfo>(irReflection.info);
+			std::cout << "Struct: " << structInfo.name << "\n";
+			std::cout << "Members:\n";
+			for (auto& member: structInfo.members)
+			{
+				std::cout << "\t""Name:" << member.name << "\n";
+				std::cout << "\t""Type:" << member.typeName << "\n\n";
+			}
 		}
 	}
 

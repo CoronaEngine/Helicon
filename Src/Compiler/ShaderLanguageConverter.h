@@ -11,7 +11,7 @@
 namespace EmbeddedShader
 {
 	// 函数参数信息
-	struct FunctionParameter
+	struct VariableInfo
 	{
 		std::string name;
 		std::string typeName;
@@ -24,8 +24,26 @@ namespace EmbeddedShader
 		std::string name;
 		std::string returnTypeName;
 		uint32_t returnTypeId = 0;
-		std::vector<FunctionParameter> parameters;
+		std::vector<VariableInfo> parameters;
 		bool isEntryPoint = false;
+	};
+
+	struct StructInfo
+	{
+		std::string name;
+		std::vector<VariableInfo> members;
+	};
+
+	struct IRReflection
+	{
+		enum class Type
+		{
+			Unknown = -1,
+			FunctionSignature,
+			Struct,
+		};
+		std::variant<FunctionSignature, StructInfo> info;
+		Type type = Type::Unknown;
 	};
 
 	struct ShaderLanguageConverter
@@ -37,7 +55,7 @@ namespace EmbeddedShader
 		static std::string spirvCrossConverter(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion = -1);
 
 		// 通过SPIRV-Cross IR层获取函数签名
-		static std::vector<FunctionSignature> spirvCrossGetFunctionSignatures(const std::vector<uint32_t>& spirv_file);
+		static std::vector<IRReflection> spirvCrossGetIRReflection(const std::vector<uint32_t>& spirv_file);
 
 		// Compile Slang to others
 		static std::string slangCompiler(std::string shaderCode, ShaderLanguage targetLanguage, Slang::ComPtr<slang::IComponentType>& program);
