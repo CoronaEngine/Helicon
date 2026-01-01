@@ -840,16 +840,6 @@ namespace EmbeddedShader
 			VariateProxy<Ret> ret{Ast::AST::callFunc(node->funcName,Ast::AST::createType<Ret>(),{proxy_wrap(args)...})};
 			return ret;
 		}
-
-		void operator()(Args... args) requires std::same_as<void,Ret>
-		{
-			if (!isBuildDeclaration)
-			{
-				Ast::AST::addGlobalStatement(node);
-				isBuildDeclaration = true;
-			}
-			Ast::AST::addLocalUniversalStatement(Ast::AST::callFunc(node->funcName,nullptr,{proxy_wrap(args)...}));
-		}
 	private:
 		std::shared_ptr<Ast::FunctionDeclaration> node;
 		bool isBuildDeclaration = false;

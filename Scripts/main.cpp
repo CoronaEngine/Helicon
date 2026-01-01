@@ -73,6 +73,16 @@ void buildFunctionSignature(FunctionSignature& signature, std::stringstream& out
 	out<< "}};";
 }
 
+void buildStruct(const StructInfo& structInfo, std::stringstream& out)
+{
+	out << "struct " << structInfo.name << "\n{\n";
+	for (auto& member : structInfo.members)
+	{
+		out << "\t""VariateProxy<" << typeNameToCpp(member.typeName) << "> " << member.name << ";\n";
+	}
+	out << "};";
+}
+
 int main()
 {
 	std::string code = R"(
@@ -91,7 +101,7 @@ int main()
 	};
 	struct A
 	{
-		int a;
+		int3 a;
 		B b;
 	};
 	void func(A a) {}
@@ -144,6 +154,13 @@ int main()
 			auto& signature = std::get<FunctionSignature>(irReflection.info);
 			if (signature.isEntryPoint) continue;
 			buildFunctionSignature(signature,out);
+			out << "\n";
+		}
+
+		if (irReflection.type == IRReflection::Type::Struct)
+		{
+			auto& structInfo = std::get<StructInfo>(irReflection.info);
+			buildStruct(structInfo,out);
 			out << "\n";
 		}
 	}
