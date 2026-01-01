@@ -1,8 +1,10 @@
+#include <filesystem>
 #include <iostream>
 #include <Compiler/ShaderCodeCompiler.h>
 #include <Compiler/ShaderLanguageConverter.h>
 #include <Scripts/Lexer.hpp>
 #include <sstream>
+#include <fstream>
 using namespace EmbeddedShader;
 
 std::string typeNameToSlang(std::string_view typeName)
@@ -19,13 +21,13 @@ std::string typeNameToSlang(std::string_view typeName)
 
 std::string typeNameToCpp(std::string_view typeName)
 {
-	if (typeName == "int2") return "ktm::svec2";
-	if (typeName == "int3") return "ktm::svec3";
-	if (typeName == "int4") return "ktm::svec4";
+	if (typeName == "int2") return "::ktm::svec2";
+	if (typeName == "int3") return "::ktm::svec3";
+	if (typeName == "int4") return "::ktm::svec4";
 
-	if (typeName == "float2") return "ktm::svec2";
-	if (typeName == "float3") return "ktm::svec3";
-	if (typeName == "float4") return "ktm::svec4";
+	if (typeName == "float2") return "::ktm::svec2";
+	if (typeName == "float3") return "::ktm::svec3";
+	if (typeName == "float4") return "::ktm::svec4";
 	return std::string(typeName);
 }
 
@@ -52,7 +54,7 @@ void buildFunctionSignature(FunctionSignature& signature, std::stringstream& out
 	// {
 	// 	out << ");";
 	// }
-	out << "FunctionProxy<";
+	out << "::EmbeddedShader::FunctionProxy<";
 	if (signature.returnTypeName == "void")
 	{
 		out << "void";
@@ -60,7 +62,7 @@ void buildFunctionSignature(FunctionSignature& signature, std::stringstream& out
 	}
 	else
 	{
-		out << "VariateProxy<" << typeNameToCpp(signature.returnTypeName);
+		out << "::EmbeddedShader::VariateProxy<" << typeNameToCpp(signature.returnTypeName);
 		buildFunctionParameter(signature,out);
 		out << ">";
 	}
@@ -78,44 +80,103 @@ void buildStruct(const StructInfo& structInfo, std::stringstream& out)
 	out << "struct " << structInfo.name << "\n{\n";
 	for (auto& member : structInfo.members)
 	{
-		out << "\t""VariateProxy<" << typeNameToCpp(member.typeName) << "> " << member.name << ";\n";
+		out << "\t""::EmbeddedShader::VariateProxy<" << typeNameToCpp(member.typeName) << "> " << member.name << ";\n";
 	}
 	out << "};";
 }
 
-int main()
+int main(int argc, char** argv)
 {
-	std::string code = R"(
-	int3 merge(int a, int b,int c)
+	std::cout << "Helicon Shader Compile Scripts\n";
+	if (argc < 2)
 	{
-		return int3(a,b,c);
+		std::cout << "NOTE:No input";
+		return 1;
+	}
+	std::filesystem::path path = "";
+	std::filesystem::path outPath = "";
+	std::string ext  = ".h";
+	ShaderLanguage inputLanguage = ShaderLanguage::GLSL;
+
+	//main 参数解析
+	for (int i = 1; i < argc;)
+	{
+		if (std::string arg = argv[i]; arg == "-s")
+		{
+			++i;
+			path = argv[i];
+		}
+		else if (arg == "-o")
+		{
+			++i;
+			outPath = argv[i];
+		}
+		else if (arg == "-l")
+		{
+			++i;
+			arg = argv[i];
+			if (arg == "glsl")
+				inputLanguage = ShaderLanguage::GLSL;
+			else if (arg == "hlsl")
+				inputLanguage = ShaderLanguage::HLSL;
+			else
+			{
+				std::cout << "ERROR:Unrecognized Shader Language.";
+				return 1;
+			}
+		}
+		else if (arg == "-output-file-extension")
+		{
+			++i;
+			ext = argv[i];
+		}
+		else
+		{
+			std::cout << "ERROR:Unrecognized Parameter.";
+			return 1;
+		}
+		++i;
 	}
 
-	void func()
+	if (path.empty())
 	{
-
+		std::cout << "ERROR:Cannot enter an empty source file path.";
+		return 1;
 	}
-	struct B
+
+	std::fstream file(path,std::ios::in);
+	if (!file.is_open())
 	{
-		float value;
-	};
-	struct A
+		std::cout << "ERROR:Cannot open the source file.";
+		return 1;
+	}
+
+	if (outPath.empty())
 	{
-		int3 a;
-		B b;
-	};
-	void func(A a) {}
-)";
-	// CompilerOption compilerOption;
-	// compilerOption.compileSpirV = true;
-	// compilerOption.compileHLSL = false;
-	// compilerOption.compileDXIL = false;
-	// compilerOption.compileDXBC = false;
-	// compilerOption.compileGLSL = false;
-	// compilerOption.enableBindless = false;
-	auto spirv = ShaderLanguageConverter::glslangSpirvCompiler(code,ShaderLanguage::HLSL,ShaderStage::VertexShader,false);
+		std::cout << "NOTE:No output. Use the source file directory as the default output directory.";
+		outPath = path.parent_path();
+	}
+
+	if (ext.empty())
+	{
+		std::cout << "NOTE:Invalid file extension. Use the default file extension (.h).";
+		ext = ".h";
+	}
+	ext = ext[0] == '.' ? ext : "." + ext;
+
+	std::string code = (std::stringstream{} << file.rdbuf()).str();
+	file.close();
+	auto spirv = ShaderLanguageConverter::glslangSpirvCompiler(code,inputLanguage,ShaderStage::VertexShader,false);
+	if (spirv.empty())
+	{
+		std::cout << "ERROR:Cannot compile SPIR-V.";
+		return 1;
+	}
+	std::cout << "SUCCESS:SPIR-V compiled.\n";
 
 	auto irReflections = ShaderLanguageConverter::spirvCrossGetIRReflection(spirv);
+	std::cout << "SUCCESS:Obtain reflection information from SPIR-V IR through SPIRV-CROSS.\n";
+
 	// for (auto& irReflection: irReflections)
 	// {
 	// 	if (irReflection.type == IRReflection::Type::FunctionSignature)
@@ -144,9 +205,9 @@ int main()
 	// 	}
 	// }
 
-	std::cout << "Shader Compile Scripts\n";
-
+	std::cout << "INFO:Generate the final C++ shader...\n";
 	std::stringstream out;
+	out << "#pragma once\n#include <Codegen/VariateProxy.h>\n";
 	for (auto& irReflection : irReflections)
 	{
 		if (irReflection.type == IRReflection::Type::FunctionSignature)
@@ -165,7 +226,15 @@ int main()
 		}
 	}
 
-	std::cout << out.str();
+	//std::cout << out.str();
+
+	auto stem = path.stem();
+	auto outFilePath = outPath / (stem.string() + ext);
+	file.open(outFilePath,std::ios::out);
+	file << out.str();
+	file.close();
+
+	std::cout << "SUCCESS:The C++ shader has been output to the following directory:\n\t" << outFilePath.string();
 
 	return 0;
 }
