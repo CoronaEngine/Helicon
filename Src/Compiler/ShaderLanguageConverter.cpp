@@ -74,7 +74,7 @@ namespace EmbeddedShader
 		shader.setEnvInput(shaderLang, stage, glslang::EShClientVulkan, 460);
 		shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_3);
 		shader.setEnvTarget(glslang::EShTargetSpv, glslang::EShTargetSpv_1_6);
-		shader.setEntryPoint("main");
+		if (isLink) shader.setEntryPoint("main");
 
 		if (!shader.parse(GetDefaultResources(), 460, false, EShMsgDefault))
 		{
@@ -298,8 +298,7 @@ namespace EmbeddedShader
 					auto nameIt = ir.meta.find(func.self);
 					if (nameIt != ir.meta.end() && !nameIt->second.decoration.alias.empty())
 						sig.name = nameIt->second.decoration.alias.substr(0,nameIt->second.decoration.alias.find('('));
-					else
-						sig.name = "func_" + std::to_string(func.self);
+					else continue;
 
 					// 获取返回类型
 					const auto& funcType = ir.ids[func.function_type].get<spirv_cross::SPIRFunctionPrototype>();
@@ -357,8 +356,7 @@ namespace EmbeddedShader
 					auto it = ir.meta.find(spvType.self);
 					if (it != ir.meta.end() && !it->second.decoration.alias.empty())
 						inf.name = it->second.decoration.alias;
-					else inf.name = "struct_" + std::to_string(spvType.self);
-					//如果拿不到name的话，不知道能不能随便取，因为声明定义可能会对不上，先这样写着吧
+					else continue;
 
 					inf.members.resize(spvType.member_types.size());
 					for (size_t memberIndex = 0; memberIndex < spvType.member_types.size(); ++memberIndex)
