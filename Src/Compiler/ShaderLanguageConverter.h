@@ -1,5 +1,7 @@
 #pragma once
 
+#include <complex.h>
+#include <filesystem>
 #include <optional>
 
 #include"ShaderCodeCompiler.h"
@@ -49,7 +51,7 @@ namespace EmbeddedShader
 	struct ShaderLanguageConverter
 	{
 		// Compile HLSL or GLSL to SPIR-V.
-		static std::vector<uint32_t> glslangSpirvCompiler(std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage, bool isLink = true);
+		static std::vector<uint32_t> glslangSpirvCompiler(const std::string& shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage, const std::vector<std::filesystem::path>& includePaths = {}, bool isLink = true);
 
 		//Compile SPIR-V to others
 		static std::string spirvCrossConverter(std::vector<uint32_t> spirv_file, ShaderLanguage targetLanguage, int32_t targetVersion = -1);

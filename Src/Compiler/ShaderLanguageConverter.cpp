@@ -14,6 +14,8 @@
 #include "ShaderLanguageConverter.h"
 
 #include <array>
+#include <filesystem>
+#include <fstream>
 #include <set>
 #include <utility>
 
@@ -26,13 +28,48 @@
 
 namespace EmbeddedShader
 {
+
+	class Includer : public glslang::TShader::Includer
+	{
+	public:
+		Includer() = default;
+
+		IncludeResult* includeLocal(const char* includeName,const char* includerName,size_t inclusionDepth) override
+		{
+			std::string content;
+			for (const auto& path: includePaths)
+			{
+				std::ifstream f(path / includeName);
+				if (!f.is_open()) continue;
+				content = std::string((std::istreambuf_iterator(f)),
+								 std::istreambuf_iterator<char>());
+			}
+			if (content.empty()) return nullptr;
+
+			auto storage = new std::string(std::move(content));
+			return new IncludeResult(includeName, storage->data(), storage->size(), storage);
+		}
+		IncludeResult* includeSystem(const char* n, const char* i, size_t d) override
+		{
+			return includeLocal(n,i,d);
+		}
+		void releaseInclude(IncludeResult* r) override
+		{
+			delete static_cast<std::string*>(r->userData);
+			delete r;
+		}
+
+		std::vector<std::filesystem::path> includePaths;
+	};
+
 	std::vector<uint32_t> ShaderLanguageConverter::glslangSpirvCompiler(
-		std::string shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage, bool isLink)
+		const std::string& shaderCode, ShaderLanguage inputLanguage, ShaderStage inputStage, const std::vector<std::filesystem::
+		path>& includePaths, bool isLink)
 	{
 		// GLSL version is default by 460
 		// Higher versions are compatible with lower versions
 		// Version in HLSL is disabled
-
+		Includer a;
 		std::vector<uint32_t> resultSpirvCode;
 
 		glslang::EShSource shaderLang;
@@ -74,9 +111,12 @@ namespace EmbeddedShader
 		shader.setEnvInput(shaderLang, stage, glslang::EShClientVulkan, 460);
 		shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_3);
 		shader.setEnvTarget(glslang::EShTargetSpv, glslang::EShTargetSpv_1_6);
+
 		if (isLink) shader.setEntryPoint("main");
 
-		if (!shader.parse(GetDefaultResources(), 460, false, EShMsgDefault))
+		Includer includer;
+		includer.includePaths = includePaths;
+		if (!shader.parse(GetDefaultResources(), 460, false, EShMsgDefault, includer))
 		{
 			std::cerr << shader.getInfoLog();
 			return resultSpirvCode;

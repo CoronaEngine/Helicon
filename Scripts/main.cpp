@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 	std::cout << "Helicon Shader Compile Scripts\n";
 	if (argc < 2)
 	{
-		std::cout << "NOTE:No input";
+		std::cout << "NOTE:No input\n";
 		return 1;
 	}
 	std::filesystem::path path = "";
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 				inputLanguage = ShaderLanguage::HLSL;
 			else
 			{
-				std::cout << "ERROR:Unrecognized Shader Language.";
+				std::cout << "ERROR:Unrecognized Shader Language.\n";
 				return 1;
 			}
 		}
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			std::cout << "ERROR:Unrecognized Parameter.";
+			std::cout << "ERROR:Unrecognized Parameter.\n";
 			return 1;
 		}
 		++i;
@@ -140,36 +140,36 @@ int main(int argc, char** argv)
 
 	if (path.empty())
 	{
-		std::cout << "ERROR:Cannot enter an empty source file path.";
+		std::cout << "ERROR:Cannot enter an empty source file path.\n";
 		return 1;
 	}
 
 	std::fstream file(path,std::ios::in);
 	if (!file.is_open())
 	{
-		std::cout << "ERROR:Cannot open the source file.";
+		std::cout << "ERROR:Cannot open the source file.\n";
 		return 1;
 	}
 
 	if (outPath.empty())
 	{
-		std::cout << "NOTE:No output. Use the source file directory as the default output directory.";
+		std::cout << "NOTE:No output. Use the source file directory as the default output directory.\n";
 		outPath = path.parent_path();
 	}
 
 	if (ext.empty())
 	{
-		std::cout << "NOTE:Invalid file extension. Use the default file extension (.h).";
+		std::cout << "NOTE:Invalid file extension. Use the default file extension (.h).\n";
 		ext = ".h";
 	}
 	ext = ext[0] == '.' ? ext : "." + ext;
 
 	std::string code = (std::stringstream{} << file.rdbuf()).str();
 	file.close();
-	auto spirv = ShaderLanguageConverter::glslangSpirvCompiler(code,inputLanguage,ShaderStage::VertexShader,false);
+	auto spirv = ShaderLanguageConverter::glslangSpirvCompiler(code,inputLanguage,ShaderStage::VertexShader,{ path.parent_path() }, false);
 	if (spirv.empty())
 	{
-		std::cout << "ERROR:Cannot compile SPIR-V.";
+		std::cout << "ERROR:Cannot compile SPIR-V.\n";
 		return 1;
 	}
 	std::cout << "SUCCESS:SPIR-V compiled.\n";
