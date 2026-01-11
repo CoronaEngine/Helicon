@@ -7,16 +7,96 @@
 #include <fstream>
 using namespace EmbeddedShader;
 
-std::string typeNameToSlang(std::string_view typeName)
+void generateBinary(std::stringstream& out, std::string_view name, const std::vector<uint32_t>& shaderCode)
 {
-	if (typeName == "ivec2") return "int2";
-	if (typeName == "ivec3") return "int3";
-	if (typeName == "ivec4") return "int4";
+	out << "std::vector<uint32_t> " << name <<" {";
+	for (uint32_t code : shaderCode)
+	{
+		out << code << ",";
+	}
+	out << "};\n";
+}
+#include <string>
+#include <string_view>
 
-	if (typeName == "vec2") return "float2";
-	if (typeName == "vec3") return "float3";
-	if (typeName == "vec4") return "float4";
-	return std::string(typeName);
+std::string typeNameToSlang(std::string_view n)
+{
+    /* ---------- 向量 ---------- */
+    if (n == "ivec2") return "int2";
+    if (n == "ivec3") return "int3";
+    if (n == "ivec4") return "int4";
+    if (n == "uvec2") return "uint2";
+    if (n == "uvec3") return "uint3";
+    if (n == "uvec4") return "uint4";
+    if (n == "vec2")  return "float2";
+    if (n == "vec3")  return "float3";
+    if (n == "vec4")  return "float4";
+    if (n == "bvec2") return "bool2";
+    if (n == "bvec3") return "bool3";
+    if (n == "bvec4") return "bool4";
+    if (n == "dvec2") return "double2";
+    if (n == "dvec3") return "double3";
+    if (n == "dvec4") return "double4";
+
+    /* ---------- 矩阵 ---------- */
+    if (n == "mat2")   return "float2x2";
+    if (n == "mat3")   return "float3x3";
+    if (n == "mat4")   return "float4x4";
+    if (n == "mat2x2") return "float2x2";
+    if (n == "mat2x3") return "float2x3";
+    if (n == "mat2x4") return "float2x4";
+    if (n == "mat3x2") return "float3x2";
+    if (n == "mat3x3") return "float3x3";
+    if (n == "mat3x4") return "float3x4";
+    if (n == "mat4x2") return "float4x2";
+    if (n == "mat4x3") return "float4x3";
+    if (n == "mat4x4") return "float4x4";
+    if (n == "dmat2")   return "double2x2";
+    if (n == "dmat3")   return "double3x3";
+    if (n == "dmat4")   return "double4x4";
+    if (n == "dmat2x2") return "double2x2";
+    if (n == "dmat2x3") return "double2x3";
+    if (n == "dmat2x4") return "double2x4";
+    if (n == "dmat3x2") return "double3x2";
+    if (n == "dmat3x3") return "double3x3";
+    if (n == "dmat3x4") return "double3x4";
+    if (n == "dmat4x2") return "double4x2";
+    if (n == "dmat4x3") return "double4x3";
+    if (n == "dmat4x4") return "double4x4";
+
+    /* ---------- 纹理（GLSL → Slang） ---------- */
+    if (n == "sampler2D")         return "Texture2D";
+    if (n == "sampler3D")         return "Texture3D";
+    if (n == "samplerCube")       return "TextureCube";
+    if (n == "sampler2DArray")    return "Texture2DArray";
+    if (n == "sampler2DMS")       return "Texture2DMS";
+    if (n == "sampler2DShadow")   return "Texture2DShadow";
+    if (n == "samplerCubeShadow") return "TextureCubeShadow";
+
+    /* ---------- 缓冲（GLSL 风格 → Slang） ---------- */
+    // GLSL 名字 → HLSL/Slang 名字
+    if (n == "samplerBuffer")       return "Buffer";          // 只读 buffer
+    if (n == "imageBuffer")         return "RWBuffer";        // 读写 buffer
+    if (n == "sampler2DRect")       return "Texture2D";       // 无 normalized coord
+    if (n == "image2D")             return "RWTexture2D";
+    if (n == "image3D")             return "RWTexture3D";
+    if (n == "imageCube")           return "RWTextureCube";
+    if (n == "image2DArray")        return "RWTexture2DArray";
+    if (n == "uimage2D")            return "RWTexture2D<uint>";
+    if (n == "uimage3D")            return "RWTexture3D<uint>";
+    if (n == "uimageCube")          return "RWTextureCube<uint>";
+    if (n == "uimage2DArray")       return "RWTexture2DArray<uint>";
+    if (n == "iimage2D")            return "RWTexture2D<int>";
+    if (n == "iimage3D")            return "RWTexture3D<int>";
+    if (n == "iimageCube")          return "RWTextureCube<int>";
+    if (n == "iimage2DArray")       return "RWTexture2DArray<int>";
+
+    /* ---------- HLSL 风格缓冲（已同名，列出仅为扩展） ---------- */
+    // StructuredBuffer / RWStructuredBuffer / ByteAddressBuffer / ... 在 Slang 里拼写不变
+    // 若有新类型需要改名，继续往这里加即可
+
+    /* 未命中则原样返回 */
+    return std::string(n);
 }
 
 std::string typeNameToCpp(std::string_view typeName)
@@ -208,6 +288,14 @@ int main(int argc, char** argv)
 	std::cout << "INFO:Generate the final C++ shader...\n";
 	std::stringstream out;
 	out << "#pragma once\n#include <Codegen/VariateProxy.h>\n";
+
+	auto fileName = path.string();
+	std::ranges::replace(fileName, '\\', '_');
+	std::ranges::replace(fileName, '/', '_');
+	std::ranges::replace(fileName, '.', '_');
+	std::ranges::replace(fileName, ':', '_');
+
+	generateBinary(out, fileName, spirv);
 	for (auto& irReflection : irReflections)
 	{
 		if (irReflection.type == IRReflection::Type::FunctionSignature)

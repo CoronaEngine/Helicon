@@ -55,6 +55,7 @@ namespace EmbeddedShader
 		}
 		void releaseInclude(IncludeResult* r) override
 		{
+			if (!r) return;
 			delete static_cast<std::string*>(r->userData);
 			delete r;
 		}
