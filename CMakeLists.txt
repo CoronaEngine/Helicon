@@ -109,6 +109,22 @@ set(SPIRV_CROSS_ENABLE_TESTS OFF)
 set(SPIRV_CROSS_CLI OFF)
 FetchContent_MakeAvailable(SPIRV-Cross)
 
+FetchContent_Declare(
+    SPIRV-Headers
+    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
+    GIT_TAG vulkan-sdk-1.4.335.0
+    EXCLUDE_FROM_ALL
+)
+FetchContent_MakeAvailable(SPIRV-Headers)
+
+FetchContent_Declare(
+    SPIRV-Tools
+    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Tools.git
+    GIT_TAG vulkan-sdk-1.4.335.0
+    EXCLUDE_FROM_ALL
+)
+FetchContent_MakeAvailable(SPIRV-Tools)
+
 add_subdirectory(Src)
 add_subdirectory(Scripts)
 
