@@ -26,7 +26,7 @@ void EmbeddedShader::Ast::Parser::beginShaderParse(ShaderStage stage)
 {
 	if (currentParser->isInShaderParse)
 	{
-		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.stage);
+		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.spvSource,currentParser->structure.stage);
 		currentParser->reset();
 		currentParser->localStatementStack.pop();
 		currentParser->isInShaderParse = false;
@@ -40,7 +40,7 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::endPi
 {
 	if (currentParser->isInShaderParse)
 	{
-		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.stage);
+		currentParser->parseOutputs.emplace_back(Generator::SlangGenerator::getShaderOutput(currentParser->structure), currentParser->structure.spvSource,currentParser->structure.stage);
 		currentParser->reset();
 		currentParser->localStatementStack.pop();
 		currentParser->isInShaderParse = false;
@@ -89,6 +89,7 @@ void EmbeddedShader::Ast::Parser::reset()
 	currentVariateIndex = 0;
 	positionOutput.reset();
 	dispatchThreadIDInput.reset();
+    structure.spvSource.clear();
 }
 
 std::string EmbeddedShader::Ast::Parser::getUniqueVariateName()

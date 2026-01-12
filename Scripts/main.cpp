@@ -9,7 +9,7 @@ using namespace EmbeddedShader;
 
 void generateBinary(std::stringstream& out, std::string_view name, const std::vector<uint32_t>& shaderCode)
 {
-	out << "std::vector<uint32_t> " << name <<" {";
+	out << "static std::vector<uint32_t> " << name <<" {";
 	for (uint32_t code : shaderCode)
 	{
 		out << code << ",";
@@ -127,14 +127,14 @@ void buildFunctionParameter(FunctionSignature& signature, std::stringstream& out
 	out << ")";
 }
 
-void buildFunctionSignature(FunctionSignature& signature, std::stringstream& out)
+void buildFunctionSignature(FunctionSignature &signature, std::stringstream &out, std::string_view sourceSpv)
 {
 	// out << signature.returnTypeName << " " << signature.name << "(";
 	// if (signature.parameters.empty())
 	// {
 	// 	out << ");";
 	// }
-	out << "::EmbeddedShader::FunctionProxy<";
+	out << "static ::EmbeddedShader::FunctionProxy<";
 	if (signature.returnTypeName == "void")
 	{
 		out << "void";
@@ -152,7 +152,7 @@ void buildFunctionSignature(FunctionSignature& signature, std::stringstream& out
 	{
 		out << "\"" << typeNameToSlang(element.typeName) << "\",";
 	}
-	out<< "}};";
+	out<< "},&" << sourceSpv << "};";
 }
 
 void buildStruct(const StructInfo& structInfo, std::stringstream& out)
@@ -302,7 +302,7 @@ int main(int argc, char** argv)
 		{
 			auto& signature = std::get<FunctionSignature>(irReflection.info);
 			if (signature.isEntryPoint) continue;
-			buildFunctionSignature(signature,out);
+			buildFunctionSignature(signature, out, fileName);
 			out << "\n";
 		}
 

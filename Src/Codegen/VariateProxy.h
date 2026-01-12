@@ -787,8 +787,8 @@ namespace EmbeddedShader
 	class FunctionProxy<Ret(Args...)>
 	{
 	public:
-		FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes)
-		: node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))) {}
+		FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes,std::vector<uint32_t>* sourceSpv)
+		: node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))),sourceSpv(std::move(sourceSpv)) {}
 
 		Ret operator()(Args... args) requires ParseHelper::IsVariateProxy<Ret>::value ||
 				ParseHelper::IsArrayProxy<Ret>::value ||
@@ -797,6 +797,7 @@ namespace EmbeddedShader
 		{
 			if (!isBuildDeclaration)
 			{
+			    if (sourceSpv) Ast::AST::getEmbeddedShaderStructure().spvSource.insert(sourceSpv);
 				Ast::AST::addGlobalStatement(node);
 				isBuildDeclaration = true;
 			}
@@ -808,6 +809,7 @@ namespace EmbeddedShader
 		{
 			if (!isBuildDeclaration)
 			{
+			    if (sourceSpv) Ast::AST::getEmbeddedShaderStructure().spvSource.insert(sourceSpv);
 				Ast::AST::addGlobalStatement(node);
 				isBuildDeclaration = true;
 			}
@@ -816,6 +818,7 @@ namespace EmbeddedShader
 	private:
 		std::shared_ptr<Ast::FunctionDeclaration> node;
 		bool isBuildDeclaration = false;
+	    std::vector<uint32_t>* sourceSpv = nullptr;
 	};
 
 	//暂时先这样特化VariateProxy，后续优化
@@ -824,8 +827,8 @@ namespace EmbeddedShader
 	class FunctionProxy<VariateProxy<Ret(Args...)>>
 	{
 	public:
-		FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes)
-		: node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))) {}
+	    FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes,std::vector<uint32_t>* sourceSpv)
+        : node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))),sourceSpv(std::move(sourceSpv)) {}
 
 		VariateProxy<Ret> operator()(Args... args) requires ParseHelper::IsVariateProxy<Ret>::value ||
 				ParseHelper::IsArrayProxy<Ret>::value ||
@@ -834,6 +837,7 @@ namespace EmbeddedShader
 		{
 			if (!isBuildDeclaration)
 			{
+			    if (sourceSpv) Ast::AST::getEmbeddedShaderStructure().spvSource.insert(sourceSpv);
 				Ast::AST::addGlobalStatement(node);//需要处理当返回值被忽略时，函数调用未被生成的问题
 				isBuildDeclaration = true;
 			}
@@ -843,5 +847,6 @@ namespace EmbeddedShader
 	private:
 		std::shared_ptr<Ast::FunctionDeclaration> node;
 		bool isBuildDeclaration = false;
+	    std::vector<uint32_t>* sourceSpv = nullptr;
 	};
 }
