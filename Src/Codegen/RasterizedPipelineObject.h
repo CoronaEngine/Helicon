@@ -4,6 +4,7 @@
 #include <Codegen/AST/Parser.hpp>
 #include <source_location>
 #include <Compiler/ShaderCodeCompiler.h>
+#include <spirv-tools/linker.hpp>
 
 namespace EmbeddedShader
 {
@@ -34,6 +35,7 @@ namespace EmbeddedShader
 			result.vertex->compile(outputs[0].output, ShaderStage::VertexShader, ShaderLanguage::Slang, compilerOption);
 			result.fragment->compile(outputs[1].output, ShaderStage::FragmentShader, ShaderLanguage::Slang, compilerOption);
 		}
+
 		return result;
 	}
 

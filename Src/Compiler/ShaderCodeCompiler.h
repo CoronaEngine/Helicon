@@ -1,12 +1,14 @@
 #pragma once
 
+#include "spirv-tools/libspirv.hpp"
+
 #include <cstdint>
+#include <mutex>
 #include <source_location>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
-#include <mutex>
 
 namespace EmbeddedShader
 {

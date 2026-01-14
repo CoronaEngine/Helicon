@@ -9,7 +9,7 @@ std::vector<EmbeddedShader::Ast::ParseOutput> EmbeddedShader::Ast::Parser::parse
 	std::vector<ParseOutput> outputs;
 	for (const auto& parameter: parameters)
 	{
-		outputs.emplace_back(parse(parameter.shaderCode,parameter.stage),parameter.stage);
+		outputs.emplace_back(parse(parameter.shaderCode,parameter.stage),currentParser->structure.spvSource,parameter.stage);
 	}
 
 	auto globalOutput = Generator::SlangGenerator::getGlobalOutput(currentParser->structure);

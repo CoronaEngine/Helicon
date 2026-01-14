@@ -13,6 +13,8 @@
 
 #include "ShaderLanguageConverter.h"
 
+#include "spirv-tools/linker.hpp"
+
 #include <array>
 #include <filesystem>
 #include <fstream>
@@ -1175,7 +1177,14 @@ namespace EmbeddedShader
 		return result;
 	}
 
-	void ShaderLanguageConverter::slangReflectField(slang::VariableLayoutReflection* field, std::string_view accessPath,
+    std::vector<uint32_t> ShaderLanguageConverter::spirvLinker(const std::vector<std::vector<uint32_t>> &binaries)
+    {
+	    std::vector<uint32_t> result;
+	    spvtools::Link(spvToolContext,binaries, &result);
+	    return result;
+    }
+
+    void ShaderLanguageConverter::slangReflectField(slang::VariableLayoutReflection* field, std::string_view accessPath,
 	                                                size_t varBaseOffset, ShaderCodeModule::ShaderResources& reflection)
 	{
 		auto type = field->getTypeLayout();
