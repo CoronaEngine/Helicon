@@ -70,7 +70,7 @@ target_link_libraries(Helicon PUBLIC
     gfx
     dxcompiler
     dxil
-    SPIRV-Tools-static
+    SPIRV-Tools-link
 )
 
 file(GLOB SLANG_DLLS "${PROJECT_SOURCE_DIR}/Env/slang/bin/*.dll")

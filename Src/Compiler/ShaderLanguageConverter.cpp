@@ -633,7 +633,11 @@ namespace EmbeddedShader
 			slang::CompilerOptionEntry{
 				slang::CompilerOptionName::BindlessSpaceIndex,
 				{slang::CompilerOptionValueKind::Int, 0, 0, nullptr, nullptr}
-			}
+			},
+		    slang::CompilerOptionEntry{
+		        slang::CompilerOptionName::NoMangle,
+                {slang::CompilerOptionValueKind::Int, 1, 0, nullptr, nullptr}
+		    },
 		};
 		sessionDesc.compilerOptionEntries = options.data();
 		sessionDesc.compilerOptionEntryCount = options.size();

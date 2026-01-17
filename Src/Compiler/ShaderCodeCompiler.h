@@ -132,6 +132,7 @@ namespace EmbeddedShader
         bool compileDXBC = true;
         bool compileSpirV = true;
         bool enableBindless = true;
+        std::vector<std::vector<uint32_t>> *spvLinkBinary = nullptr;
     };
 
     struct ShaderCodeCompiler

@@ -173,6 +173,12 @@ namespace EmbeddedShader
                 break;
         }
 
+        if (option.spvLinkBinary && !codeSpirV.empty())
+        {
+            std::vector<std::vector<uint32_t>> src = *option.spvLinkBinary;
+            src.push_back(codeSpirV);
+            codeSpirV = ShaderLanguageConverter::spirvLinker(src);
+        }
         
         //auto functionSignatures = ShaderLanguageConverter::spirvCrossGetFunctionSignatures(codeSpirV);
 
