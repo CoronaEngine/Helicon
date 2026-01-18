@@ -195,4 +195,7 @@ GPU_PUSH_VARIATE(GPU_ELSEIF_BRANCH gpuElseIfBranchJ6hF4rT9mK2zV8cX5bN1pQ3{condit
 		GPU_PUSH_VARIATE(BREAK_FLAG breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3,breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3)\
 			for (condition)\
 				GPU_PUSH_VARIATE_WITH_CONDITION(GPU_FOR::BREAK_FLAG_PROCESS gpuForBreakFlagProcessU7gD2sH5nB9yR4vM8kL3wZ6{breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3.breakFlag},gpuForBreakFlagProcessU7gD2sH5nB9yR4vM8kL3wZ6,breakFlagJ6hF4rT9mK2zV8cX5bN1pQ3.breakFlag)
+#define HELICON_STRINGIZE_(X) #X
+#define HLSL(path) HELICON_STRINGIZE_(path.hpp)
+#define GLSL(path) HELICON_STRINGIZE_(path.hpp)
 }

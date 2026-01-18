@@ -18,6 +18,7 @@
 #include <Codegen/ComputePipelineObject.h>
 #include <Codegen/TypeAlias.h>
 #include <Compiler/ShaderHardcodeManager.h>
+//#include HLSL(D:/shader.txt)
 
 static std::vector<uint32_t> D__shader_txt {119734787,67072,524299,21,0,131089,1,393227,1,1280527431,1685353262,808793134,0,196622,0,1,262159,0,4,0,196611,5,500,196613,4,0,393221,13,1735550317,828975205,993093947,3879273,196613,10,97,196613,11,98,196613,12,99,131091,2,196641,3,2,262165,6,32,1,262176,7,7,6,262167,8,6,3,393249,9,8,7,7,7,327734,2,4,0,3,131320,5,65789,65592,327734,8,13,0,9,196663,7,10,196663,7,11,196663,7,12,131320,14,262205,6,15,10,262205,6,16,11,262205,6,17,12,393296,8,18,15,16,17,131326,18,65592,};
 static ::EmbeddedShader::FunctionProxy<::EmbeddedShader::VariateProxy<::ktm::svec3(int a, int b, int c)>> merge{"merge","int3",{"int","int","int",},&D__shader_txt};
