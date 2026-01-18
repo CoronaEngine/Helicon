@@ -23,8 +23,26 @@ namespace EmbeddedShader
 	{
 		Ast::Parser::setBindless(false);
 		auto outputs = parse(vertexShaderCode,fragmentShaderCode);
+		std::vector<std::vector<uint32_t>> link[2];
+		if (compilerOption.spvLinkBinary)
+		{
+			link[0] = *compilerOption.spvLinkBinary;
+			link[1] = *compilerOption.spvLinkBinary;
+		}
+		for (auto spvSourcePtr : outputs[0].sourceSpv)
+		{
+			if (spvSourcePtr)
+				link[0].push_back(*spvSourcePtr);
+		}
+		for (auto spvSourcePtr : outputs[1].sourceSpv)
+		{
+			if (spvSourcePtr)
+				link[1].push_back(*spvSourcePtr);
+		}
 		RasterizedPipelineObject result;
+		compilerOption.spvLinkBinary = &link[0];
 		result.vertex = std::make_unique<ShaderCodeCompiler>(outputs[0].output,ShaderStage::VertexShader, ShaderLanguage::Slang,compilerOption, sourceLocation);
+		compilerOption.spvLinkBinary = &link[1];
 		result.fragment = std::make_unique<ShaderCodeCompiler>(outputs[1].output,ShaderStage::FragmentShader, ShaderLanguage::Slang,compilerOption, sourceLocation);
 
 		if (compilerOption.enableBindless)
@@ -32,7 +50,9 @@ namespace EmbeddedShader
 			Ast::Parser::setBindless(true);
 			outputs = parse(std::forward<decltype(vertexShaderCode)>(vertexShaderCode),
 							std::forward<decltype(fragmentShaderCode)>(fragmentShaderCode));
+			compilerOption.spvLinkBinary = &link[0];
 			result.vertex->compile(outputs[0].output, ShaderStage::VertexShader, ShaderLanguage::Slang, compilerOption);
+			compilerOption.spvLinkBinary = &link[1];
 			result.fragment->compile(outputs[1].output, ShaderStage::FragmentShader, ShaderLanguage::Slang, compilerOption);
 		}
 

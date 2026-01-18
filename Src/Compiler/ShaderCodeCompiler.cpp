@@ -173,7 +173,7 @@ namespace EmbeddedShader
                 break;
         }
 
-        if (option.spvLinkBinary && !codeSpirV.empty())
+        if (option.spvLinkBinary && !option.spvLinkBinary->empty() && !codeSpirV.empty())
         {
             std::vector<std::vector<uint32_t>> src = *option.spvLinkBinary;
             src.push_back(codeSpirV);
