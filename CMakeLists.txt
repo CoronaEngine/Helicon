@@ -125,6 +125,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SPIRV-Tools)
 
+# ============================================================================
+# Shader 自动编译模块
+# ============================================================================
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/HeliconShaderCompile.cmake)
+
 add_subdirectory(Src)
 add_subdirectory(Scripts)
 

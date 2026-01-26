@@ -18,3 +18,9 @@ set_target_properties(HeliconExamples PROPERTIES
 target_link_libraries(HeliconExamples PRIVATE Helicon)
 
 helicon_install_runtime_deps(HeliconExamples)
+
+# ============================================================================
+# 自动编译 shader 文件
+# 扫描源码中的 #include HLSL(path) 和 #include GLSL(path) 指令
+# ============================================================================
+helicon_compile_shaders(HeliconExamples)

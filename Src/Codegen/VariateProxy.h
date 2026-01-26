@@ -790,10 +790,10 @@ namespace EmbeddedShader
 		FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes,std::vector<uint32_t>* sourceSpv)
 		: node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))),sourceSpv(std::move(sourceSpv)) {}
 
-		Ret operator()(Args... args) requires ParseHelper::IsVariateProxy<Ret>::value ||
+		Ret operator()(Args... args) requires (ParseHelper::IsVariateProxy<Ret>::value ||
 				ParseHelper::IsArrayProxy<Ret>::value ||
 				ParseHelper::IsTexture2DProxy<Ret>::value ||
-				!std::same_as<void,Ret>
+				(!std::same_as<void,Ret>))
 		{
 			if (!isBuildDeclaration)
 			{
@@ -830,10 +830,10 @@ namespace EmbeddedShader
 	    FunctionProxy(std::string funcName, std::string returnType, std::vector<std::string> argTypes,std::vector<uint32_t>* sourceSpv)
         : node(Ast::AST::functionDeclaration(std::move(funcName),std::move(returnType),std::move(argTypes))),sourceSpv(std::move(sourceSpv)) {}
 
-		VariateProxy<Ret> operator()(Args... args) requires ParseHelper::IsVariateProxy<Ret>::value ||
+		VariateProxy<Ret> operator()(Args... args) requires (ParseHelper::IsVariateProxy<Ret>::value ||
 				ParseHelper::IsArrayProxy<Ret>::value ||
 				ParseHelper::IsTexture2DProxy<Ret>::value ||
-				!std::same_as<void,Ret>
+				(!std::same_as<void,Ret>))
 		{
 			if (!isBuildDeclaration)
 			{

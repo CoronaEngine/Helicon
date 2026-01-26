@@ -221,16 +221,8 @@ namespace EmbeddedShader
 			}
 			return "unknown";
 		}
-    private:
-        bool bIsInInputParameter = false;
-        bool bIsInShaderCodeLambda = false;
-		std::shared_ptr<Ast::Value> vec;
-		size_t currentVecComponentIndex = 0;
-		size_t currentInputIndex = 0;
-		std::stack<std::pair<std::shared_ptr<Ast::Value>,size_t>> aggregateParentStack;
-        std::stack<bool> notInitNodeStack;
-        static thread_local ParseHelper instance;
-
+    public:
+        // 类型特征模板 - 需要在 FunctionProxy 的 requires 子句中使用
         template<typename T>
 		struct IsVariateProxy
 		{
@@ -266,6 +258,16 @@ namespace EmbeddedShader
 		{
 			static constexpr bool value = true;
 		};
+
+    private:
+        bool bIsInInputParameter = false;
+        bool bIsInShaderCodeLambda = false;
+		std::shared_ptr<Ast::Value> vec;
+		size_t currentVecComponentIndex = 0;
+		size_t currentInputIndex = 0;
+		std::stack<std::pair<std::shared_ptr<Ast::Value>,size_t>> aggregateParentStack;
+        std::stack<bool> notInitNodeStack;
+        static thread_local ParseHelper instance;
 
 	    template<typename T>
         struct IsReturnVariateProxy
