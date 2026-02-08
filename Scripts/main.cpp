@@ -99,101 +99,117 @@ std::string typeNameToSlang(std::string_view n)
 }
 
 std::string typeNameToCpp(std::string_view typeName)
-{
-	// GLSL 向量类型
-if (typeName == "vec2") return "::ktm::fvec2";
-if (typeName == "vec3") return "::ktm::fvec3";
-if (typeName == "vec4") return "::ktm::fvec4";
+    {
+    // GLSL 向量类型
+    if (typeName == "vec2") return "::ktm::fvec2";
+    if (typeName == "vec3") return "::ktm::fvec3";
+    if (typeName == "vec4") return "::ktm::fvec4";
 
-if (typeName == "dvec2") return "::ktm::dvec2";
-if (typeName == "dvec3") return "::ktm::dvec3";
-if (typeName == "dvec4") return "::ktm::dvec4";
+    if (typeName == "dvec2") return "::ktm::dvec2";
+    if (typeName == "dvec3") return "::ktm::dvec3";
+    if (typeName == "dvec4") return "::ktm::dvec4";
 
-if (typeName == "bvec2") return "::ktm::bvec2";
-if (typeName == "bvec3") return "::ktm::bvec3";
-if (typeName == "bvec4") return "::ktm::bvec4";
+    if (typeName == "bvec2") return "::ktm::bvec2";
+    if (typeName == "bvec3") return "::ktm::bvec3";
+    if (typeName == "bvec4") return "::ktm::bvec4";
 
-if (typeName == "uvec2") return "::ktm::uvec2";
-if (typeName == "uvec3") return "::ktm::uvec3";
-if (typeName == "uvec4") return "::ktm::uvec4";
+    if (typeName == "uvec2") return "::ktm::uvec2";
+    if (typeName == "uvec3") return "::ktm::uvec3";
+    if (typeName == "uvec4") return "::ktm::uvec4";
 
-if (typeName == "ivec2") return "::ktm::svec2";
-if (typeName == "ivec3") return "::ktm::svec3";
-if (typeName == "ivec4") return "::ktm::svec4";
+    if (typeName == "ivec2") return "::ktm::svec2";
+    if (typeName == "ivec3") return "::ktm::svec3";
+    if (typeName == "ivec4") return "::ktm::svec4";
 
-// GLSL 矩阵类型
-if (typeName == "mat2") return "::ktm::fmat2x2";
-if (typeName == "mat3") return "::ktm::fmat3x3";
-if (typeName == "mat4") return "::ktm::fmat4x4";
+    // GLSL 矩阵类型
+    if (typeName == "mat2") return "::ktm::fmat2x2";
+    if (typeName == "mat3") return "::ktm::fmat3x3";
+    if (typeName == "mat4") return "::ktm::fmat4x4";
 
-if (typeName == "mat2x2") return "::ktm::fmat2x2";
-if (typeName == "mat2x3") return "::ktm::fmat2x3";
-if (typeName == "mat2x4") return "::ktm::fmat2x4";
-if (typeName == "mat3x2") return "::ktm::fmat3x2";
-if (typeName == "mat3x3") return "::ktm::fmat3x3";
-if (typeName == "mat3x4") return "::ktm::fmat3x4";
-if (typeName == "mat4x2") return "::ktm::fmat4x2";
-if (typeName == "mat4x3") return "::ktm::fmat4x3";
-if (typeName == "mat4x4") return "::ktm::fmat4x4";
+    if (typeName == "mat2x2") return "::ktm::fmat2x2";
+    if (typeName == "mat2x3") return "::ktm::fmat2x3";
+    if (typeName == "mat2x4") return "::ktm::fmat2x4";
+    if (typeName == "mat3x2") return "::ktm::fmat3x2";
+    if (typeName == "mat3x3") return "::ktm::fmat3x3";
+    if (typeName == "mat3x4") return "::ktm::fmat3x4";
+    if (typeName == "mat4x2") return "::ktm::fmat4x2";
+    if (typeName == "mat4x3") return "::ktm::fmat4x3";
+    if (typeName == "mat4x4") return "::ktm::fmat4x4";
 
-if (typeName == "dmat2") return "::ktm::dmat2x2";
-if (typeName == "dmat3") return "::ktm::dmat3x3";
-if (typeName == "dmat4") return "::ktm::dmat4x4";
+    if (typeName == "dmat2") return "::ktm::dmat2x2";
+    if (typeName == "dmat3") return "::ktm::dmat3x3";
+    if (typeName == "dmat4") return "::ktm::dmat4x4";
 
-if (typeName == "dmat2x2") return "::ktm::dmat2x2";
-if (typeName == "dmat2x3") return "::ktm::dmat2x3";
-if (typeName == "dmat2x4") return "::ktm::dmat2x4";
-if (typeName == "dmat3x2") return "::ktm::dmat3x2";
-if (typeName == "dmat3x3") return "::ktm::dmat3x3";
-if (typeName == "dmat3x4") return "::ktm::dmat3x4";
-if (typeName == "dmat4x2") return "::ktm::dmat4x2";
-if (typeName == "dmat4x3") return "::ktm::dmat4x3";
-if (typeName == "dmat4x4") return "::ktm::dmat4x4";
+    if (typeName == "dmat2x2") return "::ktm::dmat2x2";
+    if (typeName == "dmat2x3") return "::ktm::dmat2x3";
+    if (typeName == "dmat2x4") return "::ktm::dmat2x4";
+    if (typeName == "dmat3x2") return "::ktm::dmat3x2";
+    if (typeName == "dmat3x3") return "::ktm::dmat3x3";
+    if (typeName == "dmat3x4") return "::ktm::dmat3x4";
+    if (typeName == "dmat4x2") return "::ktm::dmat4x2";
+    if (typeName == "dmat4x3") return "::ktm::dmat4x3";
+    if (typeName == "dmat4x4") return "::ktm::dmat4x4";
 
-// HLSL 向量类型（half 映射到 float）
-if (typeName == "half2") return "::ktm::fvec2";
-if (typeName == "half3") return "::ktm::fvec3";
-if (typeName == "half4") return "::ktm::fvec4";
+    // HLSL 向量类型
+    if (typeName == "float2") return "::ktm::fvec2";
+    if (typeName == "float3") return "::ktm::fvec3";
+    if (typeName == "float4") return "::ktm::fvec4";
 
-if (typeName == "double2") return "::ktm::dvec2";
-if (typeName == "double3") return "::ktm::dvec3";
-if (typeName == "double4") return "::ktm::dvec4";
+    if (typeName == "int2") return "::ktm::svec2";
+    if (typeName == "int3") return "::ktm::svec3";
+    if (typeName == "int4") return "::ktm::svec4";
 
-// HLSL 矩阵类型（half 映射到 float）
-if (typeName == "float2x2") return "::ktm::fmat2x2";
-if (typeName == "float2x3") return "::ktm::fmat2x3";
-if (typeName == "float2x4") return "::ktm::fmat2x4";
-if (typeName == "float3x2") return "::ktm::fmat3x2";
-if (typeName == "float3x3") return "::ktm::fmat3x3";
-if (typeName == "float3x4") return "::ktm::fmat3x4";
-if (typeName == "float4x2") return "::ktm::fmat4x2";
-if (typeName == "float4x3") return "::ktm::fmat4x3";
-if (typeName == "float4x4") return "::ktm::fmat4x4";
+    if (typeName == "uint2") return "::ktm::uvec2";
+    if (typeName == "uint3") return "::ktm::uvec3";
+    if (typeName == "uint4") return "::ktm::uvec4";
 
-if (typeName == "half2x2") return "::ktm::fmat2x2";
-if (typeName == "half2x3") return "::ktm::fmat2x3";
-if (typeName == "half2x4") return "::ktm::fmat2x4";
-if (typeName == "half3x2") return "::ktm::fmat3x2";
-if (typeName == "half3x3") return "::ktm::fmat3x3";
-if (typeName == "half3x4") return "::ktm::fmat3x4";
-if (typeName == "half4x2") return "::ktm::fmat4x2";
-if (typeName == "half4x3") return "::ktm::fmat4x3";
-if (typeName == "half4x4") return "::ktm::fmat4x4";
+    if (typeName == "bool2") return "::ktm::bvec2";
+    if (typeName == "bool3") return "::ktm::bvec3";
+    if (typeName == "bool4") return "::ktm::bvec4";
 
-if (typeName == "double2x2") return "::ktm::dmat2x2";
-if (typeName == "double2x3") return "::ktm::dmat2x3";
-if (typeName == "double2x4") return "::ktm::dmat2x4";
-if (typeName == "double3x2") return "::ktm::dmat3x2";
-if (typeName == "double3x3") return "::ktm::dmat3x3";
-if (typeName == "double3x4") return "::ktm::dmat3x4";
-if (typeName == "double4x2") return "::ktm::dmat4x2";
-if (typeName == "double4x3") return "::ktm::dmat4x3";
-if (typeName == "double4x4") return "::ktm::dmat4x4";
+    if (typeName == "double2") return "::ktm::dvec2";
+    if (typeName == "double3") return "::ktm::dvec3";
+    if (typeName == "double4") return "::ktm::dvec4";
 
-// 标量类型
-if (typeName == "uint") return "unsigned int";
-if (typeName == "half") return "float";      // half 降级为 float
-if (typeName == "dword") return "unsigned int";
+    if (typeName == "half2") return "::ktm::fvec2";
+    if (typeName == "half3") return "::ktm::fvec3";
+    if (typeName == "half4") return "::ktm::fvec4";
+
+    // HLSL 矩阵类型
+    if (typeName == "float2x2") return "::ktm::fmat2x2";
+    if (typeName == "float2x3") return "::ktm::fmat2x3";
+    if (typeName == "float2x4") return "::ktm::fmat2x4";
+    if (typeName == "float3x2") return "::ktm::fmat3x2";
+    if (typeName == "float3x3") return "::ktm::fmat3x3";
+    if (typeName == "float3x4") return "::ktm::fmat3x4";
+    if (typeName == "float4x2") return "::ktm::fmat4x2";
+    if (typeName == "float4x3") return "::ktm::fmat4x3";
+    if (typeName == "float4x4") return "::ktm::fmat4x4";
+
+    if (typeName == "half2x2") return "::ktm::fmat2x2";
+    if (typeName == "half2x3") return "::ktm::fmat2x3";
+    if (typeName == "half2x4") return "::ktm::fmat2x4";
+    if (typeName == "half3x2") return "::ktm::fmat3x2";
+    if (typeName == "half3x3") return "::ktm::fmat3x3";
+    if (typeName == "half3x4") return "::ktm::fmat3x4";
+    if (typeName == "half4x2") return "::ktm::fmat4x2";
+    if (typeName == "half4x3") return "::ktm::fmat4x3";
+    if (typeName == "half4x4") return "::ktm::fmat4x4";
+
+    if (typeName == "double2x2") return "::ktm::dmat2x2";
+    if (typeName == "double2x3") return "::ktm::dmat2x3";
+    if (typeName == "double2x4") return "::ktm::dmat2x4";
+    if (typeName == "double3x2") return "::ktm::dmat3x2";
+    if (typeName == "double3x3") return "::ktm::dmat3x3";
+    if (typeName == "double3x4") return "::ktm::dmat3x4";
+    if (typeName == "double4x2") return "::ktm::dmat4x2";
+    if (typeName == "double4x3") return "::ktm::dmat4x3";
+    if (typeName == "double4x4") return "::ktm::dmat4x4";
+
+    //特定类型名称
+    if (typeName == "uint") return "unsigned int";
+    if (typeName == "half") return "float";      // half 降级为 float
+    if (typeName == "dword") return "unsigned int";
 	return std::string(typeName);
 }
 

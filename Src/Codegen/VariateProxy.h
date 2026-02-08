@@ -198,7 +198,8 @@ namespace EmbeddedShader
 		VariateProxy(const VariateProxy& value)
 		{
 			//Local Variate
-			node = Ast::AST::defineLocalVariate(value.node->type, value.node);
+		    if (ParseHelper::isInShaderCodeLambda())
+		        node = Ast::AST::defineLocalVariate(value.node->type, value.node);
 		}
 
 		VariateProxy(VariateProxy&& value) = default;
