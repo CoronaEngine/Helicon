@@ -163,10 +163,6 @@ std::string typeNameToCpp(std::string_view typeName)
     if (typeName == "uint3") return "::ktm::uvec3";
     if (typeName == "uint4") return "::ktm::uvec4";
 
-    if (typeName == "bool2") return "::ktm::bvec2";
-    if (typeName == "bool3") return "::ktm::bvec3";
-    if (typeName == "bool4") return "::ktm::bvec4";
-
     if (typeName == "double2") return "::ktm::dvec2";
     if (typeName == "double3") return "::ktm::dvec3";
     if (typeName == "double4") return "::ktm::dvec4";
@@ -219,11 +215,11 @@ void buildFunctionParameter(FunctionSignature& signature, std::stringstream& out
 	if (!signature.parameters.empty())
 	{
 		auto& param0 = signature.parameters[0];
-		out << typeNameToCpp(param0.typeName) << " " << param0.name;
+		out << "::EmbeddedShader::VariateProxy<" << typeNameToCpp(param0.typeName) << "> " << param0.name;
 		for (size_t i = 1; i < signature.parameters.size(); ++i)
 		{
 			auto& param = signature.parameters[i];
-			out << ", " << typeNameToCpp(param.typeName) << " " << param.name;
+			out << ", ::EmbeddedShader::VariateProxy<" << typeNameToCpp(param.typeName) << "> " << param.name;
 		}
 	}
 	out << ")";
