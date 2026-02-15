@@ -128,7 +128,7 @@ namespace EmbeddedShader
 		glslang::TIntermediate* intermediate = nullptr;
 		if (isLink)
 		{
-			glslang::TProgram program;
+		    glslang::TProgram program;
 			program.addShader(&shader);
 			if (!program.link(EShMsgVulkanRules))
 			{
@@ -146,9 +146,16 @@ namespace EmbeddedShader
 			}
 
 			intermediate = program.getIntermediate(stage);
-		} else intermediate = shader.getIntermediate();
 
-		glslang::GlslangToSpv(*intermediate, resultSpirvCode);
+		    glslang::GlslangToSpv(*intermediate, resultSpirvCode);
+
+		}
+	    else
+		{
+		    intermediate = shader.getIntermediate();
+
+		    glslang::GlslangToSpv(*intermediate, resultSpirvCode);
+		}
 
 		glslang::FinalizeProcess();
 
