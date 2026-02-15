@@ -125,6 +125,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SPIRV-Tools)
 
+# 修复 SPIRV-Tools 在 C++20 下的运算符重写警告 (C5232)
+if(MSVC)
+    target_compile_options(SPIRV-Tools-opt PRIVATE /Wv:18)
+    target_compile_options(SPIRV-Tools-opt PRIVATE /wd4717 /wd5232)
+endif()
+
 # ============================================================================
 # Shader 自动编译模块
 # ============================================================================
