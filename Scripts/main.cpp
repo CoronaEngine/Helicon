@@ -1,7 +1,6 @@
 #include <filesystem>
 #include <iostream>
-#include <Compiler/ShaderCodeCompiler.h>
-#include <Compiler/ShaderLanguageConverter.h>
+#include <Helicon.h>
 #include <sstream>
 #include <fstream>
 using namespace EmbeddedShader;
